@@ -4,6 +4,7 @@ import { z } from "zod";
 
 // documentRead
 export const documentCreateReq = z.object({
+	type: z.enum(["type-regular", "type-unique"]),
 	name: z.string().min(1),
 });
 export const documentCreateRes = z.object({});
@@ -12,6 +13,7 @@ export type documentCreateResType = z.infer<typeof documentCreateRes>;
 
 // documentRead
 export const documentReadReq = z.object({
+	type: z.enum(["type-regular", "type-unique"]),
 	name: z.string().min(1),
 });
 export const documentReadRes = z.object({});
@@ -21,6 +23,7 @@ export type documentReadResType = z.infer<typeof documentReadRes>;
 
 // documentWrite
 export const documentWriteReq = z.object({
+	type: z.enum(["type-regular", "type-unique"]),
 	name: z.string().min(1),
 	content: z.string(),
 });
@@ -28,8 +31,19 @@ export const documentWriteRes = z.object({});
 export type documentWriteReqType = z.infer<typeof documentWriteReq>;
 export type documentWriteResType = z.infer<typeof documentWriteRes>;
 
+// documentDelete
+export const documentDeleteReq = z.object({
+	type: z.enum(["type-regular", "type-unique"]),
+	name: z.string().min(1),
+});
+export const documentDeleteRes = z.object({});
+export type documentDeleteReqType = z.infer<typeof documentDeleteReq>;
+export type documentDeleteResType = z.infer<typeof documentDeleteRes>;
+
 // documentList
-export const documentListReq = z.object({});
+export const documentListReq = z.object({
+	type: z.enum(["type-regular", "type-unique"]),
+});
 export const documentListRes = z.object({
 	documents: z.array(
 		z.object({
@@ -39,22 +53,3 @@ export const documentListRes = z.object({
 });
 export type documentListReqType = z.infer<typeof documentListReq>;
 export type documentListResType = z.infer<typeof documentListRes>;
-
-/* ------------------- uniqueDocument ------------------- */
-
-// uniqueDocumentRead
-export const uniqueDocumentReadReq = z.object({
-	context: z.string().min(1),
-	id: z.string().min(1),
-});
-export const uniqueDocumentReadRes = z.object({});
-export type uniqueDocumentReadReqType = z.infer<typeof uniqueDocumentReadReq>;
-export type uniqueDocumentReadResType = z.infer<typeof uniqueDocumentReadRes>;
-
-// uniqueDocumentList
-export const uniqueDocumentListReq = z.object({
-	context: z.string().min(1),
-});
-export const uniqueDocumentListRes = z.object({});
-export type uniqueDocumentListReqType = z.infer<typeof uniqueDocumentListReq>;
-export type uniqueDocumentListResType = z.infer<typeof uniqueDocumentListRes>;
