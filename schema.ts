@@ -149,3 +149,35 @@ export const documentListCoupleResponse = z.object({
 export type documentListCoupleResponseType = z.infer<
 	typeof documentListCoupleResponse
 >;
+
+// query single
+export const documentQuerySingleRequest = z.object({
+	name: z.string().min(1),
+	query: z.string().min(1),
+});
+export type documentQuerySingleRequestType = z.infer<
+	typeof documentQuerySingleRequest
+>;
+export const documentQuerySingleResponse = z.object({
+	value: z.string(),
+});
+export type documentQuerySingleResponseType = z.infer<
+	typeof documentQuerySingleResponse
+>;
+
+// query couple
+
+export const documentQueryCoupleRequest = z.object({
+	channel: z.string().min(1),
+	id: z.string().min(1),
+	query: z.string().min(1),
+});
+export type documentQueryCoupleRequestType = z.infer<
+	typeof documentQueryCoupleRequest
+>;
+export const documentQueryCoupleResponse = z.object({
+	value: z.string(),
+});
+export type documentQueryCoupleResponseType = z.infer<
+	typeof documentQueryCoupleResponse
+>;
