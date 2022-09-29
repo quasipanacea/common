@@ -91,6 +91,33 @@ export type documentWriteCoupleResponseType = z.infer<
 	typeof documentWriteCoupleResponse
 >;
 
+// rename single
+export const documentRenameSingleRequest = z.object({
+	oldName: z.string().min(1),
+	newName: z.string().min(1),
+});
+export type documentRenameSingleRequestType = z.infer<
+	typeof documentRenameSingleRequest
+>;
+export const documentRenameSingleResponse = z.object({});
+export type documentRenameSingleResponseType = z.infer<
+	typeof documentRenameSingleResponse
+>;
+
+// rename couple
+export const documentRenameCoupleRequest = z.object({
+	channel: z.string().min(1),
+	oldId: z.string().min(1),
+	newId: z.string().min(1),
+});
+export type documentRenameCoupleRequestType = z.infer<
+	typeof documentRenameCoupleRequest
+>;
+export const documentRenameCoupleResponse = z.object({});
+export type documentRenameCoupleResponseType = z.infer<
+	typeof documentRenameCoupleResponse
+>;
+
 // delete single
 export const documentDeleteSingleRequest = z.object({
 	name: z.string().min(1),
