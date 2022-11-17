@@ -100,6 +100,38 @@ export type noteRename_reqT = z.infer<typeof noteRename_req>;
 export const noteRename_res = z.object({});
 export type noteRename_resT = z.infer<typeof noteRename_res>;
 
+export const noteRead_req = z.object({
+	area: z.string().min(1),
+	topic: z.string().min(1),
+	name: z.string().min(1),
+	content: z.string(),
+});
+export type noteRead_reqT = z.infer<typeof noteRead_req>;
+export const noteRead_res = z.object({});
+export type noteRead_resT = z.infer<typeof noteRead_res>;
+
+export const noteWrite_req = z.object({
+	area: z.string().min(1),
+	topic: z.string().min(1),
+	name: z.string().min(1),
+	content: z.string(),
+});
+export type noteWrite_reqT = z.infer<typeof noteWrite_req>;
+export const noteWrite_res = z.object({});
+export type noteWrite_resT = z.infer<typeof noteWrite_res>;
+
+export const noteQuery_req = z.object({
+	area: z.string().min(1),
+	topic: z.string().min(1),
+	name: z.string().min(1),
+	query: z.string().min(1),
+});
+export type noteQuery_reqT = z.infer<typeof noteQuery_req>;
+export const noteQuery_res = z.object({
+	result: z.string().min(1),
+});
+export type noteQuery_resT = z.infer<typeof noteQuery_res>;
+
 export const noteList_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
