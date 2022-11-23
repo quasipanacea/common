@@ -65,13 +65,13 @@ export const topicList_req = z.object({
 });
 export type topicList_reqT = z.infer<typeof topicList_req>;
 export const topicList_res = z.object({
-	galaxies: z.array(z.string().min(1)),
+	topics: z.array(z.string().min(1)),
 });
 export type topicList_resT = z.infer<typeof topicList_res>;
 
 //
 //
-// note
+// Note
 export const noteAdd_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
@@ -104,10 +104,11 @@ export const noteRead_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
-	content: z.string(),
 });
 export type noteRead_reqT = z.infer<typeof noteRead_req>;
-export const noteRead_res = z.object({});
+export const noteRead_res = z.object({
+	content: z.string(),
+});
 export type noteRead_resT = z.infer<typeof noteRead_res>;
 
 export const noteWrite_req = z.object({
