@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export const noteTypesAllTypesT = ["markdown", "plaintext", "json"] as const;
+
+export const noteTypesAllExtensionsT = ["md", "txt", "json"] as const;
+
 //
 //
 // Area
@@ -76,6 +80,7 @@ export const noteAdd_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 });
 export type noteAdd_reqT = z.infer<typeof noteAdd_req>;
 export const noteAdd_res = z.object({});
@@ -85,6 +90,7 @@ export const noteRemove_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 });
 export type noteRemove_reqT = z.infer<typeof noteRemove_req>;
 export const noteRemove_res = z.object({});
@@ -95,6 +101,7 @@ export const noteRename_req = z.object({
 	topic: z.string().min(1),
 	oldName: z.string().min(1),
 	newName: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 });
 export type noteRename_reqT = z.infer<typeof noteRename_req>;
 export const noteRename_res = z.object({});
@@ -104,6 +111,7 @@ export const noteRead_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 });
 export type noteRead_reqT = z.infer<typeof noteRead_req>;
 export const noteRead_res = z.object({
@@ -115,6 +123,7 @@ export const noteWrite_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 	content: z.string(),
 });
 export type noteWrite_reqT = z.infer<typeof noteWrite_req>;
@@ -125,6 +134,7 @@ export const noteQuery_req = z.object({
 	area: z.string().min(1),
 	topic: z.string().min(1),
 	name: z.string().min(1),
+	type: z.enum(noteTypesAllTypesT),
 	query: z.string().min(1),
 });
 export type noteQuery_reqT = z.infer<typeof noteQuery_req>;
@@ -139,6 +149,11 @@ export const noteList_req = z.object({
 });
 export type noteList_reqT = z.infer<typeof noteList_req>;
 export const noteList_res = z.object({
-	notes: z.array(z.string().min(1)),
+	notes: z.array(
+		z.object({
+			name: z.string().min(1),
+			type: z.enum(noteTypesAllTypesT),
+		})
+	),
 });
 export type noteList_resT = z.infer<typeof noteList_res>;
