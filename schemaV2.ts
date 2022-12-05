@@ -20,13 +20,15 @@ export type podRemove_resT = z.infer<typeof podRemove_res>;
 
 export const podList_req = z.object({});
 export type podList_reqT = z.infer<typeof podList_req>;
-export const podList_res = z.array(
-	z.object({
-		type: z.enum(["markdown", "plaintext"]),
-		uuid: z.string().min(1),
-		name: z.string().min(1),
-	})
-);
+export const podList_res = z.object({
+	pods: z.array(
+		z.object({
+			type: z.enum(["markdown", "plaintext"]),
+			uuid: z.string().min(1),
+			name: z.string().min(1),
+		})
+	),
+});
 export type podList_resT = z.infer<typeof podList_res>;
 
 //
