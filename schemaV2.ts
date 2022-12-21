@@ -4,7 +4,7 @@ import { z } from "zod";
 //
 // Pod
 export const podAdd_req = z.object({
-	type: z.enum(["markdown", "plaintext"]),
+	wraps: z.string().min(1),
 	name: z.string().min(1),
 });
 export type podAdd_reqT = z.infer<typeof podAdd_req>;
@@ -18,18 +18,32 @@ export type podRemove_reqT = z.infer<typeof podRemove_req>;
 export const podRemove_res = z.object({});
 export type podRemove_resT = z.infer<typeof podRemove_res>;
 
-export const podList_req = z.object({});
+export const podList_req = z.object({
+	wraps: z.string().min(1),
+});
 export type podList_reqT = z.infer<typeof podList_req>;
 export const podList_res = z.object({
 	pods: z.array(
 		z.object({
-			type: z.enum(["markdown", "plaintext"]),
+			wraps: z.string().min(1),
 			uuid: z.string().min(1),
 			name: z.string().min(1),
 		})
 	),
 });
 export type podList_resT = z.infer<typeof podList_res>;
+
+export const podListPlugins_req = z.object({});
+export type podListPlugins_reqT = z.infer<typeof podListPlugins_req>;
+export const podListPlugins_res = z.object({
+	plugins: z.array(
+		z.object({
+			name: z.string().min(1),
+			wraps: z.string().min(1),
+		})
+	),
+});
+export type podListPlugins_resT = z.infer<typeof podListPlugins_res>;
 
 //
 //
