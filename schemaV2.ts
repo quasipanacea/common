@@ -45,6 +45,14 @@ export const podListPlugins_res = z.object({
 });
 export type podListPlugins_resT = z.infer<typeof podListPlugins_res>;
 
+export const podQuery_req = z.object({ uuid: z.string().min(1) });
+export type podQuery_reqT = z.infer<typeof podQuery_req>;
+export const podQuery_res = z.object({
+	wraps: z.string().min(1),
+	name: z.string().min(1),
+});
+export type podQuery_resT = z.infer<typeof podQuery_res>;
+
 //
 //
 // Area
