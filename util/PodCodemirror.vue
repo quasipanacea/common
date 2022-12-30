@@ -1,9 +1,5 @@
 <template>
 	<div class="container">
-		<header class="header">
-			<h1 class="title">Document</h1>
-			<router-link to="/overview/OverviewExperimentalPod">Back</router-link>
-		</header>
 		<!-- <codemirror
 			v-model="documentText"
 			:extensions="mirrorExtensions"
@@ -23,10 +19,20 @@ import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { Codemirror } from 'vue-codemirror'
 
 export default defineComponent({
+	props: {
+		onRead: {
+			type: Function,
+			required: true,
+		},
+		onWrite: {
+			type: Function,
+			required: true,
+		},
+	},
 	components: {
 		Codemirror,
 	},
-	setup() {
+	setup({ onRead, onWrite }) {
 		const route = useRoute()
 		const q = route.query
 
@@ -45,35 +51,26 @@ export default defineComponent({
 		// 	}
 		// }, 300)
 
-		// async function ss(ev: KeyboardEvent) {
-		// 	if (ev.ctrlKey && ev.code == 'KeyS') {
-		// 		ev.preventDefault()
-		// 		await saveDocument()
-		// 	}
-		// }
-		// onMounted(async () => {
-		// 	document.addEventListener('keydown', ss)
+		async function saveDocument(ev: KeyboardEvent) {
+			if (ev.ctrlKey && ev.code == 'KeyS') {
+				ev.preventDefault()
+				// await saveDocument()
+			}
+		}
+		onMounted(async () => {
+			document.addEventListener('keydown', saveDocument)
 
-		// 	const documentId = route.fullPath.split('/').at(-1)
-		// 	if (!documentId) throw new Error('documentId is undefined')
+			const podUuid = route.fullPath.split('/').at(-1)
+			if (!podUuid) throw new Error('podUuid is undefined')
 
-		// 	let json
-		// 	if (q.area && q.topic && q.note) {
-		// 		json = await api.noteRead({
-		// 			area: q.area as string,
-		// 			topic: q.topic as string,
-		// 			name: q.note as string,
-		// 		})
-		// 	} else {
-		// 		throw new Error('not all query parameters exist')
-		// 	}
-		// 	if (!json) return
+			const content = await onRead()
+			if (!content) return
 
-		// 	documentText.value = json.content
-		// })
-		// onUnmounted(() => {
-		// 	document.removeEventListener('keydown', ss)
-		// })
+			documentText.value = content
+		})
+		onUnmounted(() => {
+			document.removeEventListener('keydown', saveDocument)
+		})
 
 		// // CodeMirror
 		// const mirrorExtensions = [mirrorMarkdown()]
