@@ -1,8 +1,43 @@
 <template>
-	<h1>Plaintext</h1>
+	<div class="container">
+		<PodCodemirror :onRead="onRead" :onWrite="onWrite" />
+	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-export default defineComponent({})
+import { useRoute } from 'vue-router'
+import PodCodemirror from '../../../../util/PodCodemirror.vue'
+
+export default defineComponent({
+	setup() {
+		const route = useRoute()
+		const uuid = route.params.uuid
+
+		return {
+			async onRead(): Promise<string> {
+				const text = await fetch('/api/v2/pod/plugin/plaintext/read', {
+					method: 'POST',
+					body: JSON.stringify({
+						uuid,
+					}),
+				})
+				const json = await text.json()
+				return json
+			},
+			async onWrite(text: string): Promise<void> {
+				await fetch('/api/v2/pod/plugin/plaintext/write', {
+					method: 'POST',
+					body: JSON.stringify({
+						uuid,
+						content: text,
+					}),
+				})
+			},
+		}
+	},
+	components: {
+		PodCodemirror,
+	},
+})
 </script>

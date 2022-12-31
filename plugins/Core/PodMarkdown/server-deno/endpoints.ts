@@ -1,15 +1,16 @@
 import { path, z } from "@src/mod.ts";
 import * as util from "@src/util/util.ts";
-import { Endpoint } from "@common/util/types.ts";
+import { Endpoint } from "@src/util/types.ts";
 
 const uuid = z.string().min(1);
 
-export const initSchema = {
-	req: z.object({}),
+const initSchema = {
+	req: z.object({ uuid }),
 	res: z.object({}),
 };
 export const init: Endpoint<typeof initSchema> = {
 	route: "/init",
+	schema: initSchema,
 	async api(pod) {
 		const filepath = path.join(pod.dir, "index.md");
 		try {
@@ -27,12 +28,13 @@ export const init: Endpoint<typeof initSchema> = {
 	},
 };
 
-export const readSchema = {
+const readSchema = {
 	req: z.object({ uuid }),
-	res: z.object({ content: z.string().min(1) }),
+	res: z.object({}),
 };
-export const read: Endpoint<typeof readSchema> = {
+export const read: Endpoint<typeof writeSchema> = {
 	route: "/read",
+	schema: readSchema,
 	async api(pod) {
 		const filepath = path.join(pod.dir, "index.md");
 		const content = await Deno.readTextFile(filepath);
@@ -40,12 +42,13 @@ export const read: Endpoint<typeof readSchema> = {
 	},
 };
 
-export const writeSchema = {
+const writeSchema = {
 	req: z.object({ uuid, content: z.string().min(1) }),
 	res: z.object({}),
 };
 export const write: Endpoint<typeof writeSchema> = {
 	route: "/write",
+	schema: writeSchema,
 	async api(pod, { content }) {
 		const filepath = path.join(pod.dir, "index.md");
 		await Deno.writeTextFile(filepath, content);
@@ -53,12 +56,13 @@ export const write: Endpoint<typeof writeSchema> = {
 	},
 };
 
-export const openNativelySchema = {
+const openNativelySchema = {
 	req: z.object({ uuid }),
 	res: z.object({}),
 };
 export const openNatively: Endpoint<typeof openNativelySchema> = {
 	route: "/open",
+	schema: openNativelySchema,
 	api(pod) {
 		const filepath = path.join(pod.dir, "index.md");
 		Deno.run({ cmd: ["xdg-open", filepath] });

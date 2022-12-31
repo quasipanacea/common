@@ -1,11 +1,11 @@
 <template>
 	<div class="container">
-		<!-- <codemirror
+		<codemirror
 			v-model="documentText"
 			:extensions="mirrorExtensions"
 			@ready="mirrorReady"
-			@keydown="saveDocument()"
-		/> -->
+			@keydown="saveOnCtrlS"
+		/>
 	</div>
 </template>
 
@@ -13,8 +13,6 @@
 import { onMounted, defineComponent, ref, shallowRef, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { debounce } from 'lodash'
-import * as api from '@/util/clientApiV2'
-import { EditorState } from '@codemirror/state'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { Codemirror } from 'vue-codemirror'
 
@@ -34,57 +32,45 @@ export default defineComponent({
 	},
 	setup({ onRead, onWrite }) {
 		const route = useRoute()
-		const q = route.query
-
 		const documentText = ref('')
 
-		// const saveDocument = debounce(async () => {
-		// 	if (q.area && q.topic && q.note) {
-		// 		await api.noteWrite({
-		// 			area: q.area as string,
-		// 			topic: q.topic as string,
-		// 			name: q.note as string,
-		// 			content: documentText.value,
-		// 		})
-		// 	} else {
-		// 		throw new Error('not all query parameters exist')
-		// 	}
-		// }, 300)
+		const saveOnType = debounce(async () => {
+			await onWrite(documentText.value)
+		}, 300)
 
-		async function saveDocument(ev: KeyboardEvent) {
+		async function saveOnCtrlS(ev: KeyboardEvent) {
 			if (ev.ctrlKey && ev.code == 'KeyS') {
 				ev.preventDefault()
-				// await saveDocument()
+				await onWrite(documentText.value)
 			}
 		}
+
 		onMounted(async () => {
-			document.addEventListener('keydown', saveDocument)
+			document.addEventListener('keydown', saveOnType)
 
-			const podUuid = route.fullPath.split('/').at(-1)
-			if (!podUuid) throw new Error('podUuid is undefined')
+			const uuid = route.params.uuid
+			if (!uuid) throw new Error('podUuid is undefined')
 
-			const content = await onRead()
-			if (!content) return
-
-			documentText.value = content
+			const obj = await onRead()
+			documentText.value = obj.content
 		})
 		onUnmounted(() => {
-			document.removeEventListener('keydown', saveDocument)
+			document.removeEventListener('keydown', saveOnType)
 		})
 
 		// // CodeMirror
-		// const mirrorExtensions = [mirrorMarkdown()]
-		// const view = shallowRef()
-		// const mirrorReady = (payload: any) => {
-		// 	view.value = payload.view
-		// }
+		const mirrorExtensions = [mirrorMarkdown() as any]
+		const view = shallowRef()
+		const mirrorReady = (payload: any) => {
+			view.value = payload.view
+		}
 
-		// return {
-		// 	documentText,
-		// 	saveDocument,
-		// 	mirrorExtensions,
-		// 	mirrorReady,
-		// }
+		return {
+			documentText,
+			saveOnCtrlS,
+			mirrorExtensions,
+			mirrorReady,
+		}
 	},
 })
 </script>
