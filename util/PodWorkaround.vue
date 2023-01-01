@@ -1,6 +1,7 @@
 <template>
 	<PodMarkdown v-if="type === 'markdown'" />
-	<PodMarkdown v-else-if="type === 'plaintext'" />
+	<PodPlaintext v-else-if="type === 'plaintext'" />
+	<p v-else>PodWorkaround Error</p>
 </template>
 
 <script lang="ts">

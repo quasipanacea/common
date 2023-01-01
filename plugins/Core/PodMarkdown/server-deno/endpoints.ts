@@ -1,20 +1,40 @@
 import { path, z } from "@src/mod.ts";
 import * as util from "@src/util/util.ts";
-import { Endpoint } from "@src/util/types.ts";
+import { Endpoint, Pod } from "@src/util/types.ts";
 
-const uuid = z.string().min(1);
+// Types
+
+const uuid_t = z.string().min(1);
+
+// State
+
+type State = {
+	indexFile: string;
+};
+
+export function getState(pod: Pod): State {
+	const indexFile = path.join(pod.dir, "index.md");
+
+	return {
+		indexFile,
+	};
+}
+
+// Routes
 
 const initSchema = {
-	req: z.object({ uuid }),
+	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const init: Endpoint<typeof initSchema> = {
+export const init: Endpoint<State, typeof initSchema> = {
 	route: "/init",
 	schema: initSchema,
-	async api(pod) {
-		const filepath = path.join(pod.dir, "index.md");
+	async api(pod, state) {
 		try {
-			const f = await Deno.open(filepath, { create: true, createNew: true });
+			const f = await Deno.open(state.indexFile, {
+				create: true,
+				createNew: true,
+			});
 			f.close();
 		} catch (err: unknown) {
 			if (!(err instanceof Deno.errors.AlreadyExists)) {
@@ -29,43 +49,40 @@ export const init: Endpoint<typeof initSchema> = {
 };
 
 const readSchema = {
-	req: z.object({ uuid }),
+	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const read: Endpoint<typeof writeSchema> = {
+export const read: Endpoint<State, typeof writeSchema> = {
 	route: "/read",
 	schema: readSchema,
-	async api(pod) {
-		const filepath = path.join(pod.dir, "index.md");
-		const content = await Deno.readTextFile(filepath);
+	async api(pod, state) {
+		const content = await Deno.readTextFile(state.indexFile);
 		return { content };
 	},
 };
 
 const writeSchema = {
-	req: z.object({ uuid, content: z.string().min(1) }),
+	req: z.object({ uuid: uuid_t, content: z.string().min(1) }),
 	res: z.object({}),
 };
-export const write: Endpoint<typeof writeSchema> = {
+export const write: Endpoint<State, typeof writeSchema> = {
 	route: "/write",
 	schema: writeSchema,
-	async api(pod, { content }) {
-		const filepath = path.join(pod.dir, "index.md");
-		await Deno.writeTextFile(filepath, content);
+	async api(pod, state, { content }) {
+		await Deno.writeTextFile(state.indexFile, content);
 		return {};
 	},
 };
 
 const openNativelySchema = {
-	req: z.object({ uuid }),
+	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const openNatively: Endpoint<typeof openNativelySchema> = {
+export const openNatively: Endpoint<State, typeof openNativelySchema> = {
 	route: "/open",
 	schema: openNativelySchema,
-	api(pod) {
-		const filepath = path.join(pod.dir, "index.md");
-		Deno.run({ cmd: ["xdg-open", filepath] });
+	api(pod, state) {
+		Deno.run({ cmd: ["xdg-open", state.indexFile] });
 		return {};
 	},
 };
