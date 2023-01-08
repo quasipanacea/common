@@ -1,24 +1,11 @@
-import { path, z } from "@src/mod.ts";
-import * as util from "@src/util/util.ts";
-import { Endpoint, Pod } from "@src/util/types.ts";
+import { z } from "@src/mod.ts";
+import { Endpoint } from "@src/verify/types.ts";
+
+import { State } from "./shared.ts";
 
 // Types
 
 const uuid_t = z.string().min(1);
-
-// State
-
-type State = {
-	indexFile: string;
-};
-
-export function getState(pod: Pod): State {
-	const indexFile = path.join(pod.dir, "index.txt");
-
-	return {
-		indexFile,
-	};
-}
 
 // Routes
 
@@ -50,7 +37,7 @@ export const init: Endpoint<State, typeof initSchema> = {
 
 const readSchema = {
 	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
+	res: z.object({ content: z.string() }), // TODO: VALIDATE RETURNS
 };
 export const read: Endpoint<State, typeof writeSchema> = {
 	route: "/read",
@@ -62,7 +49,7 @@ export const read: Endpoint<State, typeof writeSchema> = {
 };
 
 const writeSchema = {
-	req: z.object({ uuid: uuid_t, content: z.string().min(1) }),
+	req: z.object({ uuid: uuid_t, content: z.string() }),
 	res: z.object({}),
 };
 export const write: Endpoint<State, typeof writeSchema> = {
