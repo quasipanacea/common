@@ -26,11 +26,15 @@ export default defineComponent({
 			type: Function,
 			required: true,
 		},
+		onOpen: {
+			type: Function,
+			required: true,
+		},
 	},
 	components: {
 		Codemirror,
 	},
-	setup({ onRead, onWrite }) {
+	setup({ onRead, onWrite, onOpen }) {
 		const route = useRoute()
 		const documentText = ref('')
 
@@ -39,9 +43,12 @@ export default defineComponent({
 		}, 300)
 
 		async function saveOnCtrlS(ev: KeyboardEvent) {
-			if (ev.ctrlKey && ev.code == 'KeyS') {
+			if (ev.ctrlKey && ev.code === 'KeyS') {
 				ev.preventDefault()
 				await onWrite(documentText.value)
+			} else if (ev.ctrlKey && ev.code === 'KeyO') {
+				ev.preventDefault()
+				await onOpen()
 			}
 		}
 

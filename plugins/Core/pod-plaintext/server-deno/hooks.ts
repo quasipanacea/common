@@ -1,9 +1,9 @@
 import type { OnPodCreate, OnPodRemove } from "@src/verify/types.ts";
 
-export const onPodCreate: OnPodCreate = function (dir) {
-	console.log("created", dir);
+export const onPodCreate: OnPodCreate = function (pod) {
+	console.log("created", pod);
 };
 
-export const onPodRemove: OnPodRemove = function (dir) {
-	console.log("removed", dir);
+export const onPodRemove: OnPodRemove = function (pod) {
+	console.log("removed", pod);
 };

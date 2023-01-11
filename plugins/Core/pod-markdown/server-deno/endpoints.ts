@@ -1,6 +1,6 @@
 import { z } from "@src/mod.ts";
 import { Endpoint } from "@src/verify/types.ts";
-
+import * as util from "../../../../../src/util/util.ts";
 import { State } from "./shared.ts";
 
 // Types
@@ -69,7 +69,7 @@ export const openNatively: Endpoint<State, typeof openNativelySchema> = {
 	route: "/open",
 	schema: openNativelySchema,
 	api(pod, state) {
-		Deno.run({ cmd: ["xdg-open", state.indexFile] });
+		util.run_bg(["xdg-open", state.indexFile]);
 		return {};
 	},
 };
