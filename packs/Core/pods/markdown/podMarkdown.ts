@@ -1,13 +1,43 @@
-import { z } from "@src/mod.ts";
-import { Endpoint } from "@src/verify/types.ts";
-import * as util from "../../../../../src/util/util.ts";
-import { State } from "./shared.ts";
+import { z, path } from "@src/mod.ts";
 
-// Types
+import * as util from "@src/util/util.ts";
+
+import type {
+	Endpoint,
+	MakeState,
+	OnPodCreate,
+	OnPodRemove,
+} from "@src/verify/types.ts";
+
+// HOOKS
+
+export const onPodCreate: OnPodCreate = function (pod) {
+	console.log("created", pod);
+};
+
+export const onPodRemove: OnPodRemove = function (pod) {
+	console.log("removed", pod);
+};
+
+// STATE
+
+export type State = {
+	indexFile: string;
+};
+
+export const makeState: MakeState<State> = function (pod) {
+	const indexFile = path.join(pod.dir, "index.md");
+
+	return {
+		indexFile,
+	};
+};
+
+// TYPES
 
 const uuid_t = z.string().min(1);
 
-// Routes
+// ROUTES
 
 const initSchema = {
 	req: z.object({ uuid: uuid_t }),
