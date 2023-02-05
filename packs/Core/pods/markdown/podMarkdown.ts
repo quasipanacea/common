@@ -43,7 +43,7 @@ const initSchema = {
 	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const init: Endpoint<State, typeof initSchema> = {
+export const initEndpoint: Endpoint<State, typeof initSchema> = {
 	route: "/init",
 	schema: initSchema,
 	async api(pod, state) {
@@ -69,7 +69,7 @@ const readSchema = {
 	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const read: Endpoint<State, typeof writeSchema> = {
+export const readEndpoint: Endpoint<State, typeof writeSchema> = {
 	route: "/read",
 	schema: readSchema,
 	async api(pod, state) {
@@ -82,7 +82,7 @@ const writeSchema = {
 	req: z.object({ uuid: uuid_t, content: z.string() }),
 	res: z.object({}),
 };
-export const write: Endpoint<State, typeof writeSchema> = {
+export const writeEndpoint: Endpoint<State, typeof writeSchema> = {
 	route: "/write",
 	schema: writeSchema,
 	async api(pod, state, { content }) {
@@ -95,11 +95,12 @@ const openNativelySchema = {
 	req: z.object({ uuid: uuid_t }),
 	res: z.object({}),
 };
-export const openNatively: Endpoint<State, typeof openNativelySchema> = {
-	route: "/open",
-	schema: openNativelySchema,
-	api(pod, state) {
-		util.run_bg(["xdg-open", state.indexFile]);
-		return {};
-	},
-};
+export const openNativelyEndpoint: Endpoint<State, typeof openNativelySchema> =
+	{
+		route: "/open",
+		schema: openNativelySchema,
+		api(pod, state) {
+			util.run_bg(["xdg-open", state.indexFile]);
+			return {};
+		},
+	};

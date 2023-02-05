@@ -21,56 +21,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { RouterLink } from "vue-router";
-import { FormKit } from "@formkit/vue";
+import { defineComponent, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import { FormKit } from '@formkit/vue'
 
-import type * as schema from "../../../../schemaV2";
-import * as api from "@/util/clientApiV2";
-import PopupPodCreate from "@/components/popups/PopupPodCreate.vue";
-import { popupEmitter } from "@/util/popupSimple";
+import type * as schema from '../../../../schemaV2'
+import * as api from '@/util/apiv2'
+import PopupPodCreate from '@/components/popups/PopupPodCreate.vue'
+import { popupEmitter } from '@/util/popupSimple'
 
 export default defineComponent({
 	setup() {
 		const podPlugins = ref<
 			{
-				plugin: schema.podListPlugins_resT["plugins"][0];
-				pods: schema.podList_resT["pods"];
+				plugin: schema.podListPlugins_resT['plugins'][0]
+				pods: schema.podList_resT['pods']
 			}[]
-		>([]);
+		>([])
 
 		async function gen() {
-			const result = await api.podListPlugins({});
-			podPlugins.value = [];
+			const result = await api.podListPlugins({})
+			podPlugins.value = []
 			for (const plugin of result.plugins) {
 				const { pods } = await api.podList({
 					handler: plugin.name,
-				});
-				podPlugins.value.push({ plugin, pods });
+				})
+				podPlugins.value.push({ plugin, pods })
 			}
 		}
-		(async () => {
-			await gen();
-		})();
+		;(async () => {
+			await gen()
+		})()
 
-		popupEmitter.on("new-pod::close", async ({ name, type }) => {
-			if (!name || !type) return;
+		popupEmitter.on('new-pod::close', async ({ name, type }) => {
+			if (!name || !type) return
 
-			await api.podAdd({ name, handler: type });
-			await gen();
-		});
+			await api.podAdd({ name, handler: type })
+			await gen()
+		})
 
 		function popupNewPod() {
-			popupEmitter.emit("new-pod::open", { component: PopupPodCreate });
+			popupEmitter.emit('new-pod::open', { component: PopupPodCreate })
 		}
 
 		return {
 			podPlugins,
 			popupNewPod,
-		};
+		}
 	},
 	components: { RouterLink, FormKit },
-});
+})
 </script>
 
 <style scoped>

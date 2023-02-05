@@ -88,7 +88,7 @@
 <script lang="ts">
 import { FormKit } from '@formkit/vue'
 import { defineComponent, ref, watch, reactive } from 'vue'
-import * as api from '@/util/clientApiV2'
+import * as api from '@/util/apiv2'
 
 export default defineComponent({
 	components: {

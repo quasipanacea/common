@@ -1,5 +1,5 @@
 <template>
-	<h1>Null</h1>
+	<h1>Nil</h1>
 </template>
 
 <script lang="ts">
