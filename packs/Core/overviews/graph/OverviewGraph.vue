@@ -1,30 +1,29 @@
 <template>
-	<div class="graph"></div>
+	<div class="graph" style="height: 100%"></div>
 </template>
 
 <script lang="ts">
-import { FormKit } from "@formkit/vue";
-import { defineComponent, ref, watch, reactive, onMounted } from "vue";
-import * as api from "@/util/clientApiV2";
-import { Network } from "vis-network";
-import { DataSet } from "vis-data";
+import { defineComponent, onMounted } from 'vue'
+import * as api from '@/util/apiv2'
+import { Network } from 'vis-network'
+import { DataSet } from 'vis-data'
 
 export default defineComponent({
 	setup() {
 		onMounted(() => {
 			const nodes = new DataSet([
-				{ id: 1, label: "Essay 1" },
-				{ id: 2, label: "Essay 2" },
-				{ id: 3, label: "Essay 3" },
-				{ id: 4, label: "Essay 4" },
-				{ id: 5, label: "Essay 5" },
-				{ id: 6, label: "Review 1" },
-				{ id: 7, label: "Review 2" },
-				{ id: 8, label: "Review 3" },
-				{ id: 9, label: "Review 4" },
-				{ id: 10, label: "NEW" },
-				{ id: 11, label: "NEW" },
-			]);
+				{ id: 1, label: 'Essay 1' },
+				{ id: 2, label: 'Essay 2' },
+				{ id: 3, label: 'Essay 3' },
+				{ id: 4, label: 'Essay 4' },
+				{ id: 5, label: 'Essay 5' },
+				{ id: 6, label: 'Review 1' },
+				{ id: 7, label: 'Review 2' },
+				{ id: 8, label: 'Review 3' },
+				{ id: 9, label: 'Review 4' },
+				{ id: 10, label: 'NEW' },
+				{ id: 11, label: 'NEW' },
+			])
 
 			// create an array with edges
 			const edges = new DataSet([
@@ -38,44 +37,38 @@ export default defineComponent({
 				{ from: 7, to: 8 },
 				{ from: 8, to: 9 },
 				{ from: 9, to: 10 },
-			]);
+			])
 
 			// create a network
-			const container = document.querySelector(".graph");
+			const container = document.querySelector('.graph')
 			if (!container) {
-				throw new Error("container is not truthy");
+				throw new Error('container is not truthy')
 			}
 
 			const data = {
 				nodes: nodes,
 				edges: edges,
-			};
-			const options = {};
-			const network = new Network(container, data, options);
+			}
+			const options = {}
+			const network = new Network(container, data, options)
 
-			network.on("selectNode", (params) => {
+			network.on('selectNode', (params) => {
 				if (network.isCluster(params.nodes[0])) {
-					network.openCluster(params.nodes[0]);
+					network.openCluster(params.nodes[0])
 				}
-			});
+			})
 			network.cluster({
 				joinCondition(node) {
-					return node.label === "Node 1" || node.label === "Node 2";
+					return node.label === 'Node 1' || node.label === 'Node 2'
 				},
 				clusterNodeProperties: {
 					borderWidth: 3,
-					shape: "database",
+					shape: 'database',
 				},
-			});
-		});
+			})
+		})
 
-		return {};
+		return {}
 	},
-});
+})
 </script>
-
-<style scoped>
-.graph {
-	height: 100%;
-}
-</style>

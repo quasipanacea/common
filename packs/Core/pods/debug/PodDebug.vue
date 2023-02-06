@@ -1,3 +1,3 @@
 <template>
-	<h1>Nil</h1>
+	<h1>Debug</h1>
 </template>

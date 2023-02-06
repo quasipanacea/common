@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="margin: 5px">
 		<div style="display: flex; align-items: center; gap: 3px">
 			<h1>Areas</h1>
 			<FormKit type="button" @click="loadAreas">Refresh</FormKit>
@@ -86,14 +86,10 @@
 </template>
 
 <script lang="ts">
-import { FormKit } from '@formkit/vue'
 import { defineComponent, ref, watch, reactive } from 'vue'
 import * as api from '@/util/apiv2'
 
 export default defineComponent({
-	components: {
-		FormKit,
-	},
 	setup() {
 		const areaCurrent = ref('')
 		const areaList = ref<string[]>([])

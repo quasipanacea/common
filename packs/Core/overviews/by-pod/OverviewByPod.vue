@@ -23,7 +23,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { FormKit } from '@formkit/vue'
 
 import type * as schema from '../../../../schemaV2'
 import * as api from '@/util/apiv2'
@@ -69,7 +68,7 @@ export default defineComponent({
 			popupNewPod,
 		}
 	},
-	components: { RouterLink, FormKit },
+	components: { RouterLink },
 })
 </script>
 
