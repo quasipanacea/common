@@ -1,33 +1,34 @@
-import { initTRPC } from "npm:@trpc/server";
-import { z } from "npm:zod";
+import { initTRPC } from "~trpc-server";
+import { z } from "~zod";
 
 import * as util from "@src/util/util.ts";
 import * as utilResource from "@src/util/utilResource.ts";
 import * as utilPlugin from "@src/util/utilPlugin.ts";
-import * as schemas from "@src/verify/schemas.ts";
+import {
+	uuid_t,
+	name_t,
+	string_t,
+	zodPod,
+	zodPlugin,
+	zodCollection,
+} from "@common/types.ts";
 
 const t = initTRPC.create();
 
-const uuid_t = z.string().min(1);
-const name_t = z.string().min(1);
-const handler_t = z.string().min(1);
-
 export const appRouter = t.router({
 	collectionAdd: t.procedure
-		.input(z.object({ name: name_t, handler: z.string().min(1) }))
+		.input(zodCollection.omit({ uuid: true }))
 		.output(z.object({ uuid: uuid_t }))
 		.mutation(async ({ input }) => {
 			const uuid = crypto.randomUUID();
-			const rDir = utilResource.getResourceDir("collections", uuid);
-			const rJsonFile = await utilResource.getResourceJsonFile("collections");
-			const rJson = await utilResource.getResourceJson<
-				typeof schemas.ResourceSchemaCollections
-			>("collections", schemas.ResourceSchemaCollections);
+			const rDir = utilResource.getCollectionDir(uuid);
+			const rJsonFile = await utilResource.getCollectionsJsonFile();
+			const rJson = await utilResource.getCollectionsJson();
 
 			// work
 			rJson.collections[uuid] = {
 				name: input.name,
-				handler: input.handler,
+				owningPlugin: input.owningPlugin,
 			};
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
 			await Deno.mkdir(rDir, { recursive: true });
@@ -42,11 +43,9 @@ export const appRouter = t.router({
 		.input(z.object({ uuid: uuid_t }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const rDir = utilResource.getResourceDir("collections", input.uuid);
-			const rJsonFile = await utilResource.getResourceJsonFile("collections");
-			const rJson = await utilResource.getResourceJson<
-				typeof schemas.ResourceSchemaCollections
-			>("collections", schemas.ResourceSchemaCollections);
+			const rDir = utilResource.getCollectionDir(input.uuid);
+			const rJsonFile = await utilResource.getCollectionsJsonFile();
+			const rJson = await utilResource.getCollectionsJson();
 
 			// hook
 
@@ -61,22 +60,14 @@ export const appRouter = t.router({
 		.input(z.void())
 		.output(
 			z.object({
-				collections: z.array(
-					z.object({
-						uuid: uuid_t,
-						name: name_t,
-						handler: handler_t,
-					})
-				),
+				collections: z.array(zodCollection),
 			})
 		)
-		.mutation(async () => {
-			const rJson = await utilResource.getResourceJson<
-				typeof schemas.ResourceSchemaCollections
-			>("collections", schemas.ResourceSchemaCollections);
+		.query(async () => {
+			const rJson = await utilResource.getCollectionsJson();
 
 			// work
-			const collections = [];
+			const collections: z.infer<typeof zodCollection>[] = [];
 			for (const [uuid, obj] of Object.entries(rJson.collections)) {
 				collections.push({
 					uuid,
@@ -84,21 +75,13 @@ export const appRouter = t.router({
 					handler: obj.handler,
 				});
 			}
-
 			return { collections };
 		}),
 	pluginList: t.procedure
 		.input(z.void())
 		.output(
 			z.object({
-				plugins: z.array(
-					z.object({
-						name: name_t,
-						resource: z.string().min(1),
-						dir: z.string().min(1),
-						pack: z.string().min(1),
-					})
-				),
+				plugins: z.array(typeof zodPlugin),
 			})
 		)
 		.query(async () => {
