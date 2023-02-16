@@ -59,7 +59,7 @@ export default defineComponent({
 			if (!uuid) throw new Error('podUuid is undefined')
 
 			const obj = await onRead()
-			documentText.value = obj.content
+			documentText.value = obj
 		})
 		onUnmounted(() => {
 			document.removeEventListener('keydown', saveOnType)

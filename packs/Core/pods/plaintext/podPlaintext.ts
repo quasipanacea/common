@@ -1,104 +1,69 @@
 import { z, path } from "@src/mod.ts";
 
-import * as util from "@src/util/util.ts";
-
-import type {
-	Endpoint,
-	MakeState,
-	OnPodCreate,
-	OnPodRemove,
-} from "@src/verify/types.ts";
-
-// HOOKS
-
-export const onPodCreate: OnPodCreate = function (pod) {
-	console.log("created", pod);
-};
-
-export const onPodRemove: OnPodRemove = function (pod) {
-	console.log("removed", pod);
-};
+import * as util from "@common/deno/util.ts";
+import * as t from "@common/types.ts";
+import { trpc } from "@common/trpc.ts";
 
 export type State = {
 	indexFile: string;
 };
 
-// STATE
-export const makeState: MakeState<State> = function (pod) {
-	const indexFile = path.join(pod.dir, "index.txt");
+export const hooks: t.Hooks<State> = {
+	makeState(pod) {
+		const indexFile = path.join(pod.dir, "index.txt");
 
-	return {
-		indexFile,
-	};
-};
-
-// TYPES
-
-const uuid_t = z.string().min(1);
-
-// ROUTES
-
-const initSchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
-};
-export const init: Endpoint<State, typeof initSchema> = {
-	route: "/init",
-	schema: initSchema,
-	async api(pod, state) {
-		try {
-			const f = await Deno.open(state.indexFile, {
-				create: true,
-				createNew: true,
-			});
-			f.close();
-		} catch (err: unknown) {
-			if (!(err instanceof Deno.errors.AlreadyExists)) {
-				if (err instanceof Error) {
-					throw err;
-				} else {
-					throw new Error(JSON.stringify(err));
-				}
-			}
-		}
+		return {
+			indexFile,
+		};
 	},
-};
-
-const readSchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({ content: z.string() }), // TODO: VALIDATE RETURNS
-};
-export const read: Endpoint<State, typeof writeSchema> = {
-	route: "/read",
-	schema: readSchema,
-	async api(pod, state) {
-		const content = await Deno.readTextFile(state.indexFile);
-		return { content };
+	async onPodAdd(pod) {
+		console.log("plaintext added", pod);
 	},
-};
+	async onPodRemove(pod) {
+		console.log("plaintext removed", pod);
+	}
+}
 
-const writeSchema = {
-	req: z.object({ uuid: uuid_t, content: z.string() }),
-	res: z.object({}),
-};
-export const write: Endpoint<State, typeof writeSchema> = {
-	route: "/write",
-	schema: writeSchema,
-	async api(pod, state, { content }) {
-		await Deno.writeTextFile(state.indexFile, content);
-		return {};
-	},
-};
+export const router = trpc.router({
+	read: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.output(
+			z.object({
+				content: z.string(),
+			})
+		)
+		.query(async () => {
+			const content = await Deno.readTextFile(state.indexFile);
 
-const openNativelySchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
-};
-export const openNatively: Endpoint<State, typeof openNativelySchema> = {
-	route: "/open",
-	schema: openNativelySchema,
-	api(pod, state) {
-		util.run_bg(["xdg-open", state.indexFile]);
-		return {};
-	},
-};
+			return {
+				content,
+			};
+		}),
+	write: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				content: z.string(),
+			})
+		)
+		.output(z.void())
+		.mutation(async () => {
+			await Deno.writeTextFile(state.indexFile, input.content);
+		}),
+	open: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.output(z.void())
+		.mutation(({ input }) => {
+			util.run_bg(["xdg-open", state.indexFile]);
+
+			return;
+		}),
+});

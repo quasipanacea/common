@@ -7,16 +7,6 @@
 				</li>
 			</ul>
 		</span>
-		<div v-for="plugin of podPlugins" :key="plugin.plugin.name">
-			<template v-if="plugin.pods.length > 0">
-				<h2>{{ plugin.pods[0].handler }}</h2>
-				<ul v-for="pod in plugin.pods" :key="pod.uuid" class="pod-list">
-					<li>
-						<RouterLink :to="'/pod/' + pod.uuid">{{ pod.name }}</RouterLink>
-					</li>
-				</ul>
-			</template>
-		</div>
 	</div>
 </template>
 
@@ -24,48 +14,30 @@
 import { defineComponent, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
-import type * as schema from '../../../../schemaV2'
-import * as api from '@/util/apiv2'
-import PopupPodCreate from '@/components/popups/PopupPodCreate.vue'
-import { popupEmitter } from '@/util/popupSimple'
+import { api } from '@/util/api'
+import type * as t from '@common/types'
 
 export default defineComponent({
 	setup() {
-		const podPlugins = ref<
-			{
-				plugin: schema.podListPlugins_resT['plugins'][0]
-				pods: schema.podList_resT['pods']
-			}[]
-		>([])
+		const podPlugins = ref<t.Plugin_t[]>([])
 
 		async function gen() {
-			const result = await api.podListPlugins({})
-			podPlugins.value = []
-			for (const plugin of result.plugins) {
-				const { pods } = await api.podList({
-					handler: plugin.name,
-				})
-				podPlugins.value.push({ plugin, pods })
-			}
+			const result = await api.pluginList.query()
+
+			podPlugins.value = result.plugins
+			// for (const plugin of result.plugins) {
+			// 	const { pods } = await tc.podList.query()
+			// }
+			console.log(result)
 		}
+
 		;(async () => {
 			await gen()
 		})()
 
-		popupEmitter.on('new-pod::close', async ({ name, type }) => {
-			if (!name || !type) return
-
-			await api.podAdd({ name, handler: type })
-			await gen()
-		})
-
-		function popupNewPod() {
-			popupEmitter.emit('new-pod::open', { component: PopupPodCreate })
-		}
-
 		return {
+			popupNewPod() {},
 			podPlugins,
-			popupNewPod,
 		}
 	},
 	components: { RouterLink },

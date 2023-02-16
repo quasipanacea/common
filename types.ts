@@ -1,29 +1,75 @@
 import { z } from "~zod";
 
-export const uuid_t = z.string().min(1);
-export const id_t = z.string().min(1);
-export const name_t = z.string().min(1);
-export const string_t = z.string().min(1);
+export const Uuid = z.string().min(1);
+export const Id = z.string().min(1);
+export const String = z.string().min(1);
+export const CollectionPluginId = z.union([
+	z.literal("debug"),
+	z.literal("line"),
+	z.literal("nil"),
+]);
+export const OverviewPluginId = z.union([
+	z.literal("by-pod"),
+	z.literal("column"),
+	z.literal("debug"),
+	z.literal("graph"),
+	z.literal("nil"),
+]);
+export const PodPluginId = z.union([
+	z.literal("debug"),
+	z.literal("markdown"),
+	z.literal("nil"),
+	z.literal("plaintext"),
+]);
 
-export const zodPod = z.object({
-	uuid: uuid_t,
-	name: name_t,
-	owningPlugin: uuid_t,
-	owningCollection: uuid_t,
+export const Pod = z.object({
+	uuid: Uuid,
+	name: String,
+	pluginId: Id,
+	collectionUuid: Uuid,
 });
-export type Pod = z.infer<typeof zodPod>;
+export type Pod_t = z.infer<typeof Pod>;
 
-export const zodCollection = z.object({
-	uuid: uuid_t,
-	name: name_t,
-	owningPlugin: string_t,
+export const PodDir = z.intersection(
+	Pod,
+	z.object({
+		dir: String,
+	})
+);
+export type PodDir_t = z.infer<typeof PodDir>;
+
+export const Collection = z.object({
+	uuid: Uuid,
+	name: String,
+	pluginId: Id,
 });
-export type Collection = z.infer<typeof zodCollection>;
+export type Collection_t = z.infer<typeof Collection>;
 
-export const zodPlugin = z.object({
-	id: id_t,
-	filename: string_t,
-	kind: string_t,
+export const Plugin = z.object({
+	id: Id,
+	kind: z.union([
+		z.literal("collection"),
+		z.literal("overview"),
+		z.literal("pod"),
+	]),
+	dir: String,
 });
 
-export type Plugin = z.infer<typeof zodPlugin>;
+export type Plugin_t = z.infer<typeof Plugin>;
+
+// Module
+
+export type MakeState<State extends Record<string, unknown>> = (
+	pod: PodDir_t
+) => State;
+
+export type Hooks<State extends Record<string, unknown>> = {
+	makeState?: (pod: PodDir_t) => State | Promise<State>;
+	onPodAdd?: (pod: PodDir_t, state: State) => void | Promise<void>;
+	onPodRemove?: (pod: PodDir_t, state: State) => void | Promise<void>;
+};
+
+export type PluginModule = {
+	hooks: Hooks<Record<string, unknown>>;
+	router: unknown;
+};

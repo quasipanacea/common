@@ -4,7 +4,6 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue'
-import * as api from '@/util/apiv2'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
@@ -40,7 +39,7 @@ export default defineComponent({
 			])
 
 			// create a network
-			const container = document.querySelector('.graph')
+			const container: HTMLElement | null = document.querySelector('.graph')
 			if (!container) {
 				throw new Error('container is not truthy')
 			}

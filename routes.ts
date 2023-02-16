@@ -1,34 +1,36 @@
-import { initTRPC } from "~trpc-server";
+import { path } from "@src/mod.ts";
+
 import { z } from "~zod";
 
 import * as util from "@src/util/util.ts";
 import * as utilResource from "@src/util/utilResource.ts";
 import * as utilPlugin from "@src/util/utilPlugin.ts";
-import {
-	uuid_t,
-	name_t,
-	string_t,
-	zodPod,
-	zodPlugin,
-	zodCollection,
-} from "@common/types.ts";
+import * as t from "@common/types.ts";
+import { trpc } from "@common/trpc.ts";
 
-const t = initTRPC.create();
+import { router as markdownRouter } from "@common/packs/Core/pods/markdown/podMarkdown.ts";
+import { router as plaintextRouter } from "@common/packs/Core/pods/plaintext/podPlaintext.ts";
 
-export const appRouter = t.router({
-	collectionAdd: t.procedure
-		.input(zodCollection.omit({ uuid: true }))
-		.output(z.object({ uuid: uuid_t }))
+export const appRouter = trpc.router({
+	plugins: trpc.router({
+		pods: trpc.router({
+			markdown: markdownRouter,
+			plaintext: plaintextRouter,
+		}),
+	}),
+	collectionAdd: trpc.procedure
+		.input(t.Collection.omit({ uuid: true }))
+		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = crypto.randomUUID();
 			const rDir = utilResource.getCollectionDir(uuid);
-			const rJsonFile = await utilResource.getCollectionsJsonFile();
+			const rJsonFile = utilResource.getCollectionsJsonFile();
 			const rJson = await utilResource.getCollectionsJson();
 
 			// work
 			rJson.collections[uuid] = {
 				name: input.name,
-				owningPlugin: input.owningPlugin,
+				pluginId: input.pluginId,
 			};
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
 			await Deno.mkdir(rDir, { recursive: true });
@@ -39,12 +41,12 @@ export const appRouter = t.router({
 				uuid,
 			};
 		}),
-	collectionRemove: t.procedure
-		.input(z.object({ uuid: uuid_t }))
+	collectionRemove: trpc.procedure
+		.input(z.object({ uuid: t.Uuid }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			const rDir = utilResource.getCollectionDir(input.uuid);
-			const rJsonFile = await utilResource.getCollectionsJsonFile();
+			const rJsonFile = utilResource.getCollectionsJsonFile();
 			const rJson = await utilResource.getCollectionsJson();
 
 			// hook
@@ -56,37 +58,148 @@ export const appRouter = t.router({
 			}
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
 		}),
-	collectionList: t.procedure
+	collectionList: trpc.procedure
 		.input(z.void())
 		.output(
 			z.object({
-				collections: z.array(zodCollection),
+				collections: z.array(t.Collection),
 			})
 		)
 		.query(async () => {
 			const rJson = await utilResource.getCollectionsJson();
 
 			// work
-			const collections: z.infer<typeof zodCollection>[] = [];
+			const collections: t.Collection_t[] = [];
 			for (const [uuid, obj] of Object.entries(rJson.collections)) {
 				collections.push({
 					uuid,
-					name: obj.handler,
-					handler: obj.handler,
+					name: obj.name,
+					pluginId: obj.pluginId,
 				});
 			}
 			return { collections };
 		}),
-	pluginList: t.procedure
+	podAdd: trpc.procedure
+		.input(
+			z.object({
+				name: t.String,
+				collectionUuid: t.Uuid,
+				pluginId: t.PodPluginId,
+			})
+		)
+		.output(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.mutation(async ({ input }) => {
+			const uuid = crypto.randomUUID();
+			const pod: t.PodDir_t = {
+				uuid,
+				name: input.name,
+				collectionUuid: input.collectionUuid,
+				pluginId: input.pluginId,
+				dir: utilResource.getPodDir(uuid),
+			};
+			const podsJson = await utilResource.getPodsJson();
+
+			// work
+			podsJson.pods[uuid] = {
+				name: input.name,
+				pluginId: input.pluginId,
+				collectionUuid: input.collectionUuid,
+			};
+			await Deno.writeTextFile(
+				utilResource.getPodsJsonFile(),
+				util.jsonStringify(podsJson)
+			);
+			await Deno.mkdir(pod.dir, { recursive: true });
+
+			// hook
+			const hooks = await utilPlugin.getHooks(pod.pluginId);
+			const state = hooks.makeState?.(pod) || {};
+			if (hooks.onPodAdd) {
+				await hooks.onPodAdd(pod, state);
+			}
+
+			return { uuid };
+		}),
+	podRemove: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const pod = await util.getPod(input.uuid);
+			const podsJson = await utilResource.getPodsJson();
+
+			// hook
+			const hooks = await utilPlugin.getHooks(pod.pluginId);
+			const state = hooks.makeState?.(pod) || {};
+			if (hooks.onPodAdd) {
+				await hooks.onPodAdd(pod, state);
+			}
+
+			// work
+			await Deno.remove(path.dirname(pod.dir), { recursive: true });
+			if (podsJson.pods[input.uuid]) {
+				delete podsJson.pods[input.uuid];
+			}
+			await Deno.writeTextFile(
+				utilResource.getPodsJsonFile(),
+				util.jsonStringify(podsJson)
+			);
+
+			return;
+		}),
+	podQuery: trpc.procedure
+		.input(z.object({ uuid: t.Uuid, queryString: t.String }))
+		.output(z.object({ result: t.String }))
+		.query(({ input }) => {
+			return {
+				result: input.queryString,
+			};
+		}),
+	podList: trpc.procedure
 		.input(z.void())
 		.output(
 			z.object({
-				plugins: z.array(typeof zodPlugin),
+				pods: z.array(t.Pod),
+			})
+		)
+		.query(async () => {
+			const podsJson = await utilResource.getPodsJson();
+
+			const pods: t.Pod_t[] = [];
+			for (const [uuid, obj] of Object.entries(podsJson.pods)) {
+				pods.push({
+					uuid,
+					...obj,
+				});
+			}
+
+			return { pods };
+		}),
+	pluginList: trpc.procedure
+		.input(z.void())
+		.output(
+			z.object({
+				plugins: z.array(t.Plugin),
 			})
 		)
 		.query(async () => {
 			const plugins = await utilPlugin.getPluginList();
 			return { plugins };
+		}),
+	pluginQuery: trpc.procedure
+		.input(z.object({ query: t.String }))
+		.output(z.object({ result: t.String }))
+		.query(({ input }) => {
+			return {
+				result: input.query,
+			};
 		}),
 });
 

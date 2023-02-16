@@ -1,56 +1,29 @@
-import { z, path } from "@src/mod.ts";
+import { z, path, TRPCError } from "@src/mod.ts";
 
-import * as util from "@src/util/util.ts";
-
-import type {
-	Endpoint,
-	MakeState,
-	OnPodCreate,
-	OnPodRemove,
-} from "@src/verify/types.ts";
-
-// HOOKS
-
-export const onPodCreate: OnPodCreate = function (pod) {
-	console.log("created", pod);
-};
-
-export const onPodRemove: OnPodRemove = function (pod) {
-	console.log("removed", pod);
-};
-
-// STATE
+import * as util2 from "@src/util/util.ts";
+import * as utilResource from "@src/util/utilResource.ts";
+import * as util from "@common/deno/util.ts";
+import * as t from "@common/types.ts";
+import { trpc } from "@common/trpc.ts";
 
 export type State = {
 	indexFile: string;
 };
 
-export const makeState: MakeState<State> = function (pod) {
-	const indexFile = path.join(pod.dir, "index.md");
+export const hooks: t.Hooks<State> = {
+	makeState(pod) {
+		const indexFile = path.join(pod.dir, "index.md");
 
-	return {
-		indexFile,
-	};
-};
-
-// TYPES
-
-const uuid_t = z.string().min(1);
-
-// ROUTES
-
-const initSchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
-};
-export const initEndpoint: Endpoint<State, typeof initSchema> = {
-	route: "/init",
-	schema: initSchema,
-	async api(pod, state) {
+		return {
+			indexFile,
+		};
+	},
+	async onPodAdd(pod, state) {
+		console.log("markdown added");
 		try {
 			const f = await Deno.open(state.indexFile, {
-				create: true,
 				createNew: true,
+				write: true,
 			});
 			f.close();
 		} catch (err: unknown) {
@@ -63,44 +36,97 @@ export const initEndpoint: Endpoint<State, typeof initSchema> = {
 			}
 		}
 	},
-};
-
-const readSchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
-};
-export const readEndpoint: Endpoint<State, typeof writeSchema> = {
-	route: "/read",
-	schema: readSchema,
-	async api(pod, state) {
-		const content = await Deno.readTextFile(state.indexFile);
-		return { content };
+	async onPodRemove(pod) {
+		console.log("markdown removed", pod);
 	},
 };
 
-const writeSchema = {
-	req: z.object({ uuid: uuid_t, content: z.string() }),
-	res: z.object({}),
-};
-export const writeEndpoint: Endpoint<State, typeof writeSchema> = {
-	route: "/write",
-	schema: writeSchema,
-	async api(pod, state, { content }) {
-		await Deno.writeTextFile(state.indexFile, content);
-		return {};
-	},
-};
+const stuffPod = trpc.middleware(async ({ ctx, input, next }) => {
+	if ((input as any).uuid) {
+		const uuid = (input as any).uuid;
 
-const openNativelySchema = {
-	req: z.object({ uuid: uuid_t }),
-	res: z.object({}),
-};
-export const openNativelyEndpoint: Endpoint<State, typeof openNativelySchema> =
-	{
-		route: "/open",
-		schema: openNativelySchema,
-		api(pod, state) {
-			util.run_bg(["xdg-open", state.indexFile]);
-			return {};
+		ctx.pod = await util2.getPod(uuid);
+	}
+
+	if (!ctx.pod) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	return next({
+		ctx: {
+			pod: ctx.pod,
 		},
-	};
+	});
+});
+
+const stuffState = trpc.middleware(async ({ ctx, next }) => {
+	if (!ctx.pod) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	if (hooks.makeState) {
+		ctx.state = await hooks.makeState(ctx.pod);
+	}
+
+	if (!ctx.state) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	return next({
+		ctx: {
+			state: ctx.state,
+		},
+	});
+});
+
+export const router = trpc.router({
+	read: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.output(
+			z.object({
+				content: z.string(),
+			})
+		)
+		.use(stuffPod)
+		.use(stuffState)
+		.query(async ({ ctx, input }) => {
+			console.log("ctx", ctx);
+
+			const content = await Deno.readTextFile(ctx.state.indexFile);
+
+			return {
+				content,
+			};
+		}),
+	write: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				content: z.string(),
+			})
+		)
+		.output(z.void())
+		.use(stuffPod)
+		.use(stuffState)
+		.mutation(async ({ ctx, input }) => {
+			await Deno.writeTextFile(ctx.state.indexFile, input.content);
+		}),
+	open: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+			})
+		)
+		.output(z.void())
+		.use(stuffPod)
+		.use(stuffState)
+		.mutation(({ ctx }) => {
+			util.run_bg(["xdg-open", ctx.state.indexFile]);
+
+			return;
+		}),
+});

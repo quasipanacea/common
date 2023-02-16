@@ -7,37 +7,30 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
+
+import { api } from '@/util/api'
 import PodCodemirror from '../../../../util/PodCodemirror.vue'
 
 export default defineComponent({
 	setup() {
 		const route = useRoute()
 		const uuid = route.params.uuid
+		if (Array.isArray(uuid)) throw new TypeError('Should not be array')
 
 		return {
 			async onRead(): Promise<string> {
-				const text = await fetch('/api/v2/pod/plugin/markdown/read', {
-					method: 'POST',
-					body: JSON.stringify({
-						uuid,
-					}),
-				})
-				const json = await text.json()
-				return json
+				const result = await api.plugins.pods.markdown.read.query({ uuid })
+				return result.content
 			},
 			async onWrite(text: string): Promise<void> {
-				await fetch('/api/v2/pod/plugin/markdown/write', {
-					method: 'POST',
-					body: JSON.stringify({
-						uuid,
-						content: text,
-					}),
+				await api.plugins.pods.markdown.write.mutate({
+					uuid,
+					content: text,
 				})
 			},
 			async onOpen(): Promise<void> {
-				await fetch('/api/v2/pod/plugin/markdown/open', {
-					method: 'POST',
-					body: JSON.stringify({ uuid }),
+				await api.plugins.pods.markdown.open.mutate({
+					uuid,
 				})
 			},
 		}
