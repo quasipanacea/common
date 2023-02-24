@@ -1,3 +1,0 @@
-<template>
-	<h1>Nil</h1>
-</template>

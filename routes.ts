@@ -58,6 +58,21 @@ export const appRouter = trpc.router({
 			}
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
 		}),
+	collectionRename: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newName: t.String,
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const rJsonFile = utilResource.getCollectionsJsonFile();
+			const rJson = await utilResource.getCollectionsJson();
+
+			rJson.collections[input.uuid].name = input.newName;
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+		}),
 	collectionList: trpc.procedure
 		.input(z.void())
 		.output(
@@ -153,6 +168,23 @@ export const appRouter = trpc.router({
 			);
 
 			return;
+		}),
+	podRename: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newName: t.String,
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const podsJson = await utilResource.getPodsJson();
+
+			podsJson.pods[input.uuid].name = input.newName;
+			await Deno.writeTextFile(
+				utilResource.getPodsJsonFile(),
+				util.jsonStringify(podsJson)
+			);
 		}),
 	podQuery: trpc.procedure
 		.input(z.object({ uuid: t.Uuid, queryString: t.String }))

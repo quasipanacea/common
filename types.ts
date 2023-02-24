@@ -3,24 +3,28 @@ import { z } from "~zod";
 export const Uuid = z.string().min(1);
 export const Id = z.string().min(1);
 export const String = z.string().min(1);
+
 export const CollectionPluginId = z.union([
 	z.literal("debug"),
-	z.literal("line"),
-	z.literal("nil"),
+	z.literal("line")
 ]);
+export type CollectionPluginId_t = z.infer<typeof CollectionPluginId>
+
 export const OverviewPluginId = z.union([
-	z.literal("by-pod"),
+	z.literal("by-collection"),
 	z.literal("column"),
 	z.literal("debug"),
-	z.literal("graph"),
-	z.literal("nil"),
+	z.literal("graph")
 ]);
+export type OverviewPluginId_t = z.infer<typeof OverviewPluginId>
+
 export const PodPluginId = z.union([
 	z.literal("debug"),
 	z.literal("markdown"),
 	z.literal("nil"),
 	z.literal("plaintext"),
 ]);
+export type PodPluginId_t = z.infer<typeof PodPluginId>
 
 export const Pod = z.object({
 	uuid: Uuid,

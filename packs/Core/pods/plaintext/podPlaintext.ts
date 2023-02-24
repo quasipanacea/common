@@ -21,8 +21,8 @@ export const hooks: t.Hooks<State> = {
 	},
 	async onPodRemove(pod) {
 		console.log("plaintext removed", pod);
-	}
-}
+	},
+};
 
 export const router = trpc.router({
 	read: trpc.procedure

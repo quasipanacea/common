@@ -94,8 +94,6 @@ export const router = trpc.router({
 		.use(stuffPod)
 		.use(stuffState)
 		.query(async ({ ctx, input }) => {
-			console.log("ctx", ctx);
-
 			const content = await Deno.readTextFile(ctx.state.indexFile);
 
 			return {
