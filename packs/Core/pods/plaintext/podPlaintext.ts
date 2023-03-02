@@ -1,8 +1,9 @@
-import { z, path } from "@src/mod.ts";
+import { z, path, TRPCError } from "@src/mod.ts";
 
 import * as util from "@common/deno/util.ts";
 import * as t from "@common/types.ts";
 import { trpc } from "@common/trpc.ts";
+import * as util2 from "@src/util/util.ts";
 
 export type State = {
 	indexFile: string;
@@ -16,13 +17,66 @@ export const hooks: t.Hooks<State> = {
 			indexFile,
 		};
 	},
-	async onPodAdd(pod) {
+	async onPodAdd(pod, state) {
 		console.log("plaintext added", pod);
+		try {
+			const f = await Deno.open(state.indexFile, {
+				createNew: true,
+				write: true,
+			});
+			f.close();
+		} catch (err: unknown) {
+			if (!(err instanceof Deno.errors.AlreadyExists)) {
+				if (err instanceof Error) {
+					throw err;
+				} else {
+					throw new Error(JSON.stringify(err));
+				}
+			}
+		}
 	},
 	async onPodRemove(pod) {
 		console.log("plaintext removed", pod);
 	},
 };
+
+const stuffPod = trpc.middleware(async ({ ctx, input, next }) => {
+	if ((input as any).uuid) {
+		const uuid = (input as any).uuid;
+
+		ctx.pod = await util2.getPod(uuid);
+	}
+
+	if (!ctx.pod) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	return next({
+		ctx: {
+			pod: ctx.pod,
+		},
+	});
+});
+
+const stuffState = trpc.middleware(async ({ ctx, next }) => {
+	if (!ctx.pod) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	if (hooks.makeState) {
+		ctx.state = await hooks.makeState(ctx.pod);
+	}
+
+	if (!ctx.state) {
+		throw new TRPCError({ code: "PRECONDITION_FAILED" });
+	}
+
+	return next({
+		ctx: {
+			state: ctx.state,
+		},
+	});
+});
 
 export const router = trpc.router({
 	read: trpc.procedure
@@ -36,8 +90,10 @@ export const router = trpc.router({
 				content: z.string(),
 			})
 		)
-		.query(async () => {
-			const content = await Deno.readTextFile(state.indexFile);
+		.use(stuffPod)
+		.use(stuffState)
+		.query(async ({ ctx }) => {
+			const content = await Deno.readTextFile(ctx.state.indexFile);
 
 			return {
 				content,
@@ -51,8 +107,10 @@ export const router = trpc.router({
 			})
 		)
 		.output(z.void())
-		.mutation(async () => {
-			await Deno.writeTextFile(state.indexFile, input.content);
+		.use(stuffPod)
+		.use(stuffState)
+		.mutation(async ({ ctx, input }) => {
+			await Deno.writeTextFile(ctx.state.indexFile, input.content);
 		}),
 	open: trpc.procedure
 		.input(
@@ -61,8 +119,10 @@ export const router = trpc.router({
 			})
 		)
 		.output(z.void())
-		.mutation(({ input }) => {
-			util.run_bg(["xdg-open", state.indexFile]);
+		.use(stuffPod)
+		.use(stuffState)
+		.mutation(({ ctx, input }) => {
+			util.run_bg(["xdg-open", ctx.state.indexFile]);
 
 			return;
 		}),

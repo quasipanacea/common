@@ -328,7 +328,7 @@ function showRenameCollectionPopup(uuid: string, oldName: string) {
 	boolRenameCollection.value = true
 }
 async function afterRenameCollection(value: unknown) {
-	boolCreateCollection.value = false
+	boolRenameCollection.value = false
 	await updateCollections()
 }
 </script>

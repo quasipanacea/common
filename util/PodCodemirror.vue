@@ -65,7 +65,7 @@ export default defineComponent({
 			document.removeEventListener('keydown', saveOnType)
 		})
 
-		// // CodeMirror
+		// CodeMirror
 		const mirrorExtensions = [mirrorMarkdown() as any]
 		const view = shallowRef()
 		const mirrorReady = (payload: any) => {
