@@ -132,7 +132,7 @@ export const appRouter = trpc.router({
 
 			// hook
 			const hooks = await utilPlugin.getHooks(pod.pluginId);
-			const state = hooks.makeState?.(pod) || {};
+			const state = (await hooks.makeState?.(pod)) || {};
 			if (hooks.onPodAdd) {
 				await hooks.onPodAdd(pod, state);
 			}
@@ -152,7 +152,7 @@ export const appRouter = trpc.router({
 
 			// hook
 			const hooks = await utilPlugin.getHooks(pod.pluginId);
-			const state = hooks.makeState?.(pod) || {};
+			const state = (await hooks.makeState?.(pod)) || {};
 			if (hooks.onPodAdd) {
 				await hooks.onPodAdd(pod, state);
 			}
