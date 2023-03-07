@@ -1,25 +1,34 @@
-import { z, path } from "@src/mod.ts";
+import { z, path, Router } from "@src/mod.ts";
 
 import { trpc } from "@common/trpc.ts";
 import * as t from "@common/types.ts";
 import * as util from "@common/shared/util/util.ts";
 
 export type State = {
-	indexFile: string;
+	latexFile: string;
+	pdfFile: string;
 };
 
 export const hooks: t.Hooks<State> = {
 	makeState(pod) {
-		const indexFile = path.join(pod.dir, "index.md");
+		const latexFile = path.join(pod.dir, "main.tex");
+		const pdfFile = path.join(pod.dir, "main.pdf");
 
 		return {
-			indexFile,
+			latexFile,
+			pdfFile,
 		};
 	},
 	async onPodAdd(pod, state) {
-		await util.assertFileExists(state.indexFile);
+		await util.assertFileExists(state.latexFile);
 	},
 };
+
+export const oakRouter = new Router().get("/send-pdf", (ctx) => {
+	ctx.response.body = JSON.stringify({
+		success: true,
+	});
+});
 
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
@@ -36,7 +45,7 @@ export const trpcRouter = trpc.router({
 		.use(util.stuffPod(trpc))
 		.use(util.stuffState(trpc, hooks))
 		.query(async ({ ctx, input }) => {
-			const content = await Deno.readTextFile(ctx.state.indexFile);
+			const content = await Deno.readTextFile(ctx.state.latexFile);
 
 			return {
 				content,
@@ -53,7 +62,26 @@ export const trpcRouter = trpc.router({
 		.use(util.stuffPod(trpc))
 		.use(util.stuffState(trpc, hooks))
 		.mutation(async ({ ctx, input }) => {
-			await Deno.writeTextFile(ctx.state.indexFile, input.content);
+			await Deno.writeTextFile(ctx.state.latexFile, input.content);
+
+			const p = await Deno.run({
+				stdout: "piped",
+				stderr: "piped",
+				cwd: ctx.pod.dir,
+				cmd: ["pdflatex", ctx.state.latexFile, ctx.state.pdfFile],
+			});
+			const [status, stdout, stderr] = await Promise.all([
+				p.status(),
+				p.output(),
+				p.stderrOutput(),
+			]);
+			p.close();
+			console.log(
+				status,
+				new TextDecoder().decode(stdout),
+				new TextDecoder().decode(stderr)
+			);
+			console.log("----- DONE");
 		}),
 	open: trpc.procedure
 		.input(
@@ -65,7 +93,7 @@ export const trpcRouter = trpc.router({
 		.use(util.stuffPod(trpc))
 		.use(util.stuffState(trpc, hooks))
 		.mutation(({ ctx }) => {
-			util.run_bg(["xdg-open", ctx.state.indexFile]);
+			util.run_bg(["xdg-open", ctx.state.latexFile]);
 
 			return;
 		}),

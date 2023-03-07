@@ -52,11 +52,13 @@
 </template>
 
 <script setup lang="ts">
-import { api } from '@/util/api'
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import type * as t from '@common/types'
+import { apiObj as api } from '@/util/api'
+
 import PopupComponent from '@/components/PopupComponent.vue'
+// import { useApi } from '@common/shared/util/c'
+// import { apiObj } from '@common/trpcClient'
 
 const props = defineProps<{
 	show: boolean
@@ -68,7 +70,7 @@ const emit = defineEmits(['cancel', 'submit'])
 
 const pluginOptions = ref([])
 onMounted(async () => {
-	pluginOptions.value = (await api.pluginList.query()).plugins
+	pluginOptions.value = (await api.core.pluginList.query()).plugins
 		.filter((item) => item.kind === 'pod')
 		.map((item) => ({
 			label: item.id,
@@ -89,7 +91,7 @@ watch(props, (val) => {
 })
 
 async function doSubmit() {
-	await api.podAdd.mutate(formData)
+	await api.core.podAdd.mutate(formData)
 	emit('submit')
 }
 </script>

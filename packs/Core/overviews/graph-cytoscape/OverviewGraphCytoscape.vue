@@ -37,12 +37,13 @@ import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 import cytoscapeLasso from 'cytoscape-lasso'
 import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 
+import { apiObj as api } from '@/util/api'
+
 import type * as t from '@common/types'
-import { api } from '@/util/api'
-import CreatePodPopup from '@common/components/CreatePodPopup.vue'
-import PodRenamePopup from '@common/components/popups/PodRenamePopup.vue'
-import CreateCollectionPopup from '@common/components/CreateCollectionPopup.vue'
-import CollectionRenamePopup from '@common/components/popups/CollectionRenamePopup.vue'
+import CreatePodPopup from '@common/shared/components/popups/CreatePodPopup.vue'
+import PodRenamePopup from '@common/shared/components/popups/PodRenamePopup.vue'
+import CreateCollectionPopup from '@common/shared/components/popups/CreateCollectionPopup.vue'
+import CollectionRenamePopup from '@common/shared/components/popups/CollectionRenamePopup.vue'
 
 const router = useRouter()
 
@@ -137,7 +138,7 @@ onMounted(async () => {
 								const json = el.json()
 
 								if (globalThis.confirm('Are you sure')) {
-									await api.collectionRemove.mutate({
+									await api.core.collectionRemove.mutate({
 										uuid: json?.data?.data?.collectionUuid,
 									})
 									await updateCollections()
@@ -182,7 +183,7 @@ onMounted(async () => {
 									const json = el.json()
 									const podUuid = json.data?.data?.podUuid
 
-									await api.podRemove.mutate({
+									await api.core.podRemove.mutate({
 										uuid: podUuid,
 									})
 									await updateCollections()
@@ -224,8 +225,8 @@ onMounted(async () => {
 })
 
 async function updateCollections() {
-	collections.value = (await api.collectionList.query()).collections
-	pods.value = (await api.podList.query()).pods
+	collections.value = (await api.core.collectionList.query()).collections
+	pods.value = (await api.core.podList.query()).pods
 
 	const uuidsFromPods = Array.from(
 		new Set(pods.value.map((item) => item.collectionUuid)),

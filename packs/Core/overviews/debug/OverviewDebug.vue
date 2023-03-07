@@ -5,14 +5,14 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 
-import { api } from '@/util/api'
+import { apiObj as api } from '@/util/api'
 
 export default defineComponent({
 	setup() {
 		const str = ref('')
 
 		onMounted(async () => {
-			const result = await api.podList.query()
+			const result = await api.core.podList.query()
 			str.value = JSON.stringify(result.pods, null, '\t')
 		})
 

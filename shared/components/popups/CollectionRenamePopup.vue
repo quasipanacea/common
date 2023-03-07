@@ -32,8 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { api } from '@/util/api'
 import { reactive, watch } from 'vue'
+
+import { apiObj as api } from '@/util/api'
 
 import type * as t from '@common/types'
 import PopupComponent from '@/components/PopupComponent.vue'
@@ -54,7 +55,7 @@ const formData = reactive<{
 })
 
 async function doSubmit() {
-	await api.collectionRename.mutate({
+	await api.core.collectionRename.mutate({
 		uuid: props.data.collectionUuid,
 		newName: formData.newName,
 	})

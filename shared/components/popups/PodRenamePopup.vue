@@ -27,8 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { api } from '@/util/api'
 import { defineComponent, reactive, ref, watch } from 'vue'
+
+import { apiObj as api } from '@/util/api'
 
 import type * as t from '@common/types'
 import PopupComponent from '@/components/PopupComponent.vue'
@@ -47,7 +48,7 @@ const formData = reactive<{
 })
 
 async function doSubmit() {
-	await api.podRename.mutate({
+	await api.core.podRename.mutate({
 		uuid: props.podUuid,
 		newName: formData.newName,
 	})

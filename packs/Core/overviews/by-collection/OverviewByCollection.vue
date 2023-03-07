@@ -46,14 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue'
+import { onMoun
+	ted, reactive, ref } from 'vue'
+
+import { apiObj as api } from '@/util/api'
 
 import type * as t from '@common/types'
-import { api } from '@/util/api'
-import { emitter } from '@/util/emitter'
-import PopupComponent from '@/components/PopupComponent.vue'
-import CreatePodPopup from '@common/components/CreatePodPopup.vue'
-import CreateCollectionPopup from '@common/components/CreateCollectionPopup.vue'
+import CreatePodPopup from '@common/shared/components/popups/CreatePodPopup.vue'
+import CreateCollectionPopup from '@common/shared/components/popups/CreateCollectionPopup.vue'
 
 let collections = ref<t.Collection_t[]>([])
 let collectionsObj = reactive<Record<string, t.Pod_t[]>>({})
@@ -64,7 +64,7 @@ const collectionFormData = reactive({ name: '', pluginId: '' })
 onMounted(async () => {
 	await updateCollections()
 
-	const plugins = await api.pluginList.query()
+	const plugins = await api.core.pluginList.query()
 	collectionPluginOptions.value = plugins.plugins
 		.filter((item) => item.kind === 'collection')
 		.map((item) => ({
@@ -74,9 +74,9 @@ onMounted(async () => {
 })
 
 async function updateCollections() {
-	collections.value = (await api.collectionList.query()).collections
+	collections.value = (await api.core.collectionList.query()).collections
 
-	const pods = (await api.podList.query()).pods
+	const pods = (await api.core.podList.query()).pods
 	for (const collectionUuid of Array.from(
 		new Set(pods.map((item) => item.collectionUuid)),
 	)) {
@@ -86,7 +86,7 @@ async function updateCollections() {
 }
 
 async function getCollectionPods(collectionUuid: string) {
-	const result = await api.podList.query()
+	const result = await api.core.podList.query()
 	const pods = result.pods.filter((item) => {
 		return (item.collectionUuid = collectionUuid)
 	})
@@ -94,17 +94,17 @@ async function getCollectionPods(collectionUuid: string) {
 	return pods
 }
 async function createCollection() {
-	await api.collectionAdd.mutate(collectionFormData)
+	await api.core.collectionAdd.mutate(collectionFormData)
 	await updateCollections()
 }
 async function deleteCollection(uuid: string) {
 	if (globalThis.confirm('Are you sure?')) {
-		await api.collectionRemove.mutate({ uuid })
+		await api.core.collectionRemove.mutate({ uuid })
 		await updateCollections()
 	}
 }
 async function createPod() {
-	await api.podAdd.mutate(podFormData)
+	await api.core.podAdd.mutate(podFormData)
 	await updateCollections()
 }
 

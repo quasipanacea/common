@@ -7,7 +7,7 @@ import { onMounted, onUnmounted, ref, useSlots } from 'vue'
 import { GoldenLayout, LayoutConfig } from 'golden-layout'
 import 'golden-layout/dist/css/goldenlayout-base.css'
 import 'golden-layout/dist/css/themes/goldenlayout-light-theme.css'
-import { vueMount } from './utils'
+import { vueMount } from '@common/shared/util/clientUtils'
 
 export type CustomLayoutConfig = LayoutConfig & {
 	root: {

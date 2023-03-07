@@ -8,16 +8,7 @@ import * as utilPlugin from "@src/util/utilPlugin.ts";
 import * as t from "@common/types.ts";
 import { trpc } from "@common/trpc.ts";
 
-import { router as markdownRouter } from "@common/packs/Core/pods/markdown/podMarkdown.ts";
-import { router as plaintextRouter } from "@common/packs/Core/pods/plaintext/podPlaintext.ts";
-
-export const appRouter = trpc.router({
-	plugins: trpc.router({
-		pods: trpc.router({
-			markdown: markdownRouter,
-			plaintext: plaintextRouter,
-		}),
-	}),
+export const coreRouter = trpc.router({
 	collectionAdd: trpc.procedure
 		.input(t.Collection.omit({ uuid: true }))
 		.output(z.object({ uuid: t.Uuid }))
@@ -235,4 +226,7 @@ export const appRouter = trpc.router({
 		}),
 });
 
-export type AppRouter = typeof appRouter;
+const bareAppRouter = trpc.router({
+	core: coreRouter,
+});
+export type BareAppRouter = typeof bareAppRouter;

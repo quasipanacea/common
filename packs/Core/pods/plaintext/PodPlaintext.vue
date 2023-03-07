@@ -8,8 +8,13 @@
 import { defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { api } from '@/util/api'
-import PodCodemirror from '../../../../util/PodCodemirror.vue'
+import PodCodemirror from '@common/shared/components/PodCodemirror.vue'
+import { apiObj } from '@/util/api'
+import { useApi } from '@common/shared/util/c'
+
+import type { InferenceOnlyApi } from './c'
+
+const api = useApi<InferenceOnlyApi>(apiObj)
 
 export default defineComponent({
 	setup() {

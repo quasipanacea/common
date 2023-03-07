@@ -1,16 +1,19 @@
 <template>
 	<GoldenLayoutVue :layoutConfig="goldenLayoutConfig">
 		<template #ComponentA>
-			<codemirror
+			<slot name="input"> </slot>
+
+			<!-- <codemirror
 				v-model="documentText"
 				placeholder="Loading..."
 				:extensions="mirrorExtensions"
 				@ready="mirrorReady"
 				@keydown="saveOnCtrlS"
-			/>
+			/> -->
 		</template>
 		<template #ComponentB>
-			<div class="markdown-body" v-html="mdHtml"></div>
+			<!-- <div class="markdown-body" v-html="mdHtml"></div> -->
+			<slot name="output"> </slot>
 		</template>
 	</GoldenLayoutVue>
 </template>
@@ -41,12 +44,7 @@ import GoldenLayoutVue, {
 } from '@common/shared/components/GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
-import { apiObj } from '@/util/api'
-import { useApi } from '@common/shared/util/c'
-
-import type { InferenceOnlyApi } from './c'
-
-const api = useApi<InferenceOnlyApi>(apiObj)
+import { api } from '@/util/api'
 
 let uuid = ref('')
 
@@ -136,20 +134,20 @@ watch(documentText, async (value) => {
 
 // Generic
 async function onRead(): Promise<string> {
-	const result = await api.plugins.pods.markdown.read.query({
-		uuid: uuid.value,
-	})
-	return result.content
+	// const result = await api.plugins.pods.markdown.read.query({
+	// 	uuid: uuid.value,
+	// })
+	// return result.content
 }
 async function onWrite(text: string): Promise<void> {
-	await api.plugins.pods.markdown.write.mutate({
-		uuid: uuid.value,
-		content: text,
-	})
+	// await api.plugins.pods.markdown.write.mutate({
+	// 	uuid: uuid.value,
+	// 	content: text,
+	// })
 }
 async function onOpen(): Promise<void> {
-	await api.plugins.pods.markdown.open.mutate({
-		uuid: uuid.value,
-	})
+	// await api.plugins.pods.markdown.open.mutate({
+	// 	uuid: uuid.value,
+	// })
 }
 </script>

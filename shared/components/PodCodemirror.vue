@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { onMounted, defineComponent, ref, shallowRef, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { debounce } from 'lodash'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { Codemirror } from 'vue-codemirror'
@@ -36,6 +36,9 @@ export default defineComponent({
 	},
 	setup({ onRead, onWrite, onOpen }) {
 		const route = useRoute()
+
+		console.log('router', router, route)
+
 		const documentText = ref('')
 
 		const saveOnType = debounce(async () => {
@@ -54,7 +57,7 @@ export default defineComponent({
 
 		onMounted(async () => {
 			document.addEventListener('keydown', saveOnType)
-
+			route = useRoute()
 			const uuid = route.params.uuid
 			if (!uuid) throw new Error('podUuid is undefined')
 
@@ -81,5 +84,3 @@ export default defineComponent({
 	},
 })
 </script>
-
-<style scoped></style>

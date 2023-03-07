@@ -41,8 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { api } from '@/util/api'
 import { onMounted, reactive, ref, watch } from 'vue'
+
+import { apiObj as api } from '@/util/api'
 
 import type * as t from '@common/types'
 import PopupComponent from '@/components/PopupComponent.vue'
@@ -55,7 +56,7 @@ const emit = defineEmits(['cancel', 'submit'])
 
 const collectionPluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
-	collectionPluginOptions.value = (await api.pluginList.query()).plugins
+	collectionPluginOptions.value = (await api.core.pluginList.query()).plugins
 		.filter((item) => item.kind === 'collection')
 		.map((item) => ({
 			label: item.id,
@@ -74,7 +75,7 @@ const formData = reactive<{
 })
 
 async function doSubmit() {
-	await api.collectionAdd.mutate(formData)
+	await api.core.collectionAdd.mutate(formData)
 	emit('submit')
 }
 </script>
