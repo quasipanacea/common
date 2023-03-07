@@ -1,47 +1,76 @@
 <template>
-	<div style="display: flex; flex-direction: row">
-		<codemirror
-			style="flex: 40%"
-			v-model="documentText"
-			:extensions="mirrorExtensions"
-			@ready="mirrorReady"
-			@keydown="saveOnCtrlS"
-		/>
-		<div style="flex: 50%" class="markdown-body" v-html="mdHtml"></div>
-	</div>
+	<GoldenLayoutVue :layoutConfig="goldenLayoutConfig">
+		<template #ComponentA>
+			<codemirror
+				ref="a"
+				v-model="documentText"
+				placeholder="Loading..."
+				:extensions="mirrorExtensions"
+				@ready="mirrorReady"
+				@keydown="saveOnCtrlS"
+			/>
+		</template>
+		<template #ComponentB>
+			<div class="markdown-body" v-html="mdHtml"></div>
+		</template>
+	</GoldenLayoutVue>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, shallowRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
+
 import { Codemirror } from 'vue-codemirror'
+import { EditorView } from 'codemirror'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
+import { basicLight } from 'cm6-theme-basic-light'
 import { debounce } from 'lodash'
-import { micromark } from 'micromark'
-import { gfm, gfmHtml } from 'micromark-extension-gfm'
-import { gfmTable, gfmTableHtml } from 'micromark-extension-gfm-table'
-import { math, mathHtml } from 'micromark-extension-math'
 import { unified } from 'unified'
-import { remark } from 'remark'
 import remarkParse from 'remark-parse'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import remarkToc from 'remark-toc'
 import rehypeKatex from 'rehype-katex'
-import 'katex/dist/katex.min.css'
 
 import remarkRehype from 'remark-rehype'
-import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
+import 'katex/dist/katex.min.css'
+
+import GoldenLayoutVue, { type CustomLayoutConfig } from './GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
 import { api } from '@/util/api'
-import PodCodemirror from '../../../../util/PodCodemirror.vue'
 
 let uuid = ref('')
 
 const documentText = ref('')
 
+const goldenLayoutConfig: CustomLayoutConfig = {
+	root: {
+		type: 'row',
+		// @ts-expect-error
+		content: [
+			{
+				type: 'component',
+				componentType: 'ComponentA',
+				componentState: { text: 'Component 1' },
+				size: '50%',
+				factoryFn(container, state) {
+					container.setTitle('Left')
+				},
+			},
+			{
+				type: 'component',
+				componentType: 'ComponentB',
+				componentState: { text: 'Component 2' },
+				factoryFn(container, state) {
+					container.setTitle('Right')
+				},
+			},
+		],
+	},
+}
+// CodeMirror
 onMounted(async () => {
 	document.addEventListener('keydown', saveOnType)
 
@@ -63,7 +92,11 @@ const saveOnType = debounce(async () => {
 }, 300)
 
 // CodeMirror
-const mirrorExtensions = [mirrorMarkdown() as any]
+const mirrorExtensions = [
+	EditorView.lineWrapping,
+	mirrorMarkdown() as any,
+	basicLight,
+]
 const view = shallowRef()
 const mirrorReady = (payload: any) => {
 	view.value = payload.view
