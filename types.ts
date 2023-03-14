@@ -4,14 +4,11 @@ export const Uuid = z.string().min(1);
 export const Id = z.string().min(1);
 export const String = z.string().min(1);
 
-export const CollectionPluginId = z.union([
-	z.literal("debug"),
-	z.literal("line"),
-]);
-export type CollectionPluginId_t = z.infer<typeof CollectionPluginId>;
+export const GroupPluginId = z.union([z.literal("debug"), z.literal("line")]);
+export type GroupPluginId_t = z.infer<typeof GroupPluginId>;
 
 export const OverviewPluginId = z.union([
-	z.literal("by-collection"),
+	z.literal("by-group"),
 	z.literal("column"),
 	z.literal("debug"),
 	z.literal("graph"),
@@ -31,7 +28,7 @@ export const Pod = z.object({
 	uuid: Uuid,
 	name: String,
 	pluginId: Id,
-	collectionUuid: Uuid,
+	groupUuid: Uuid,
 });
 export type Pod_t = z.infer<typeof Pod>;
 
@@ -43,19 +40,28 @@ export const PodDir = z.intersection(
 );
 export type PodDir_t = z.infer<typeof PodDir>;
 
-export const Collection = z.object({
+export const Cover = z.object({
+	uuid: Uuid,
+	name: String,
+	pluginId: Id,
+	groupUuid: Uuid,
+});
+export type Cover_t = z.infer<typeof Cover>;
+
+export const Group = z.object({
 	uuid: Uuid,
 	name: String,
 	pluginId: Id,
 });
-export type Collection_t = z.infer<typeof Collection>;
+export type Group_t = z.infer<typeof Group>;
 
 export const Plugin = z.object({
 	id: Id,
 	kind: z.union([
-		z.literal("collection"),
+		z.literal("group"),
 		z.literal("overview"),
 		z.literal("pod"),
+		z.literal("cover"),
 	]),
 	dir: String,
 });

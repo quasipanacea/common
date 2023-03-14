@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Rename Collection</h2></legend>
+				<legend><h2>Rename Group</h2></legend>
 				<div class="pure-control-group">
 					<label for="old-name">Old Name</label>
 					<input
@@ -32,33 +32,33 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { reactive, watch } from "vue";
 
-import { apiObj as api } from '@/util/api'
+import { apiObj as api } from "@/util/api";
 
-import type * as t from '@common/types'
-import PopupComponent from '@/components/PopupComponent.vue'
+import type * as t from "@common/types";
+import PopupComponent from "@/components/PopupComponent.vue";
 
-const emit = defineEmits(['cancel', 'submit'])
+const emit = defineEmits(["cancel", "submit"]);
 const props = defineProps<{
-	show: boolean
+	show: boolean;
 	data: {
-		oldName: string
-		collectionUuid: string
-	}
-}>()
+		oldName: string;
+		groupUuid: string;
+	};
+}>();
 
 const formData = reactive<{
-	newName: string
+	newName: string;
 }>({
-	newName: '',
-})
+	newName: "",
+});
 
 async function doSubmit() {
-	await api.core.collectionRename.mutate({
-		uuid: props.data.collectionUuid,
+	await api.core.groupRename.mutate({
+		uuid: props.data.groupUuid,
 		newName: formData.newName,
-	})
-	emit('submit')
+	});
+	emit("submit");
 }
 </script>

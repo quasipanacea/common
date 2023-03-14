@@ -12,7 +12,7 @@ import { apiObj as api } from '@/util/api'
 export default defineComponent({
 	setup() {
 		onMounted(() => {
-			const f = api.core.collectionList.query()
+			const f = api.core.groupList.query()
 			const nodes = new DataSet([
 				{ id: 1, label: 'Essay 1' },
 				{ id: 2, label: 'Essay 2' },

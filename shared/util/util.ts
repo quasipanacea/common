@@ -41,8 +41,8 @@ export async function run_bg(args: string[]) {
 	p.close();
 }
 
-export const stuffPod = (trpc) => {
-	return trpc.middleware(async ({ ctx, input, next }) => {
+export const stuffPod = (trpc: any) => {
+	return trpc.middleware(async ({ ctx, input, next }: any) => {
 		if ((input as any).uuid) {
 			const uuid = (input as any).uuid;
 
@@ -61,8 +61,8 @@ export const stuffPod = (trpc) => {
 	});
 };
 
-export const stuffState = (trpc, hooks) => {
-	return trpc.middleware(async ({ ctx, next }) => {
+export const stuffState = (trpc: any, hooks: any) => {
+	return trpc.middleware(async ({ ctx, next }: any) => {
 		if (!ctx.pod) {
 			throw new TRPCError({ code: "PRECONDITION_FAILED" });
 		}

@@ -2,11 +2,11 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Create Pod</h2></legend>
+				<legend><h2>Create Cover</h2></legend>
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
-					<input id="name" type="text" v-model="formData.name" required />
+					<input type="text" id="name" required v-model="formData.name" />
 				</div>
 
 				<div class="pure-control-group">
@@ -18,21 +18,21 @@
 						required
 					>
 						<option
-							v-for="item in pluginOptions"
-							:key="item.value"
-							:value="item.value"
+							v-for="(plugin, i) in groupPluginOptions"
+							:value="plugin.value"
+							:key="plugin.value"
 						>
-							{{ item.label }}
+							{{ plugin.label }}
 						</option>
 					</select>
 				</div>
 
 				<div class="pure-control-group">
-					<label for="collection-uuid">Collection UUID</label>
+					<label for="group-uuid">Group UUID</label>
 					<input
-						id="collection-uuid"
+						id="group-uuid"
 						type="text"
-						v-model="formData.collectionUuid"
+						v-model="formData.groupUuid"
 						required
 						disabled
 					/>
@@ -41,8 +41,8 @@
 				<div class="pure-controls">
 					<input
 						type="submit"
-						class="pure-button"
 						value="Create"
+						class="pure-button"
 						@click.prevent="doSubmit"
 					/>
 				</div>
@@ -56,42 +56,42 @@ import { onMounted, reactive, ref, watch } from 'vue'
 
 import { apiObj as api } from '@/util/api'
 
+import type * as t from '@common/types'
 import PopupComponent from '@/components/PopupComponent.vue'
-// import { useApi } from '@common/shared/util/c'
-// import { apiObj } from '@common/trpcClient'
 
 const props = defineProps<{
 	show: boolean
 	data: {
-		collectionUuid: string
+		groupUuid: string
 	}
 }>()
 const emit = defineEmits(['cancel', 'submit'])
 
-const pluginOptions = ref([])
+const groupPluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
-	pluginOptions.value = (await api.core.pluginList.query()).plugins
-		.filter((item) => item.kind === 'pod')
+	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
+		.filter((item) => item.kind === 'cover')
 		.map((item) => ({
 			label: item.id,
 			value: item.id,
 		}))
 })
+
 const formData = reactive<{
 	name: string
 	pluginId: string
-	collectionUuid: string
+	groupUuid: string
 }>({
 	name: '',
 	pluginId: '',
-	collectionUuid: '',
+	groupUuid: '',
 })
 watch(props, (val) => {
-	formData.collectionUuid = val.data.collectionUuid
+	formData.groupUuid = val.data.groupUuid
 })
 
 async function doSubmit() {
-	await api.core.podAdd.mutate(formData)
+	await api.core.coverAdd.mutate(formData)
 	emit('submit')
 }
 </script>

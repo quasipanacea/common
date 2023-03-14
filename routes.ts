@@ -9,87 +9,11 @@ import * as t from "@common/types.ts";
 import { trpc } from "@common/trpc.ts";
 
 export const coreRouter = trpc.router({
-	collectionAdd: trpc.procedure
-		.input(t.Collection.omit({ uuid: true }))
-		.output(z.object({ uuid: t.Uuid }))
-		.mutation(async ({ input }) => {
-			const uuid = crypto.randomUUID();
-			const rDir = utilResource.getCollectionDir(uuid);
-			const rJsonFile = utilResource.getCollectionsJsonFile();
-			const rJson = await utilResource.getCollectionsJson();
-
-			// work
-			rJson.collections[uuid] = {
-				name: input.name,
-				pluginId: input.pluginId,
-			};
-			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
-			await Deno.mkdir(rDir, { recursive: true });
-
-			// hook
-
-			return {
-				uuid,
-			};
-		}),
-	collectionRemove: trpc.procedure
-		.input(z.object({ uuid: t.Uuid }))
-		.output(z.void())
-		.mutation(async ({ input }) => {
-			const rDir = utilResource.getCollectionDir(input.uuid);
-			const rJsonFile = utilResource.getCollectionsJsonFile();
-			const rJson = await utilResource.getCollectionsJson();
-
-			// hook
-
-			// work
-			await Deno.remove(rDir, { recursive: true });
-			if (rJson.collections[input.uuid]) {
-				delete rJson.collections[input.uuid];
-			}
-			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
-		}),
-	collectionRename: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-				newName: t.String,
-			})
-		)
-		.output(z.void())
-		.mutation(async ({ input }) => {
-			const rJsonFile = utilResource.getCollectionsJsonFile();
-			const rJson = await utilResource.getCollectionsJson();
-
-			rJson.collections[input.uuid].name = input.newName;
-			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
-		}),
-	collectionList: trpc.procedure
-		.input(z.void())
-		.output(
-			z.object({
-				collections: z.array(t.Collection),
-			})
-		)
-		.query(async () => {
-			const rJson = await utilResource.getCollectionsJson();
-
-			// work
-			const collections: t.Collection_t[] = [];
-			for (const [uuid, obj] of Object.entries(rJson.collections)) {
-				collections.push({
-					uuid,
-					name: obj.name,
-					pluginId: obj.pluginId,
-				});
-			}
-			return { collections };
-		}),
 	podAdd: trpc.procedure
 		.input(
 			z.object({
 				name: t.String,
-				collectionUuid: t.Uuid,
+				groupUuid: t.Uuid,
 				pluginId: t.PodPluginId,
 			})
 		)
@@ -103,7 +27,7 @@ export const coreRouter = trpc.router({
 			const pod: t.PodDir_t = {
 				uuid,
 				name: input.name,
-				collectionUuid: input.collectionUuid,
+				groupUuid: input.groupUuid,
 				pluginId: input.pluginId,
 				dir: utilResource.getPodDir(uuid),
 			};
@@ -113,7 +37,7 @@ export const coreRouter = trpc.router({
 			podsJson.pods[uuid] = {
 				name: input.name,
 				pluginId: input.pluginId,
-				collectionUuid: input.collectionUuid,
+				groupUuid: input.groupUuid,
 			};
 			await Deno.writeTextFile(
 				utilResource.getPodsJsonFile(),
@@ -205,6 +129,163 @@ export const coreRouter = trpc.router({
 
 			return { pods };
 		}),
+
+	groupAdd: trpc.procedure
+		.input(t.Group.omit({ uuid: true }))
+		.output(z.object({ uuid: t.Uuid }))
+		.mutation(async ({ input }) => {
+			const uuid = crypto.randomUUID();
+			const rDir = utilResource.getGroupDir(uuid);
+			const rJsonFile = utilResource.getGroupsJsonFile();
+			const rJson = await utilResource.getGroupsJson();
+
+			// work
+			rJson.groups[uuid] = {
+				name: input.name,
+				pluginId: input.pluginId,
+			};
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+			await Deno.mkdir(rDir, { recursive: true });
+
+			// hook
+
+			return {
+				uuid,
+			};
+		}),
+	groupRemove: trpc.procedure
+		.input(z.object({ uuid: t.Uuid }))
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const rDir = utilResource.getGroupDir(input.uuid);
+			const rJsonFile = utilResource.getGroupsJsonFile();
+			const rJson = await utilResource.getGroupsJson();
+
+			// hook
+
+			// work
+			await Deno.remove(rDir, { recursive: true });
+			if (rJson.groups[input.uuid]) {
+				delete rJson.groups[input.uuid];
+			}
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+		}),
+	groupRename: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newName: t.String,
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const rJsonFile = utilResource.getGroupsJsonFile();
+			const rJson = await utilResource.getGroupsJson();
+
+			rJson.groups[input.uuid].name = input.newName;
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+		}),
+	groupList: trpc.procedure
+		.input(z.void())
+		.output(
+			z.object({
+				groups: z.array(t.Group),
+			})
+		)
+		.query(async () => {
+			const rJson = await utilResource.getGroupsJson();
+
+			// work
+			const groups: t.Group_t[] = [];
+			for (const [uuid, obj] of Object.entries(rJson.groups)) {
+				groups.push({
+					uuid,
+					name: obj.name,
+					pluginId: obj.pluginId,
+				});
+			}
+			return { groups };
+		}),
+
+	coverAdd: trpc.procedure
+		.input(t.Cover.omit({ uuid: true }))
+		.output(z.object({ uuid: t.Uuid }))
+		.mutation(async ({ input }) => {
+			const uuid = crypto.randomUUID();
+			const rDir = utilResource.getCoverDir(uuid);
+			const rJsonFile = utilResource.getCoversJsonFile();
+			const rJson = await utilResource.getCoversJson();
+
+			// work
+			rJson.covers[uuid] = {
+				name: input.name,
+				pluginId: input.pluginId,
+				groupUuid: input.groupUuid,
+			};
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+			await Deno.mkdir(rDir, { recursive: true });
+
+			// hook
+
+			return {
+				uuid,
+			};
+		}),
+	coverRemove: trpc.procedure
+		.input(z.object({ uuid: t.Uuid }))
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const rDir = utilResource.getCoverDir(input.uuid);
+			const rJsonFile = utilResource.getCoversJsonFile();
+			const rJson = await utilResource.getCoversJson();
+
+			// hook
+
+			// work
+			await Deno.remove(rDir, { recursive: true });
+			if (rJson.covers[input.uuid]) {
+				delete rJson.covers[input.uuid];
+			}
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+		}),
+	coverRename: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newName: t.String,
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			const rJsonFile = utilResource.getCoversJsonFile();
+			const rJson = await utilResource.getCoversJson();
+
+			rJson.covers[input.uuid].name = input.newName;
+			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
+		}),
+	coverList: trpc.procedure
+		.input(z.void())
+		.output(
+			z.object({
+				covers: z.array(t.Cover),
+			})
+		)
+		.query(async () => {
+			const rJson = await utilResource.getCoversJson();
+
+			// work
+			const covers: t.Cover_t[] = [];
+			for (const [uuid, obj] of Object.entries(rJson.covers)) {
+				covers.push({
+					uuid,
+					name: obj.name,
+					pluginId: obj.pluginId,
+					groupUuid: obj.groupUuid,
+				});
+			}
+			return { covers };
+		}),
+
 	pluginList: trpc.procedure
 		.input(z.void())
 		.output(

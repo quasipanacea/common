@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Create Collection</h2></legend>
+				<legend><h2>Create Group</h2></legend>
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
@@ -18,7 +18,7 @@
 						required
 					>
 						<option
-							v-for="(plugin, i) in collectionPluginOptions"
+							v-for="(plugin, i) in groupPluginOptions"
 							:value="plugin.value"
 							:key="plugin.value"
 						>
@@ -41,41 +41,41 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from "vue";
 
-import { apiObj as api } from '@/util/api'
+import { apiObj as api } from "@/util/api";
 
-import type * as t from '@common/types'
-import PopupComponent from '@/components/PopupComponent.vue'
+import type * as t from "@common/types";
+import PopupComponent from "@/components/PopupComponent.vue";
 
 defineProps<{
-	show: boolean
-	data: {}
-}>()
-const emit = defineEmits(['cancel', 'submit'])
+	show: boolean;
+	data: {};
+}>();
+const emit = defineEmits(["cancel", "submit"]);
 
-const collectionPluginOptions = ref<{ label: string; value: string }[]>([])
+const groupPluginOptions = ref<{ label: string; value: string }[]>([]);
 onMounted(async () => {
-	collectionPluginOptions.value = (await api.core.pluginList.query()).plugins
-		.filter((item) => item.kind === 'collection')
+	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
+		.filter((item) => item.kind === "group")
 		.map((item) => ({
 			label: item.id,
 			value: item.id,
-		}))
-})
+		}));
+});
 
 const formData = reactive<{
-	name: string
-	pluginId: string
-	collectionUuid: string
+	name: string;
+	pluginId: string;
+	groupUuid: string;
 }>({
-	name: '',
-	pluginId: '',
-	collectionUuid: '',
-})
+	name: "",
+	pluginId: "",
+	groupUuid: "",
+});
 
 async function doSubmit() {
-	await api.core.collectionAdd.mutate(formData)
-	emit('submit')
+	await api.core.groupAdd.mutate(formData);
+	emit("submit");
 }
 </script>

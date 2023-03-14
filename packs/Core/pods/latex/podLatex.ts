@@ -1,8 +1,9 @@
-import { z, path, Router } from "@src/mod.ts";
+import { z, path, Router, send } from "@src/mod.ts";
 
 import { trpc } from "@common/trpc.ts";
 import * as t from "@common/types.ts";
 import * as util from "@common/shared/util/util.ts";
+import * as srcUtil from "@src/util/util.ts";
 
 export type State = {
 	latexFile: string;
@@ -24,9 +25,15 @@ export const hooks: t.Hooks<State> = {
 	},
 };
 
-export const oakRouter = new Router().get("/send-pdf", (ctx) => {
-	ctx.response.body = JSON.stringify({
-		success: true,
+export const oakRouter = new Router().get("/get-pdf/:podId", async (ctx) => {
+	const podId = ctx.params.podId;
+	const pod = await srcUtil.getPod(podId);
+
+	const pdfFile = path.join(pod.dir, "main.pdf");
+	console.log(pdfFile);
+
+	await send(ctx, pdfFile.slice("/home/edwin".length), {
+		root: "/home/edwin",
 	});
 });
 
@@ -61,7 +68,7 @@ export const trpcRouter = trpc.router({
 		.output(z.void())
 		.use(util.stuffPod(trpc))
 		.use(util.stuffState(trpc, hooks))
-		.mutation(async ({ ctx, input }) => {
+		.mutation(async ({ ctx, input }: any) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content);
 
 			const p = await Deno.run({

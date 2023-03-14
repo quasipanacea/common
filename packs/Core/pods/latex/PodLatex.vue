@@ -9,7 +9,11 @@
 			/>
 		</template>
 		<template #output>
-			<h1>PDF Output</h1>
+			<iframe
+				id="if"
+				style="width: 100%; height: 100%"
+				src="/api/plugins/pod/latex/get-pdf/413456e5-967a-40ab-aa62-c46bfb7a73dc"
+			></iframe>
 		</template>
 	</SemanticInputOutput>
 </template>
@@ -21,6 +25,7 @@ import { debounce } from 'lodash'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { Codemirror } from 'vue-codemirror'
 
+import 'pdfjs-dist/web/pdf_viewer.css'
 import SemanticInputOutput from '@common/shared/components/SemanticInputOutput.vue'
 import { apiObj } from '@/util/api'
 import { useApi } from '@common/shared/util/c'
@@ -85,8 +90,12 @@ async function onWrite(text: string) {
 		uuid: uuid.value,
 		content: text,
 	})
+	const el = document.getElementById('if')
+	if (el?.contentWindow) {
+		el.contentWindow.location.reload()
+	} else {
+		el.location.reload()
+	}
 }
 async function onOpen() {}
-
-// pdf.js
 </script>
