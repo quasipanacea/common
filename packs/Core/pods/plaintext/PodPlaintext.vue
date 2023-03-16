@@ -1,14 +1,13 @@
 <template>
-	<div class="container">
-		<PodCodemirror :onRead="onRead" :onWrite="onWrite" :onOpen="onOpen" />
+	<div class="container" style="width: 100%; height: 100%">
+		<CodeMirror :onRead="onRead" :onWrite="onWrite" />
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import PodCodemirror from '@common/shared/components/PodCodemirror.vue'
+import CodeMirror from '@common/shared/components/CodeMirror.vue'
 import { apiObj } from '@/util/api'
 import { useApi } from '@common/shared/util/c'
 
@@ -16,32 +15,23 @@ import type { InferenceOnlyApi } from './c'
 
 const api = useApi<InferenceOnlyApi>(apiObj)
 
-export default defineComponent({
-	setup() {
-		const route = useRoute()
-		const uuid = route.params.uuid
-		if (Array.isArray(uuid)) throw new TypeError('Should not be array')
+const route = useRoute()
+function getUuid(): string {
+	const uuid = route.params.uuid
+	if (!uuid) throw new Error('uuid must be defined')
+	if (Array.isArray(uuid)) throw new Error('uuid must not be an array')
+	return uuid
+}
+const uuid = getUuid()
 
-		return {
-			async onRead(): Promise<string> {
-				const result = await api.plugins.pods.plaintext.read.query({ uuid })
-				return result.content
-			},
-			async onWrite(text: string): Promise<void> {
-				await api.plugins.pods.plaintext.write.mutate({
-					uuid,
-					content: text,
-				})
-			},
-			async onOpen(): Promise<void> {
-				await api.plugins.pods.plaintext.open.mutate({
-					uuid,
-				})
-			},
-		}
-	},
-	components: {
-		PodCodemirror,
-	},
-})
+async function onRead(): Promise<string> {
+	const result = await api.plugins.pods.plaintext.read.query({ uuid })
+	return result.content
+}
+async function onWrite(text: string): Promise<void> {
+	await api.plugins.pods.plaintext.write.mutate({
+		uuid,
+		content: text,
+	})
+}
 </script>

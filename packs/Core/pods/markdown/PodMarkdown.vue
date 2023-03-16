@@ -1,13 +1,7 @@
 <template>
 	<GoldenLayoutVue :layoutConfig="goldenLayoutConfig">
 		<template #ComponentA>
-			<codemirror
-				v-model="documentText"
-				placeholder="Loading..."
-				:extensions="mirrorExtensions"
-				@ready="mirrorReady"
-				@keydown="saveOnCtrlS"
-			/>
+			<CodeMirror :onRead="onRead" :onWrite="onWrite" />
 		</template>
 		<template #ComponentB>
 			<div class="markdown-body" v-html="mdHtml"></div>
@@ -16,14 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, shallowRef, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { Codemirror } from 'vue-codemirror'
-import { EditorView } from 'codemirror'
-import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
-import { basicLight } from 'cm6-theme-basic-light'
-import { debounce } from 'lodash'
+import CodeMirror from '@common/shared/components/CodeMirror.vue'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkMath from 'remark-math'
@@ -48,9 +38,16 @@ import type { InferenceOnlyApi } from './c'
 
 const api = useApi<InferenceOnlyApi>(apiObj)
 
-let uuid = ref('')
+const route = useRoute()
+function getUuid(): string {
+	const uuid = route.params.uuid
+	if (!uuid) throw new Error('uuid must be defined')
+	if (Array.isArray(uuid)) throw new Error('uuid must not be an array')
+	return uuid
+}
+const uuid = getUuid()
 
-const documentText = ref('')
+const mdHtml = ref('')
 
 const goldenLayoutConfig: CustomLayoutConfig = {
 	root: {
@@ -77,51 +74,9 @@ const goldenLayoutConfig: CustomLayoutConfig = {
 		],
 	},
 }
-// CodeMirror
-onMounted(async () => {
-	document.addEventListener('keydown', saveOnType)
 
-	const route = useRoute()
-	const u = route.params.uuid
-	if (!u) throw new Error('uuid must be defined')
-	if (Array.isArray(u)) throw new Error('uuid must not be an array')
-	uuid.value = u
-
-	const obj = await onRead()
-	documentText.value = obj
-})
-onUnmounted(() => {
-	document.removeEventListener('keydown', saveOnType)
-})
-
-const saveOnType = debounce(async () => {
-	await onWrite(documentText.value)
-}, 300)
-
-// CodeMirror
-const mirrorExtensions = [
-	EditorView.lineWrapping,
-	mirrorMarkdown() as any,
-	basicLight,
-]
-const view = shallowRef()
-const mirrorReady = (payload: any) => {
-	view.value = payload.view
-}
-async function saveOnCtrlS(ev: KeyboardEvent) {
-	if (ev.ctrlKey && ev.code === 'KeyS') {
-		ev.preventDefault()
-		await onWrite(documentText.value)
-	} else if (ev.ctrlKey && ev.code === 'KeyO') {
-		ev.preventDefault()
-		await onOpen()
-	}
-}
-
-// markdown Viewer
-const mdHtml = ref('')
-watch(documentText, async (value) => {
-	const file = await unified()
+async function convertMarkdownToHtml(input: string) {
+	const output = await unified()
 		.use(remarkToc)
 		.use(remarkParse)
 		.use(remarkMath)
@@ -130,26 +85,29 @@ watch(documentText, async (value) => {
 		.use(rehypeKatex)
 		.use(rehypeExternalLinks, { target: '__blank', rel: 'nofollow ' })
 		.use(rehypeStringify)
-		.process(value)
-	mdHtml.value = String(file)
+		.process(input)
+
+	return String(output)
+}
+onMounted(async () => {
+	const result = await api.plugins.pods.markdown.read.query({
+		uuid: uuid,
+	})
+	mdHtml.value = await convertMarkdownToHtml(result.content)
 })
 
-// Generic
 async function onRead(): Promise<string> {
 	const result = await api.plugins.pods.markdown.read.query({
-		uuid: uuid.value,
+		uuid: uuid,
 	})
 	return result.content
 }
 async function onWrite(text: string): Promise<void> {
 	await api.plugins.pods.markdown.write.mutate({
-		uuid: uuid.value,
+		uuid: uuid,
 		content: text,
 	})
-}
-async function onOpen(): Promise<void> {
-	await api.plugins.pods.markdown.open.mutate({
-		uuid: uuid.value,
-	})
+
+	mdHtml.value = await convertMarkdownToHtml(text)
 }
 </script>
