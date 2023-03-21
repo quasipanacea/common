@@ -1,5 +1,6 @@
 import { TRPCError } from "@src/mod.ts";
 import * as util2 from "@src/util/util.ts";
+import { initTRPC } from "~trpc-server";
 
 import { trpc } from "@common/trpc.ts";
 
@@ -41,42 +42,31 @@ export async function run_bg(args: string[]) {
 	p.close();
 }
 
-export const stuffPod = (trpc: any) => {
+export function useTrpc<State extends Record<string, unknown>>() {
+	// const trpc = getCommonTrpc(makeStateFn);
+	const inferenceOnlyTrpc = initTRPC
+		.context<{
+			state: State;
+		}>()
+		.create();
+
+	// TODO
+	return trpc as typeof inferenceOnlyTrpc;
+}
+
+/**
+ * Note: 'trpc' must be passed since it contains custom State
+ */
+export const executeAllMiddleware = (trpc: any, hooks: any) => {
 	return trpc.middleware(async ({ ctx, input, next }: any) => {
-		if ((input as any).uuid) {
-			const uuid = (input as any).uuid;
+		const uuid = input.uuid;
 
-			ctx.pod = await util2.getPod(uuid);
-		}
-
-		if (!ctx.pod) {
-			throw new TRPCError({ code: "PRECONDITION_FAILED" });
-		}
+		ctx.pod = await util2.getPod(uuid);
+		ctx.state = await hooks.makeState(ctx.pod);
 
 		return next({
 			ctx: {
 				pod: ctx.pod,
-			},
-		});
-	});
-};
-
-export const stuffState = (trpc: any, hooks: any) => {
-	return trpc.middleware(async ({ ctx, next }: any) => {
-		if (!ctx.pod) {
-			throw new TRPCError({ code: "PRECONDITION_FAILED" });
-		}
-
-		if (hooks.makeState) {
-			ctx.state = await hooks.makeState(ctx.pod);
-		}
-
-		if (!ctx.state) {
-			throw new TRPCError({ code: "PRECONDITION_FAILED" });
-		}
-
-		return next({
-			ctx: {
 				state: ctx.state,
 			},
 		});

@@ -286,6 +286,31 @@ export const coreRouter = trpc.router({
 			return { covers };
 		}),
 
+	overviewSaveLayout: trpc.procedure
+		.input(
+			z.object({
+				nodes: z.array(t.NodeLayout.passthrough()),
+			})
+		)
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			await Deno.writeTextFile(
+				"/home/edwin/temp.json",
+				util.jsonStringify(input)
+			);
+		}),
+	overviewGetSavedLayout: trpc.procedure
+		.input(z.void())
+		.output(
+			z.object({
+				nodes: z.array(t.NodeLayout.passthrough()),
+			})
+		)
+		.mutation(async () => {
+			const obj = await Deno.readTextFile("/home/edwin/temp.json");
+			return JSON.parse(obj);
+		}),
+
 	pluginList: trpc.procedure
 		.input(z.void())
 		.output(

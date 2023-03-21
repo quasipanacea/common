@@ -1,5 +1,26 @@
 <template>
-	<div id="graph" style="height: 100%"></div>
+	<div ref="cytoscapeContainer" style="height: 100%"></div>
+	<div style="position: absolute; top: 0; right: 0">
+		<div class="dropdown is-right is-hoverable">
+			<div class="dropdown-trigger">
+				<button
+					class="button"
+					aria-haspopup="true"
+					aria-controls="dropdown-menu"
+				>
+					<span>Options</span>
+					<span class="icon is-small">
+						<i class="fas fa-angle-down" aria-hidden="true"></i>
+					</span>
+				</button>
+			</div>
+			<div class="dropdown-menu" id="dropdown-menu" role="menu">
+				<div class="dropdown-content">
+					<a @click="saveCytoscapeLayout" class="dropdown-item">Save Layout</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	<PodCreatePopup
 		:show="boolCreatePod"
 		:data="dataCreatePod"
@@ -36,16 +57,19 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+
 import cytoscape from "cytoscape";
 import cytoscapeCola from "cytoscape-cola";
-import cytoscapeCtxMenu from "cytoscape-cxtmenu";
-import cytoscapeCompoundDragAndDrop from "cytoscape-compound-drag-and-drop";
 import cytoscapeLasso from "cytoscape-lasso";
+import cytoscapeCtxMenu from "cytoscape-cxtmenu";
 import cytoscapeUndoRedo from "cytoscape-undo-redo";
+import cytoscapeEdgehandles from "cytoscape-edgehandles";
+import cytoscapeCompoundDragAndDrop from "cytoscape-compound-drag-and-drop";
 
 import { apiObj as api } from "@/util/api";
 
 import type * as t from "@common/types";
+import type * as types from "@/util/types";
 import PodCreatePopup from "@common/shared/components/popups/PodCreatePopup.vue";
 import PodRenamePopup from "@common/shared/components/popups/PodRenamePopup.vue";
 import GroupCreatePopup from "@common/shared/components/popups/GroupCreatePopup.vue";
@@ -59,6 +83,8 @@ let groupsObj = reactive<Record<string, t.Pod_t[]>>({});
 let pods = ref<t.Pod_t[]>([]);
 
 let cy: cytoscape.Core | null = null;
+let cytoscapeContainer = ref<HTMLElement>();
+
 const cyLayout: cytoscape.LayoutOptions = {
 	name: "cola",
 	animate: true,
@@ -66,7 +92,7 @@ const cyLayout: cytoscape.LayoutOptions = {
 
 onMounted(async () => {
 	cy = cytoscape({
-		container: document.getElementById("graph"),
+		container: cytoscapeContainer.value,
 		style: [
 			{
 				selector: "node[label]",
@@ -107,17 +133,19 @@ onMounted(async () => {
 		if (!Object.getPrototypeOf(cy)["cxtmenu"]) {
 			cytoscape.use(cytoscapeCtxMenu);
 		}
+		if (!Object.getPrototypeOf(cy)["undoRedo"]) {
+			cytoscape.use(cytoscapeUndoRedo);
+		}
+		if (!Object.getPrototypeOf(cy)["edgehandles"]) {
+			cytoscape.use(cytoscapeEdgehandles);
+		}
 		if (!Object.getPrototypeOf(cy)["compoundDragAndDrop"]) {
 			cytoscape.use(cytoscapeCompoundDragAndDrop);
 		}
 		if (!Object.getPrototypeOf(cy)["lassoSelectionEnabled"]) {
 			cytoscape.use(cytoscapeLasso);
 		}
-		if (!Object.getPrototypeOf(cy)["undoRedo"]) {
-			cytoscape.use(cytoscapeUndoRedo);
-		}
 		cytoscape.use(cytoscapeCola);
-		// console.log(Object.getPrototypeOf(cy))
 
 		cyDND = cy.compoundDragAndDrop();
 		cyDND.disable();
@@ -127,16 +155,17 @@ onMounted(async () => {
 		cy.cxtmenu({
 			selector: "node",
 			commands: (el) => {
+				const data = el.data();
 				const json = el.json();
 
-				if (json.data?.data?.isGroup) {
+				if (json.data.my.isGroup) {
 					return [
 						{
 							content: "Add Pod",
 							select: (el) => {
 								const json = el.json();
 
-								showPodCreatePopup(json?.data?.data?.groupUuid);
+								showPodCreatePopup(json.data.my.groupUuid);
 							},
 						},
 						{
@@ -144,7 +173,7 @@ onMounted(async () => {
 							select: (el) => {
 								const json = el.json();
 
-								showCreateCoverPopup(json?.data?.data?.groupUuid);
+								showCreateCoverPopup(json.data.my.groupUuid);
 							},
 						},
 						{
@@ -152,7 +181,7 @@ onMounted(async () => {
 							select: (el) => {
 								const json = el.json();
 
-								router.push(`/group/${json?.data?.data?.groupUuid}`);
+								router.push(`/group/${json.data.my.groupUuid}`);
 							},
 						},
 						{
@@ -173,20 +202,17 @@ onMounted(async () => {
 							select: async (el) => {
 								const json = el.json();
 
-								showRenameGroupPopup(
-									json?.data?.data?.groupUuid,
-									json?.data?.label
-								);
+								showRenameGroupPopup(json.data.my.groupUuid, json.data.label);
 							},
 						},
 					];
-				} else if (json.data?.data?.isPod) {
+				} else if (json.data.my.isPod) {
 					return [
 						{
 							content: "Go To Pod",
 							select: (el) => {
 								const json = el.json();
-								const podUuid = json.data?.data?.podUuid;
+								const podUuid = json.data.my.podUuid;
 
 								router.push(`/pod/${podUuid}`);
 							},
@@ -196,7 +222,7 @@ onMounted(async () => {
 							select: async (el) => {
 								const json = el.json();
 
-								showRenamePodPopup(json.data?.data?.podUuid, json.data?.label);
+								showRenamePodPopup(json.data.my.podUuid, json.data.label);
 							},
 						},
 						{
@@ -204,7 +230,7 @@ onMounted(async () => {
 							select: async (el) => {
 								if (globalThis.confirm("Are you sure?")) {
 									const json = el.json();
-									const podUuid = json.data?.data?.podUuid;
+									const podUuid = json.data.my.podUuid;
 
 									await api.core.podRemove.mutate({
 										uuid: podUuid,
@@ -248,6 +274,8 @@ onMounted(async () => {
 });
 
 async function updateGroups() {
+	if (!cy) throw new Error("cy is undefined");
+
 	groups.value = (await api.core.groupList.query()).groups;
 	pods.value = (await api.core.podList.query()).pods;
 
@@ -259,8 +287,7 @@ async function updateGroups() {
 		groupsObj[groupUuid] = arr;
 	}
 
-	let edges: cytoscape.CytoscapeOptions["elements"] = [];
-	let nodes: cytoscape.CytoscapeOptions["elements"] = [];
+	let nodes: cytoscape.ElementDefinition[] = [];
 
 	// node for each group
 	nodes = nodes.concat(
@@ -268,7 +295,7 @@ async function updateGroups() {
 			data: {
 				id: item.uuid,
 				label: item.name,
-				data: { isGroup: true, groupUuid: item.uuid },
+				my: { resource: "group", isGroup: true, groupUuid: item.uuid },
 			},
 		}))
 	);
@@ -278,30 +305,57 @@ async function updateGroups() {
 	for (const group of groups.value) {
 		const items = pods.value.filter((item) => item.groupUuid === group.uuid);
 		if (items.length > 0) {
-			nodes = nodes.concat(
-				items.map((item) => ({
+			for (const item of items) {
+				let obj = void 0;
+				if (item.name === "Intelisense") {
+					obj = {
+						x: 757.0848795327603,
+						y: 665.6137353241595,
+					};
+				}
+
+				nodes.push({
+					position: obj,
 					data: {
 						id: item.uuid,
 						label: item.name,
 						parent: group.uuid,
-						data: { isPod: true, podUuid: item.uuid },
+
+						my: {
+							resource: "pod",
+							isPod: true,
+							podUuid: item.uuid,
+						},
 					},
-				}))
-			);
+				});
+			}
 		} else {
 			nodes.push({
 				data: {
 					id: "__PLACEHOLDER: " + group.uuid,
 					label: "__placeholder",
 					parent: group.uuid,
-					data: {},
+					my: {
+						resource: "group",
+						isGroup: true,
+						groupUuid: group.uuid,
+					},
 				},
 			});
 		}
 	}
-	cy.remove(cy?.nodes("*"));
+	cy.remove(cy.nodes("*"));
 	cy.add(nodes);
 	cy.layout(cyLayout).run();
+}
+
+async function saveCytoscapeLayout() {
+	if (!cy) throw new Error("cy is undefined");
+
+	const json = cy.json();
+	await api.core.overviewSaveLayout.mutate({
+		nodes: json?.elements?.nodes,
+	});
 }
 
 // popup: create cover

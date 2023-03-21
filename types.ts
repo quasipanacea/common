@@ -84,3 +84,19 @@ export type PluginModule = {
 	hooks: Hooks<Record<string, unknown>>;
 	router: unknown;
 };
+
+export const NodeLayout = z.object({
+	data: z.object({
+		id: z.string(),
+		label: z.string(),
+		my: z.object({
+			resource: z.string(),
+			groupUuid: z.string().optional(),
+			podUuid: z.string().optional(),
+		}),
+	}),
+	position: z.object({
+		x: z.number(),
+		y: z.number(),
+	}),
+});

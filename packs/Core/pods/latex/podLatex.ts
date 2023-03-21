@@ -37,6 +37,8 @@ export const oakRouter = new Router().get("/get-pdf/:podId", async (ctx) => {
 	});
 });
 
+const trpc = util.useTrpc<State>();
+
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
 		.input(
@@ -49,8 +51,7 @@ export const trpcRouter = trpc.router({
 				content: z.string(),
 			})
 		)
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.query(async ({ ctx, input }) => {
 			const content = await Deno.readTextFile(ctx.state.latexFile);
 
@@ -66,8 +67,7 @@ export const trpcRouter = trpc.router({
 			})
 		)
 		.output(z.void())
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.mutation(async ({ ctx, input }: any) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content);
 
@@ -97,8 +97,7 @@ export const trpcRouter = trpc.router({
 			})
 		)
 		.output(z.void())
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.mutation(({ ctx }) => {
 			util.run_bg(["xdg-open", ctx.state.latexFile]);
 

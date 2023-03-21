@@ -1,6 +1,5 @@
 import { z, path } from "@src/mod.ts";
 
-import { trpc } from "@common/trpc.ts";
 import * as t from "@common/types.ts";
 import * as util from "@common/shared/util/util.ts";
 
@@ -21,6 +20,8 @@ export const hooks: t.Hooks<State> = {
 	},
 };
 
+const trpc = util.useTrpc<State>();
+
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
 		.input(
@@ -33,8 +34,7 @@ export const trpcRouter = trpc.router({
 				content: z.string(),
 			})
 		)
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.query(async ({ ctx }) => {
 			const content = await Deno.readTextFile(ctx.state.indexFile);
 
@@ -50,8 +50,7 @@ export const trpcRouter = trpc.router({
 			})
 		)
 		.output(z.void())
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.indexFile, input.content);
 		}),
@@ -62,8 +61,7 @@ export const trpcRouter = trpc.router({
 			})
 		)
 		.output(z.void())
-		.use(util.stuffPod(trpc))
-		.use(util.stuffState(trpc, hooks))
+		.use(util.executeAllMiddleware(trpc, hooks))
 		.mutation(({ ctx, input }) => {
 			util.run_bg(["xdg-open", ctx.state.indexFile]);
 

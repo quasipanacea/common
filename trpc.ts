@@ -4,16 +4,14 @@ import type { FetchCreateContextFnOptions } from "~trpc-server/adapters/fetch";
 import type * as t from "@common/types.ts";
 
 type Context = {
-	universalValue: string;
-	pod?: t.PodDir_t;
-	state?: any; // TODO
+	zero: 0;
 };
 
 export async function createContext(
 	_opts: FetchCreateContextFnOptions
 ): Promise<Context> {
 	return {
-		universalValue: await Promise.resolve("pie"),
+		zero: 0,
 	};
 }
 
