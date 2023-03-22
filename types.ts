@@ -21,6 +21,7 @@ export const PodPluginId = z.union([
 	z.literal("nil"),
 	z.literal("plaintext"),
 	z.literal("latex"),
+	z.literal("chemical"),
 ]);
 export type PodPluginId_t = z.infer<typeof PodPluginId>;
 

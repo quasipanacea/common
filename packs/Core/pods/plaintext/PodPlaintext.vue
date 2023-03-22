@@ -1,37 +1,44 @@
 <template>
-	<div class="container" style="width: 100%; height: 100%">
-		<CodeMirror :onRead="onRead" :onWrite="onWrite" />
+	<div style="width: 100%; height: 100%">
+		<textarea
+			class="textarea"
+			placeholder="Loading..."
+			v-model="content"
+			@keyup="handleKeyup"
+		></textarea>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
 
-import CodeMirror from '@common/shared/components/CodeMirror.vue'
-import { apiObj } from '@/util/api'
-import { useApi } from '@common/shared/util/c'
+import CodeMirror from "@common/shared/components/CodeMirror.vue";
+import { apiObj } from "@/util/api";
+import { useApi } from "@common/shared/util/c";
 
-import type { InferenceOnlyApi } from './c'
+import type { InferenceOnlyApi } from "./c";
+import { onMounted, ref } from "vue";
 
-const api = useApi<InferenceOnlyApi>(apiObj)
+const api = useApi<InferenceOnlyApi>(apiObj);
 
-const route = useRoute()
+const route = useRoute();
 function getUuid(): string {
-	const uuid = route.params.uuid
-	if (!uuid) throw new Error('uuid must be defined')
-	if (Array.isArray(uuid)) throw new Error('uuid must not be an array')
-	return uuid
+	const uuid = route.params.uuid;
+	if (!uuid) throw new Error("uuid must be defined");
+	if (Array.isArray(uuid)) throw new Error("uuid must not be an array");
+	return uuid;
 }
-const uuid = getUuid()
+const uuid = getUuid();
 
-async function onRead(): Promise<string> {
-	const result = await api.plugins.pods.plaintext.read.query({ uuid })
-	return result.content
-}
-async function onWrite(text: string): Promise<void> {
+const content = ref("");
+onMounted(async () => {
+	const result = await api.plugins.pods.plaintext.read.query({ uuid });
+	content.value = result.content;
+});
+async function handleKeyup(): Promise<void> {
 	await api.plugins.pods.plaintext.write.mutate({
 		uuid,
-		content: text,
-	})
+		content: content.value,
+	});
 }
 </script>

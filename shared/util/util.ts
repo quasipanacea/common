@@ -72,3 +72,7 @@ export const executeAllMiddleware = (trpc: any, hooks: any) => {
 		});
 	});
 };
+
+export function setupCurrentAltMenu(boundaryEl: any, action: () => void) {
+
+}
