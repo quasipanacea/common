@@ -10,13 +10,7 @@ import { trpc } from "@common/trpc.ts";
 
 export const coreRouter = trpc.router({
 	podAdd: trpc.procedure
-		.input(
-			z.object({
-				name: t.String,
-				groupUuid: t.Uuid,
-				pluginId: t.PodPluginId,
-			})
-		)
+		.input(t.Pod.omit({ uuid: true }))
 		.output(
 			z.object({
 				uuid: t.Uuid,
@@ -25,19 +19,15 @@ export const coreRouter = trpc.router({
 		.mutation(async ({ input }) => {
 			const uuid = crypto.randomUUID();
 			const pod: t.PodDir_t = {
+				...input,
 				uuid,
-				name: input.name,
-				groupUuid: input.groupUuid,
-				pluginId: input.pluginId,
 				dir: utilResource.getPodDir(uuid),
 			};
 			const podsJson = await utilResource.getPodsJson();
 
 			// work
 			podsJson.pods[uuid] = {
-				name: input.name,
-				pluginId: input.pluginId,
-				groupUuid: input.groupUuid,
+				...input,
 			};
 			await Deno.writeTextFile(
 				utilResource.getPodsJsonFile(),
@@ -63,7 +53,7 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			const pod = await util.getPod(input.uuid);
-			const podsJson = await utilResource.getPodsJson();
+			const rJson = await utilResource.getPodsJson();
 
 			// hook
 			const hooks = await utilPlugin.getHooks(pod.pluginId);
@@ -74,12 +64,12 @@ export const coreRouter = trpc.router({
 
 			// work
 			await Deno.remove(path.dirname(pod.dir), { recursive: true });
-			if (podsJson.pods[input.uuid]) {
-				delete podsJson.pods[input.uuid];
+			if (rJson.pods[input.uuid]) {
+				delete rJson.pods[input.uuid];
 			}
 			await Deno.writeTextFile(
 				utilResource.getPodsJsonFile(),
-				util.jsonStringify(podsJson)
+				util.jsonStringify(rJson)
 			);
 
 			return;
@@ -93,13 +83,39 @@ export const coreRouter = trpc.router({
 		)
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const podsJson = await utilResource.getPodsJson();
+			const rJson = await utilResource.getPodsJson();
 
-			podsJson.pods[input.uuid].name = input.newName;
+			rJson.pods[input.uuid].name = input.newName;
 			await Deno.writeTextFile(
 				utilResource.getPodsJsonFile(),
-				util.jsonStringify(podsJson)
+				util.jsonStringify(rJson)
 			);
+		}),
+	podMutate: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newData: t.Pod.omit({ uuid: true }).partial(),
+			})
+		)
+		.output(t.Pod.omit({ uuid: true }))
+		.mutation(async ({ input }) => {
+			const rJson = await utilResource.getPodsJson();
+
+			if (!(input.uuid in rJson.pods)) {
+				throw new Error(`Failed to find pod ${input.uuid}`);
+			}
+
+			rJson.pods[input.uuid] = {
+				...rJson.pods[input.uuid],
+				...input.newData,
+			};
+			await Deno.writeTextFile(
+				utilResource.getPodsJsonFile(),
+				util.jsonStringify(rJson)
+			);
+
+			return rJson.pods[input.uuid];
 		}),
 	podQuery: trpc.procedure
 		.input(z.object({ uuid: t.Uuid, queryString: t.String }))
@@ -117,10 +133,10 @@ export const coreRouter = trpc.router({
 			})
 		)
 		.query(async () => {
-			const podsJson = await utilResource.getPodsJson();
+			const rJson = await utilResource.getPodsJson();
 
 			const pods: t.Pod_t[] = [];
-			for (const [uuid, obj] of Object.entries(podsJson.pods)) {
+			for (const [uuid, obj] of Object.entries(rJson.pods)) {
 				pods.push({
 					uuid,
 					...obj,
@@ -185,6 +201,32 @@ export const coreRouter = trpc.router({
 			rJson.groups[input.uuid].name = input.newName;
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson));
 		}),
+	groupMutate: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				newData: t.Group.omit({ uuid: true }).partial(),
+			})
+		)
+		.output(t.Group.omit({ uuid: true }))
+		.mutation(async ({ input }) => {
+			const rJson = await utilResource.getGroupsJson();
+
+			if (!(input.uuid in rJson.groups)) {
+				throw new Error(`Failed to find group ${input.uuid}`);
+			}
+
+			rJson.groups[input.uuid] = {
+				...rJson.groups[input.uuid],
+				...input.newData,
+			};
+			await Deno.writeTextFile(
+				utilResource.getGroupsJsonFile(),
+				util.jsonStringify(rJson)
+			);
+
+			return rJson.groups[input.uuid];
+		}),
 	groupList: trpc.procedure
 		.input(z.void())
 		.output(
@@ -200,8 +242,7 @@ export const coreRouter = trpc.router({
 			for (const [uuid, obj] of Object.entries(rJson.groups)) {
 				groups.push({
 					uuid,
-					name: obj.name,
-					pluginId: obj.pluginId,
+					...obj,
 				});
 			}
 			return { groups };
@@ -278,37 +319,10 @@ export const coreRouter = trpc.router({
 			for (const [uuid, obj] of Object.entries(rJson.covers)) {
 				covers.push({
 					uuid,
-					name: obj.name,
-					pluginId: obj.pluginId,
-					groupUuid: obj.groupUuid,
+					...obj,
 				});
 			}
 			return { covers };
-		}),
-
-	overviewSaveLayout: trpc.procedure
-		.input(
-			z.object({
-				nodes: z.array(t.NodeLayout.passthrough()),
-			})
-		)
-		.output(z.void())
-		.mutation(async ({ input }) => {
-			await Deno.writeTextFile(
-				"/home/edwin/temp.json",
-				util.jsonStringify(input)
-			);
-		}),
-	overviewGetSavedLayout: trpc.procedure
-		.input(z.void())
-		.output(
-			z.object({
-				nodes: z.array(t.NodeLayout.passthrough()),
-			})
-		)
-		.mutation(async () => {
-			const obj = await Deno.readTextFile("/home/edwin/temp.json");
-			return JSON.parse(obj);
 		}),
 
 	pluginList: trpc.procedure

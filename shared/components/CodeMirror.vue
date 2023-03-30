@@ -1,5 +1,6 @@
 <template>
-	<ConfigurableContext>
+	<div ref="mirrorEl"></div>
+	<!-- <ConfigurableContext>
 		<div ref="mirrorEl"></div>
 		<template #configuration>
 			<h1 class="title">Properties</h1>
@@ -23,7 +24,7 @@
 				</select>
 			</div>
 		</template>
-	</ConfigurableContext>
+	</ConfigurableContext> -->
 </template>
 
 <script setup lang="ts">

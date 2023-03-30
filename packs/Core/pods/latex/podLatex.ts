@@ -68,7 +68,7 @@ export const trpcRouter = trpc.router({
 		)
 		.output(z.void())
 		.use(util.executeAllMiddleware(trpc, hooks))
-		.mutation(async ({ ctx, input }: any) => {
+		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content);
 
 			const p = await Deno.run({
@@ -89,18 +89,5 @@ export const trpcRouter = trpc.router({
 				new TextDecoder().decode(stderr)
 			);
 			console.log("----- DONE");
-		}),
-	open: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-			})
-		)
-		.output(z.void())
-		.use(util.executeAllMiddleware(trpc, hooks))
-		.mutation(({ ctx }) => {
-			util.run_bg(["xdg-open", ctx.state.latexFile]);
-
-			return;
 		}),
 });

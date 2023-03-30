@@ -26,10 +26,19 @@ export const PodPluginId = z.union([
 export type PodPluginId_t = z.infer<typeof PodPluginId>;
 
 export const Pod = z.object({
+	type: z.enum(["node", "edge"]),
 	uuid: Uuid,
 	name: String,
 	pluginId: Id,
-	groupUuid: Uuid,
+	groupUuid: Uuid.optional(),
+	sourceUuid: Uuid.optional(),
+	targetUuid: Uuid.optional(),
+	datas: z
+		.object({
+			common: z.any(),
+		})
+		.passthrough()
+		.optional(),
 });
 export type Pod_t = z.infer<typeof Pod>;
 
@@ -49,10 +58,20 @@ export const Cover = z.object({
 });
 export type Cover_t = z.infer<typeof Cover>;
 
+export const Link = z.object({
+	uuid: Uuid,
+});
+
 export const Group = z.object({
 	uuid: Uuid,
 	name: String,
 	pluginId: Id,
+	datas: z
+		.object({
+			common: z.any(),
+		})
+		.passthrough()
+		.optional(),
 });
 export type Group_t = z.infer<typeof Group>;
 
@@ -89,12 +108,14 @@ export type PluginModule = {
 export const NodeLayout = z.object({
 	data: z.object({
 		id: z.string(),
-		label: z.string(),
-		my: z.object({
-			resource: z.string(),
-			groupUuid: z.string().optional(),
-			podUuid: z.string().optional(),
-		}),
+		label: z.string().optional(),
+		my: z
+			.object({
+				resource: z.string(),
+				groupUuid: z.string().optional(),
+				podUuid: z.string().optional(),
+			})
+			.optional(),
 	}),
 	position: z.object({
 		x: z.number(),

@@ -2,7 +2,7 @@
 	<div class=":context-event-wrapper" @contextmenu="handleContextMenu">
 		<slot />
 	</div>
-	<div
+	<!-- <div
 		class=":context-menu"
 		:style="{ visibility: contextVisible ? 'visible' : 'hidden' }"
 		style="
@@ -25,7 +25,7 @@
 		>
 			<slot name="configuration" />
 		</div>
-	</div>
+	</div> -->
 </template>
 
 <script setup lang="ts">

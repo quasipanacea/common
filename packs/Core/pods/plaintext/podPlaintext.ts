@@ -54,17 +54,4 @@ export const trpcRouter = trpc.router({
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.indexFile, input.content);
 		}),
-	open: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-			})
-		)
-		.output(z.void())
-		.use(util.executeAllMiddleware(trpc, hooks))
-		.mutation(({ ctx, input }) => {
-			util.run_bg(["xdg-open", ctx.state.indexFile]);
-
-			return;
-		}),
 });

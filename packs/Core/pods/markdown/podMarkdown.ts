@@ -35,7 +35,7 @@ export const trpcRouter = trpc.router({
 			})
 		)
 		.use(util.executeAllMiddleware(trpc, hooks))
-		.query(async ({ ctx, input }) => {
+		.query(async ({ ctx }) => {
 			const content = await Deno.readTextFile(ctx.state.indexFile);
 
 			return {
@@ -53,16 +53,5 @@ export const trpcRouter = trpc.router({
 		.use(util.executeAllMiddleware(trpc, hooks))
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.indexFile, input.content);
-		}),
-	open: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-			})
-		)
-		.output(z.void())
-		.use(util.executeAllMiddleware(trpc, hooks))
-		.mutation(({ ctx }) => {
-			util.run_bg(["xdg-open", ctx.state.indexFile]);
 		}),
 });

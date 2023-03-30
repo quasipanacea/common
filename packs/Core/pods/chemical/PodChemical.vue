@@ -1,8 +1,12 @@
 <template>
-	<h1>Something</h1>
-	<AtomChart />
+	<AtomMermaid />
+	<AtomKatex />
+	<AtomMarkdown />
+	<AtomMarkdown />
 </template>
 
 <script setup lang="ts">
-import AtomChart from './AtomChart.vue'
+import AtomMermaid from './AtomMermaid.vue'
+import AtomKatex from './AtomKatex.vue'
+import AtomMarkdown from './AtomMarkdown.vue'
 </script>
