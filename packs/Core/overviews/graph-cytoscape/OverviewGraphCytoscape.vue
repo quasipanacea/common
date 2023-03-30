@@ -459,6 +459,9 @@ async function updateGroups() {
 					target: pod.targetUuid,
 					pluginId: pod.pluginId,
 					uuid: pod.uuid,
+					my: {
+						podUuid: pod.uuid,
+					},
 				},
 			})
 		}
@@ -495,13 +498,26 @@ async function saveCytoscapeLayout() {
 		}
 	}
 	for (const edge of json.elements?.edges || []) {
-		await api.core.podAdd.mutate({
-			type: 'edge',
-			name: '?',
-			pluginId: 'markdown',
-			sourceUuid: edge.data.source,
-			targetUuid: edge.data.target,
-		})
+		if (edge.data.my?.podUuid) {
+			await api.core.podMutate.mutate({
+				uuid: edge.data.my.podUuid,
+				newData: {
+					type: 'edge',
+					name: '?',
+					pluginId: 'markdown',
+					sourceUuid: edge.data.source,
+					targetUuid: edge.data.target,
+				},
+			})
+		} else {
+			await api.core.podAdd.mutate({
+				type: 'edge',
+				name: '?',
+				pluginId: 'markdown',
+				sourceUuid: edge.data.source,
+				targetUuid: edge.data.target,
+			})
+		}
 	}
 }
 
