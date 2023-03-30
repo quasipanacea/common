@@ -78,10 +78,12 @@ onMounted(async () => {
 })
 const formData = reactive<{
 	name: string
+	type: string
 	pluginId: string
 	groupUuid: string
 }>({
 	name: '',
+	type: 'node',
 	pluginId: '',
 	groupUuid: '',
 })

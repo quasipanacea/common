@@ -187,7 +187,6 @@ onMounted(async () => {
 		maxZoom: 3,
 	})
 
-	let cyDND = null
 	{
 		// Check before '.use()' to prevent spurious warnings on hot-reload
 		if (!Object.getPrototypeOf(cy)['cxtmenu']) {
@@ -209,7 +208,7 @@ onMounted(async () => {
 			cytoscape.use(cytoscapeCola)
 		}
 
-		cyDND = cy.compoundDragAndDrop()
+		const cyDND = cy.compoundDragAndDrop()
 		cyDND.disable()
 
 		cy.lassoSelectionEnabled(true)
@@ -233,14 +232,17 @@ onMounted(async () => {
 			disableBrowserGestures: true,
 		})
 		cy.on('ehcomplete', async (event, sourceNode, targetNode, addedEdge) => {
-			// addedEdge.data({
-			// 	key: 'value',
-			// 	data: {
-			// 		my: {
-			// 			uuid: crypto.randomUUID(),
-			// 		},
-			// 	},
-			// })
+			const edge = addedEdge.json()
+
+			await api.core.podAdd.mutate({
+				type: 'edge',
+				name: '?',
+				pluginId: 'markdown',
+				sourceUuid: edge.data.source,
+				targetUuid: edge.data.target,
+			})
+
+			await updateGroups()
 		})
 
 		// context menu
@@ -250,7 +252,7 @@ onMounted(async () => {
 		cy.cxtmenu({
 			selector: 'node',
 			...ctxMenuDefaults,
-			commands: (el) => {
+			commands(el) {
 				const data = el.data()
 				const json = el.json()
 
@@ -258,7 +260,7 @@ onMounted(async () => {
 					return [
 						{
 							content: 'Add Pod',
-							select: (el) => {
+							select(el) {
 								const json = el.json()
 
 								showPodCreatePopup(json.data.my.groupUuid)
@@ -266,7 +268,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Add Cover',
-							select: (el) => {
+							select(el) {
 								const json = el.json()
 
 								showCreateCoverPopup(json.data.my.groupUuid)
@@ -274,7 +276,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Go to Group',
-							select: (el) => {
+							select(el) {
 								const json = el.json()
 
 								router.push(`/group/${json.data.my.groupUuid}`)
@@ -282,7 +284,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Delete Group',
-							select: async (el) => {
+							async select(el) {
 								const json = el.json()
 
 								if (globalThis.confirm('Are you sure')) {
@@ -295,7 +297,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Rename Group',
-							select: async (el) => {
+							async select(el) {
 								const json = el.json()
 
 								showRenameGroupPopup(json.data.my.groupUuid, json.data.label)
@@ -306,7 +308,7 @@ onMounted(async () => {
 					return [
 						{
 							content: 'Go To Pod',
-							select: (el) => {
+							select(el) {
 								const json = el.json()
 								const podUuid = json.data.my.podUuid
 
@@ -315,7 +317,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Rename Pod',
-							select: async (el) => {
+							async select(el) {
 								const json = el.json()
 
 								showRenamePodPopup(json.data.my.podUuid, json.data.label)
@@ -323,7 +325,7 @@ onMounted(async () => {
 						},
 						{
 							content: 'Delete Pod',
-							select: async (el) => {
+							async select(el) {
 								if (globalThis.confirm('Are you sure?')) {
 									const json = el.json()
 									const podUuid = json.data.my.podUuid
@@ -342,37 +344,61 @@ onMounted(async () => {
 			},
 		})
 		cy.cxtmenu({
+			selector: 'edge',
+			...ctxMenuDefaults,
+			commands(el) {
+				const data = el.data()
+				const json = el.json()
+
+				return [
+					{
+						content: 'Remove Edge',
+						async select(el) {
+							const json = el.json()
+
+							if (globalThis.confirm('Are you sure?')) {
+								await api.core.podRemove.mutate({
+									uuid: json?.data?.my?.podUuid,
+								})
+							}
+							await updateGroups()
+						},
+					},
+				]
+			},
+		})
+		cy.cxtmenu({
 			selector: 'core',
 			...ctxMenuDefaults,
 			commands: [
 				{
 					content: 'Create Group',
-					select: (el) => {
+					select() {
 						showGroupCreatePopup()
 					},
 				},
 				{
 					content: 'Enable DND',
-					select: () => {
+					select() {
 						cyDND.enable()
 					},
 				},
 				{
 					content: 'Disable DND',
-					select: () => {
+					select() {
 						cyDND.disable()
 					},
 				},
 				{
 					content: 'Enable Edge handle',
-					select: () => {
+					select() {
 						cyEdgeHandle.enableDrawMode()
 						cyEdgeHandle.enable()
 					},
 				},
 				{
 					content: 'Disable Edge handle',
-					select: () => {
+					select() {
 						cyEdgeHandle.disable()
 						cyEdgeHandle.disableDrawMode()
 					},
@@ -397,10 +423,10 @@ async function updateGroups() {
 		groupsObj[groupUuid] = arr
 	}
 
-	let nodes: cytoscape.ElementDefinition[] = []
+	let elements: cytoscape.ElementDefinition[] = []
 
 	// node for each group
-	nodes = nodes.concat(
+	elements = elements.concat(
 		groups.value.map((item) => ({
 			data: {
 				id: item.uuid,
@@ -416,8 +442,8 @@ async function updateGroups() {
 		const items = pods.value.filter((item) => item.groupUuid === group.uuid)
 		if (items.length > 0) {
 			for (const item of items) {
-				nodes.push({
-					position: item.datas.position,
+				elements.push({
+					position: item.datas?.position,
 					data: {
 						id: item.uuid,
 						label: item.name,
@@ -432,7 +458,7 @@ async function updateGroups() {
 				})
 			}
 		} else {
-			nodes.push({
+			elements.push({
 				position: group.datas.position,
 				data: {
 					id: '__PLACEHOLDER: ' + group.uuid,
@@ -451,7 +477,7 @@ async function updateGroups() {
 	// edges
 	for (const pod of pods.value) {
 		if (pod.type === 'edge') {
-			nodes.push({
+			elements.push({
 				label: pod.name,
 				data: {
 					id: pod.uuid,
@@ -468,7 +494,7 @@ async function updateGroups() {
 	}
 
 	cy.remove(cy.nodes('*'))
-	cy.add(nodes)
+	cy.add(elements)
 	cy.layout(cyLayout).run()
 }
 
