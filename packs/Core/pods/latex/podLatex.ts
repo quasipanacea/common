@@ -1,6 +1,5 @@
 import { z, path, Router, send } from "@src/mod.ts";
 
-import { trpc } from "@common/trpc.ts";
 import * as t from "@common/types.ts";
 import * as util from "@common/shared/util/util.ts";
 import * as srcUtil from "@src/util/util.ts";
@@ -74,7 +73,7 @@ export const trpcRouter = trpc.router({
 			const p = await Deno.run({
 				stdout: "piped",
 				stderr: "piped",
-				cwd: ctx.pod.dir,
+				cwd: (ctx as any).pod.dir,
 				cmd: ["pdflatex", ctx.state.latexFile, ctx.state.pdfFile],
 			});
 			const [status, stdout, stderr] = await Promise.all([

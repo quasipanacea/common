@@ -51,7 +51,7 @@ export function useTrpc<State extends Record<string, unknown>>() {
 		.create();
 
 	// TODO
-	return trpc as typeof inferenceOnlyTrpc;
+	return trpc as unknown as typeof inferenceOnlyTrpc;
 }
 
 /**
@@ -73,6 +73,4 @@ export const executeAllMiddleware = (trpc: any, hooks: any) => {
 	});
 };
 
-export function setupCurrentAltMenu(boundaryEl: any, action: () => void) {
-
-}
+export function setupCurrentAltMenu(boundaryEl: any, action: () => void) {}
