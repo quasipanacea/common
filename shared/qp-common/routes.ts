@@ -140,7 +140,6 @@ export const coreRouter = trpc.router({
 					...obj,
 				})
 			}
-
 			return { pods }
 		}),
 
