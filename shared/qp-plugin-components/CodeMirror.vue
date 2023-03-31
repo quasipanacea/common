@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted, reactive, watch, toRef } from 'vue'
+import { onMounted, ref, reactive, watch, toRef } from 'vue'
 import { debounce } from 'lodash'
 import { basicSetup } from 'codemirror'
 import { indentUnit } from '@codemirror/language'
@@ -38,7 +38,7 @@ import { indentWithTab, defaultKeymap } from '@codemirror/commands'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { basicLight } from 'cm6-theme-basic-light'
 
-import ConfigurableContext from '@quazipanacea/common-components/ConfigurableContext.vue'
+import ConfigurableContext from '@quazipanacea/plugin-components/ConfigurableContext.vue'
 
 const emit = defineEmits(['contentUpdate'])
 const props = defineProps<{

@@ -15,8 +15,8 @@ import { ref, onMounted, onUpdated, nextTick, watch } from 'vue'
 import { Transformer } from 'markmap-lib'
 import { Markmap } from 'markmap-view/dist/index.esm'
 
-import SemanticInputOutput from '@quazipanacea/common-components/SemanticInputOutput.vue'
-import CodeMirror from '@quazipanacea/common-components/CodeMirror.vue'
+import SemanticInputOutput from '@quazipanacea/plugin-components/SemanticInputOutput.vue'
+import CodeMirror from '@quazipanacea/plugin-components/CodeMirror.vue'
 
 const transformer = new Transformer()
 

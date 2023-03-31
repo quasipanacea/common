@@ -1,8 +1,7 @@
-import { z, path } from '@server/mod.ts'
+import { z, path } from './mod.ts'
 
-import * as util from '@quazipanacea/common/util.ts'
-
-import * as t from '@quazipanacea/common/types.ts'
+import * as util from './util.ts'
+import * as t from './types.ts'
 
 // types
 const SchemaPodsJson = z.object({

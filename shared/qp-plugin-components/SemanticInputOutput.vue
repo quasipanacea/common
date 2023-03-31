@@ -10,9 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import GoldenLayoutVue, {
-	type CustomLayoutConfig,
-} from '@quazipanacea/common-components/GoldenLayoutVue.vue'
+import GoldenLayoutVue, { type CustomLayoutConfig } from './GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
 const goldenLayoutConfig: CustomLayoutConfig = {

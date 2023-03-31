@@ -1,3 +1,11 @@
 {
-	"name": "@quazipanacea/overview-graph-vis"
+	"name": "@quazipanacea/overview-graph-vis",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"vis-data": "^7.1.6",
+		"vis-network": "^9.1.6",
+		"vis-util": "^5.0.3"
+	}
 }

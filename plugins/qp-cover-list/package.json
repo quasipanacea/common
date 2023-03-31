@@ -1,3 +1,8 @@
 {
-	"name": "@quazipanacea/cover-list"
+	"name": "@quazipanacea/cover-list",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
 }

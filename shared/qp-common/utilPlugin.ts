@@ -1,7 +1,7 @@
-import { path } from '@server/mod.ts'
+import { path } from './mod.ts'
 
-import * as util from '@quazipanacea/common/util.ts'
-import type * as t from '@quazipanacea/common/types.ts'
+import * as util from './util.ts'
+import type * as t from './types.ts'
 
 export async function getHooks(
 	pluginId: string,
@@ -28,37 +28,21 @@ export async function getHooks(
 export async function getPluginList(): Promise<t.Plugin_t[]> {
 	const plugins: t.Plugin_t[] = []
 
-	const packsDir = path.join(util.getPacksDir())
-	for await (const packEntry of await Deno.readDir(packsDir)) {
-		const packDir = path.join(packsDir, packEntry.name)
-		if (!packEntry.isDirectory) {
+	const pluginsDir = path.join(util.getPluginsDir())
+	for await (const pluginEntry of await Deno.readDir(pluginsDir)) {
+		const pluginDir = path.join(pluginsDir, pluginEntry.name)
+		if (!pluginEntry.isDirectory) {
 			continue
 		}
 
-		for await (const resourceEntry of await Deno.readDir(packDir)) {
-			const resourceDir = path.join(packDir, resourceEntry.name)
-			if (
-				!resourceEntry.isDirectory ||
-				(resourceEntry.name !== 'groups' &&
-					resourceEntry.name !== 'overviews' &&
-					resourceEntry.name !== 'pods' &&
-					resourceEntry.name !== 'covers')
-			) {
-				continue
-			}
+		if (/$qp-(group|overview|pod|cover)/.test(pluginEntry.name)) {
+			const kind = pluginEntry.name.split['-'][1] as string
 
-			for await (const pluginEntry of await Deno.readDir(resourceDir)) {
-				const pluginDir = path.join(resourceDir, pluginEntry.name)
-				if (!pluginEntry.isDirectory) {
-					continue
-				}
-
-				plugins.push({
-					id: pluginEntry.name,
-					kind: resourceEntry.name.slice(0, -1) as t.Plugin_t['kind'],
-					dir: pluginDir,
-				})
-			}
+			plugins.push({
+				id: pluginEntry.name,
+				kind,
+				dir: pluginDir,
+			})
 		}
 	}
 

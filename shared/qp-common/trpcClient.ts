@@ -1,6 +1,6 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 
-import type { BareAppRouter } from '@common/routes'
+import type { BareAppRouter } from './routes'
 
 export const apiObj = createTRPCProxyClient<BareAppRouter>({
 	links: [

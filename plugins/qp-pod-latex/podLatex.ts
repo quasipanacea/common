@@ -2,6 +2,7 @@ import { z, path, Router, send } from '@server/mod.ts'
 
 import * as t from '@quazipanacea/common/types.ts'
 import * as util from '@quazipanacea/common/util.ts'
+import * as pluginUtility from '@quazipanacea/plugin-utility/util.ts'
 
 export type State = {
 	latexFile: string
@@ -19,13 +20,13 @@ export const hooks: t.Hooks<State> = {
 		}
 	},
 	async onPodAdd(pod, state) {
-		await util.assertFileExists(state.latexFile)
+		await pluginUtility.assertFileExists(state.latexFile)
 	},
 }
 
 export const oakRouter = new Router().get('/get-pdf/:podId', async (ctx) => {
 	const podId = ctx.params.podId
-	const pod = await srcUtil.getPod(podId)
+	const pod = await util.getPod(podId)
 
 	const pdfFile = path.join(pod.dir, 'main.pdf')
 	console.log(pdfFile)
@@ -35,7 +36,7 @@ export const oakRouter = new Router().get('/get-pdf/:podId', async (ctx) => {
 	})
 })
 
-const trpc = util.useTrpc<State>()
+const trpc = pluginUtility.useTrpc<State>()
 
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
@@ -49,7 +50,7 @@ export const trpcRouter = trpc.router({
 				content: z.string(),
 			}),
 		)
-		.use(util.executeAllMiddleware(trpc, hooks))
+		.use(pluginUtility.executeAllMiddleware(trpc, hooks))
 		.query(async ({ ctx, input }) => {
 			const content = await Deno.readTextFile(ctx.state.latexFile)
 
@@ -65,7 +66,7 @@ export const trpcRouter = trpc.router({
 			}),
 		)
 		.output(z.void())
-		.use(util.executeAllMiddleware(trpc, hooks))
+		.use(pluginUtility.executeAllMiddleware(trpc, hooks))
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content)
 

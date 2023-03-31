@@ -14,7 +14,7 @@ import { onMounted, ref } from 'vue'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
-import CodeMirror from '@quazipanacea/common-components/CodeMirror.vue'
+import CodeMirror from '@quazipanacea/plugin-components/CodeMirror.vue'
 
 const inputCode = ref('c = \\pm\\sqrt{a^2 + b^2}')
 const outputEl = ref<HTMLElement>()

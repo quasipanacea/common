@@ -79,15 +79,15 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import { apiObj as api } from '@quazipanacea/common/trpcClient.js'
+import { apiObj as api } from '@quazipanacea/common/trpcClient.ts'
 
 import type * as t from '@quazipanacea/common/types.js'
-import { PopupComponent } from '@quazipanacea/common-components/index.js'
-import PodCreatePopup from '@quazipanacea/common-components/popups/PodCreatePopup.vue'
-import PodRenamePopup from '@quazipanacea/common-components/popups/PodRenamePopup.vue'
-import GroupCreatePopup from '@quazipanacea/common-components/popups/GroupCreatePopup.vue'
-import GroupRenamePopup from '@quazipanacea/common-components/popups/GroupRenamePopup.vue'
-import CoverCreatePopup from '@quazipanacea/common-components/popups/CoverCreatePopup.vue'
+import { PopupComponent } from '@quazipanacea/plugin-components/index.js'
+import PodCreatePopup from '@quazipanacea/plugin-components/popups/PodCreatePopup.vue'
+import PodRenamePopup from '@quazipanacea/plugin-components/popups/PodRenamePopup.vue'
+import GroupCreatePopup from '@quazipanacea/plugin-components/popups/GroupCreatePopup.vue'
+import GroupRenamePopup from '@quazipanacea/plugin-components/popups/GroupRenamePopup.vue'
+import CoverCreatePopup from '@quazipanacea/plugin-components/popups/CoverCreatePopup.vue'
 
 const router = useRouter()
 

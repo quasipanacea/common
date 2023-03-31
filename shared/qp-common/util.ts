@@ -1,75 +1,98 @@
-import { initTRPC } from '~trpc-server'
+import { path, z, toml } from './mod.ts'
 
-import { trpc } from '@quazipanacea/common/trpc.ts'
-import * as util2 from '@quazipanacea/common/util2.ts'
+import { config } from './config.ts'
+import type * as t from './types.ts'
+import * as utilResource from './utilResource.ts'
 
-export async function assertFileExists(filepath: string) {
-	try {
-		const f = await Deno.open(filepath, {
-			createNew: true,
-			write: true,
-		})
-		f.close()
-	} catch (err: unknown) {
-		if (!(err instanceof Deno.errors.AlreadyExists)) {
-			throw err
+export function jsonStringify(obj: Record<string, unknown>) {
+	return JSON.stringify(obj, null, '\t')
+}
+
+export function tomlStringify(obj: Record<string, unknown>) {
+	return toml.stringify(obj)
+}
+
+// misc
+export function getPublicDir() {
+	let public_dir = ''
+	const env = Deno.env.get('QP_PUBLIC')
+	if (env) {
+		public_dir = env
+	} else {
+		public_dir = path.join(Deno.cwd(), './public')
+	}
+
+	return public_dir
+}
+
+export function getPluginsDir() {
+	const commonDir = path.join(Deno.cwd(), '../common')
+
+	return path.join(commonDir, 'plugins')
+}
+
+export function getPacksDir() {
+	let commonDir
+	const env = Deno.env.get('QP_COMMON')
+	if (env) {
+		commonDir = env
+	} else {
+		commonDir = path.join(Deno.cwd(), 'common')
+	}
+	return path.join(commonDir, 'packs')
+}
+
+export function getDataDir() {
+	return path.join(config.documentsDir, 'data')
+}
+
+export function validateSchema<Schema extends z.AnyZodObject>(
+	obj: Record<string, unknown>,
+	schema: z.AnyZodObject,
+): z.infer<Schema> {
+	const result = schema.strict().safeParse(obj)
+	if (!result.success) {
+		throw new JSONError(result.error.format())
+	}
+	return result.data
+}
+
+export async function getPod(uuid: string): Promise<t.Pod_t & { dir: string }> {
+	const dir = utilResource.getPodDir(uuid)
+
+	const podsJson = await utilResource.getPodsJson()
+	const obj = podsJson.pods[uuid]
+
+	if (!obj) {
+		throw new Error(`Failed to find pod with id: ${uuid}`)
+	}
+
+	return {
+		...obj,
+		uuid,
+		dir,
+	}
+}
+
+export class JSONError extends Error {
+	obj: Record<string, unknown>
+
+	constructor(
+		obj: Record<string, unknown>,
+		serializationType: 'json' | 'toml' = 'json',
+	) {
+		let str = '???'
+		switch (serializationType) {
+			case 'json':
+				str = jsonStringify(obj)
+				break
+			case 'toml':
+				str = tomlStringify(obj)
 		}
+
+		super(`JSON Error: ${str}`)
+
+		this.name = this.constructor.name
+		this.obj = obj
 	}
 }
-
-export async function run_bg(args: string[]) {
-	console.log(args)
-	// TODO: security
-	const p = Deno.run({
-		// cmd: ["systemd-run", "--user", ...args],
-		cmd: ['bash', '-c', `setsid ${args.join(' ')}`],
-		stderr: 'piped',
-		stdout: 'piped',
-	})
-	const [status, stdout, stderr] = await Promise.all([
-		p.status(),
-		p.output(),
-		p.stderrOutput(),
-	])
-	console.log(
-		new TextDecoder().decode(stdout),
-		new TextDecoder().decode(stderr),
-	)
-	if (!status.success) {
-		throw new Error('Failed to spawn background process:' + stdout + stderr)
-	}
-	p.close()
-}
-
-export function useTrpc<State extends Record<string, unknown>>() {
-	// const trpc = getCommonTrpc(makeStateFn);
-	const inferenceOnlyTrpc = initTRPC
-		.context<{
-			state: State
-		}>()
-		.create()
-
-	// TODO
-	return trpc as unknown as typeof inferenceOnlyTrpc
-}
-
-/**
- * Note: 'trpc' must be passed since it contains custom State
- */
-export const executeAllMiddleware = (trpc: any, hooks: any) => {
-	return trpc.middleware(async ({ ctx, input, next }: any) => {
-		const uuid = input.uuid
-
-		ctx.pod = await util2.getPod(uuid)
-		ctx.state = await hooks.makeState(ctx.pod)
-
-		return next({
-			ctx: {
-				pod: ctx.pod,
-				state: ctx.state,
-			},
-		})
-	})
-}
-
-export function setupCurrentAltMenu(boundaryEl: any, action: () => void) {}

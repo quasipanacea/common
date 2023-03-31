@@ -1,3 +1,15 @@
 {
-	"name": "@quazipanacea/overview-graph-cytoscape"
+	"name": "@quazipanacea/overview-graph-cytoscape",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"cytoscape": "^3.23.0",
+		"cytoscape-cola": "^2.5.1",
+		"cytoscape-compound-drag-and-drop": "^1.1.0",
+		"cytoscape-cxtmenu": "^3.5.0",
+		"cytoscape-edgehandles": "^4.0.1",
+		"cytoscape-lasso": "^1.1.4",
+		"cytoscape-undo-redo": "^1.3.3"
+	}
 }

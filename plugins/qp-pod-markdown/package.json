@@ -1,6 +1,10 @@
 {
 	"name": "@quazipanacea/pod-markdown",
 	"dependencies": {
-		"@quazipanacea/plugin-utility": "workspace:*"
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"github-markdown-css": "^5.2.0",
+		"katex": "^0.16.4"
 	}
 }

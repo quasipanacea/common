@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 
-import { apiObj as api } from '@quazipanacea/common/trpcClient.js'
+import { apiObj as api } from '@quazipanacea/common/trpcClient.ts'
 
 export default defineComponent({
 	setup() {

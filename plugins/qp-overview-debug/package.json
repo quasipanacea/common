@@ -1,3 +1,8 @@
 {
-	"name": "@quazipanacea/overview-debug"
+	"name": "@quazipanacea/overview-debug",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
 }

@@ -1,3 +1,8 @@
 {
-	"name": "@quazipanacea/group-line"
+	"name": "@quazipanacea/group-line",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
 }

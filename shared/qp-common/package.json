@@ -1,3 +1,10 @@
 {
-	"name": "@quazipanacea/common"
+	"name": "@quazipanacea/common",
+	"dependencies": {
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"mind-elixir": "^1.2.0",
+		"@trpc/client": "^10.11.0",
+		"@trpc/server": "^10.11.0"
+	}
 }

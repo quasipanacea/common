@@ -13,15 +13,15 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import CodeMirror from '@quazipanacea/common-components/CodeMirror.vue'
+import CodeMirror from '@quazipanacea/plugin-components/CodeMirror.vue'
 import 'katex/dist/katex.min.css'
 
 import GoldenLayoutVue, {
 	type CustomLayoutConfig,
-} from '@quazipanacea/common-components/GoldenLayoutVue.vue'
+} from '@quazipanacea/plugin-components/GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
-import { apiObj } from '@quazipanacea/common/trpcClient.js'
+import { apiObj } from '@quazipanacea/common/trpcClient.ts'
 import * as convert from '@quazipanacea/plugin-utility/convert'
 import { useApi } from '@quazipanacea/plugin-utility/c'
 

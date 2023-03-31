@@ -1,3 +1,19 @@
 {
-	"name": "@quazipanacea/plugin-components"
+	"name": "@quazipanacea/plugin-components",
+	"dependencies": {
+		"@codemirror/commands": "^6.2.2",
+		"@codemirror/lang-markdown": "^6.1.0",
+		"@codemirror/language": "^6.6.0",
+		"@codemirror/state": "^6.2.0",
+		"@codemirror/view": "^6.9.3",
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"cm6-theme-basic-light": "^0.2.0",
+		"codemirror": "^6.0.1",
+		"github-markdown-css": "^5.2.0",
+		"golden-layout": "^2.6.0",
+		"lodash": "^4.17.21",
+		"mind-elixir": "^1.2.0",
+		"split-grid": "^1.0.11"
+	}
 }

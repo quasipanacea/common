@@ -2,6 +2,10 @@
 	"name": "@quazipanacea/pod-chemical",
 	"dependencies": {
 		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*"
+		"@quazipanacea/plugin-components": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*",
+		"github-markdown-css": "^5.2.0",
+		"katex": "^0.16.4",
+		"mermaid": "^10.0.2"
 	}
 }

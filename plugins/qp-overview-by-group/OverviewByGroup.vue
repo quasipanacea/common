@@ -48,11 +48,11 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
-import { apiObj as api } from '@quazipanacea/common/trpcClient.js'
+import { apiObj as api } from '@quazipanacea/common/trpcClient.ts'
 
 import type * as t from '@quazipanacea/common/types.js'
-import PodCreatePopup from '@quazipanacea/common-components/popups/PodCreatePopup.vue'
-import GroupCreatePopup from '@quazipanacea/common-components/popups/GroupCreatePopup.vue'
+import PodCreatePopup from '@quazipanacea/plugin-components/popups/PodCreatePopup.vue'
+import GroupCreatePopup from '@quazipanacea/plugin-components/popups/GroupCreatePopup.vue'
 
 let groups = ref<t.Group_t[]>([])
 let groupsObj = reactive<Record<string, t.Pod_t[]>>({})

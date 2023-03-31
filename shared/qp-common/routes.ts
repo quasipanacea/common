@@ -1,6 +1,4 @@
-import { path } from '@server/mod.ts'
-
-import { z } from '~zod'
+import { path, z } from './mod.ts'
 
 import * as util from './util.ts'
 import * as utilResource from './utilResource.ts'
