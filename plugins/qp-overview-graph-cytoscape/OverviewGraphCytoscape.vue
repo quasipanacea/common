@@ -458,7 +458,7 @@ async function updateGroups() {
 			}
 		} else {
 			elements.push({
-				position: group.datas.position,
+				position: group.datas?.position,
 				data: {
 					id: '__PLACEHOLDER: ' + group.uuid,
 					label: '__placeholder',

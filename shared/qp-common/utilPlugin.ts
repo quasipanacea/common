@@ -35,15 +35,16 @@ export async function getPluginList(): Promise<t.Plugin_t[]> {
 			continue
 		}
 
-		if (/$qp-(group|overview|pod|cover)/.test(pluginEntry.name)) {
-			const kind = pluginEntry.name.split['-'][1] as string
-
-			plugins.push({
-				id: pluginEntry.name,
-				kind,
-				dir: pluginDir,
-			})
+		const kind = pluginEntry.name.split('-')[1]
+		if (kind === 'pack') {
+			continue
 		}
+
+		plugins.push({
+			id: pluginEntry.name.split('-')[2],
+			kind,
+			dir: pluginDir,
+		})
 	}
 
 	return plugins

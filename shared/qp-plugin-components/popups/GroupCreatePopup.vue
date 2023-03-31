@@ -43,9 +43,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
-import type * as t from '@quasipanacea/common/types.ts'
+import type * as t from '@quasipanacea/common/types'
 import PopupComponent from '../PopupComponent.vue'
 
 defineProps<{
@@ -56,6 +56,7 @@ const emit = defineEmits(['cancel', 'submit'])
 
 const groupPluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
+	console.log((await api.core.pluginList.query()).plugins)
 	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
 		.filter((item) => item.kind === 'group')
 		.map((item) => ({
