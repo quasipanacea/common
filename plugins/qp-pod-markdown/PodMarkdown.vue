@@ -21,7 +21,7 @@ import GoldenLayoutVue, {
 } from '@quasipanacea/plugin-components/GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
-import { apiObj } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj } from '@quasipanacea/common/trpcClient'
 import * as convert from '@quasipanacea/plugin-utility/convert'
 import { useApi } from '@quasipanacea/plugin-utility/c'
 

@@ -343,7 +343,7 @@ export const coreRouter = trpc.router({
 		}),
 })
 
-const bareAppRouter = trpc.router({
+export const bareAppRouter = trpc.router({
 	core: coreRouter,
 })
 export type BareAppRouter = typeof bareAppRouter

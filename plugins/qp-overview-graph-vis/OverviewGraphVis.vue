@@ -7,7 +7,7 @@ import { defineComponent, onMounted } from 'vue'
 import { Network } from 'vis-network'
 import { DataSet } from 'vis-data'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
 export default defineComponent({
 	setup() {

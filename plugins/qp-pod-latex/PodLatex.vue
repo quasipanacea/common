@@ -19,7 +19,7 @@ import { useRoute } from 'vue-router'
 
 import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
 import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
-import { apiObj } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj } from '@quasipanacea/common/trpcClient'
 import { useApi } from '@quasipanacea/plugin-utility/c'
 import type { InferenceOnlyApi } from './c'
 

@@ -1,4 +1,4 @@
-import { initTRPC } from '~trpc-server'
+import { initTRPC } from '@trpc/server'
 
 import { trpc } from '@quasipanacea/common/trpc.ts'
 import * as util from '@quasipanacea/common/util.ts'

@@ -1,7 +1,5 @@
-import { initTRPC } from '~trpc-server'
-import type { FetchCreateContextFnOptions } from '~trpc-server/adapters/fetch'
-
-import type * as t from './types.ts'
+import { initTRPC } from '@trpc/server'
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 
 type Context = {
 	zero: 0

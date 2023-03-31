@@ -6,5 +6,13 @@
 		"@quasipanacea/plugin-utility": "workspace:*",
 		"github-markdown-css": "^5.2.0",
 		"katex": "^0.16.4"
+	},
+	"devDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
+	},
+	"peerDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
 	}
 }

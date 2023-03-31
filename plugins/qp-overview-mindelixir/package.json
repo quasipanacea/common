@@ -5,5 +5,13 @@
 		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
 		"mind-elixir": "^1.2.0"
+	},
+	"devDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
+	},
+	"peerDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
 	}
 }

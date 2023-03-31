@@ -11,7 +11,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import type * as t from '@quasipanacea/common/types.js'
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
 const currentCovers = ref<null | t.Group_t[]>()
 onMounted(async () => {

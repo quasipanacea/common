@@ -8,5 +8,13 @@
 		"markmap-lib": "^0.14.4",
 		"markmap-toolbar": "^0.14.4",
 		"markmap-view": "^0.14.4"
+	},
+	"devDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
+	},
+	"peerDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
 	}
 }

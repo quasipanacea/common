@@ -79,10 +79,10 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
-import type * as t from '@quasipanacea/common/types.js'
-import { PopupComponent } from '@quasipanacea/plugin-components/index.js'
+import type * as t from '@quasipanacea/common/types'
+import { PopupComponent } from '@quasipanacea/plugin-components/index'
 import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopup.vue'
 import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
 import GroupCreatePopup from '@quasipanacea/plugin-components/popups/GroupCreatePopup.vue'
