@@ -1,0 +1,7 @@
+{
+	"name": "@quazipanacea/pod-chemical",
+	"dependencies": {
+		"@quazipanacea/common": "workspace:*",
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
+}

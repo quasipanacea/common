@@ -1,0 +1,6 @@
+{
+	"name": "@quazipanacea/pod-latex",
+	"dependencies": {
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
+}

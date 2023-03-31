@@ -1,0 +1,6 @@
+{
+	"name": "@quazipanacea/pod-debug",
+	"dependencies": {
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
+}

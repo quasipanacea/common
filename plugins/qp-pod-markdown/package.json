@@ -1,0 +1,6 @@
+{
+	"name": "@quazipanacea/pod-markdown",
+	"dependencies": {
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
+}

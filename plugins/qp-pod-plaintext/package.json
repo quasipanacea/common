@@ -1,0 +1,6 @@
+{
+	"name": "@quazipanacea/pod-plaintext",
+	"dependencies": {
+		"@quazipanacea/plugin-utility": "workspace:*"
+	}
+}
