@@ -1,5 +1,5 @@
 {
-	"name": "@quazipanacea/plugin-utility",
+	"name": "@quasipanacea/plugin-utility",
 	"dependencies": {
 		"mind-elixir": "^1.2.0",
 		"rehype-external-links": "^2.0.1",

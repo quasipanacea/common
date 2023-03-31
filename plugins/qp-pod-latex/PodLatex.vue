@@ -17,10 +17,10 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import SemanticInputOutput from '@quazipanacea/plugin-components/SemanticInputOutput.vue'
-import CodeMirror from '@quazipanacea/plugin-components/CodeMirror.vue'
-import { apiObj } from '@quazipanacea/common/trpcClient.ts'
-import { useApi } from '@quazipanacea/plugin-utility/c'
+import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
+import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
+import { apiObj } from '@quasipanacea/common/trpcClient.ts'
+import { useApi } from '@quasipanacea/plugin-utility/c'
 import type { InferenceOnlyApi } from './c'
 
 const api = useApi<InferenceOnlyApi>(apiObj)

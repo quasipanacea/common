@@ -1,8 +1,8 @@
 import { z, path, Router, send } from '@server/mod.ts'
 
-import * as t from '@quazipanacea/common/types.ts'
-import * as util from '@quazipanacea/common/util.ts'
-import * as pluginUtility from '@quazipanacea/plugin-utility/util.ts'
+import * as t from '@quasipanacea/common/types.ts'
+import * as util from '@quasipanacea/common/util.ts'
+import * as pluginUtility from '@quasipanacea/plugin-utility/util.ts'
 
 export type State = {
 	latexFile: string

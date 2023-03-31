@@ -1,13 +1,13 @@
 {
-	"name": "@quazipanacea/plugin-components",
+	"name": "@quasipanacea/plugin-components",
 	"dependencies": {
 		"@codemirror/commands": "^6.2.2",
 		"@codemirror/lang-markdown": "^6.1.0",
 		"@codemirror/language": "^6.6.0",
 		"@codemirror/state": "^6.2.0",
 		"@codemirror/view": "^6.9.3",
-		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*",
+		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/plugin-utility": "workspace:*",
 		"cm6-theme-basic-light": "^0.2.0",
 		"codemirror": "^6.0.1",
 		"github-markdown-css": "^5.2.0",

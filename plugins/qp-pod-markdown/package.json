@@ -1,9 +1,9 @@
 {
-	"name": "@quazipanacea/pod-markdown",
+	"name": "@quasipanacea/pod-markdown",
 	"dependencies": {
-		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-components": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*",
+		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/plugin-utility": "workspace:*",
 		"github-markdown-css": "^5.2.0",
 		"katex": "^0.16.4"
 	}

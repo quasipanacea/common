@@ -1,8 +1,8 @@
 {
-	"name": "@quazipanacea/pod-latex",
+	"name": "@quasipanacea/pod-latex",
 	"dependencies": {
-		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-components": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*"
+		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/plugin-utility": "workspace:*"
 	}
 }

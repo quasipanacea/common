@@ -12,9 +12,9 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import CodeMirror from '@quazipanacea/plugin-components/CodeMirror.vue'
-import { apiObj } from '@quazipanacea/common/trpcClient.ts'
-import { useApi } from '@quazipanacea/plugin-utility/c'
+import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
+import { apiObj } from '@quasipanacea/common/trpcClient.ts'
+import { useApi } from '@quasipanacea/plugin-utility/c'
 
 import type { InferenceOnlyApi } from './c'
 import { onMounted, ref } from 'vue'

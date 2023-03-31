@@ -51,5 +51,5 @@ function getConfigFile() {
 		xdgConfigHome = path.join(home, '.config')
 	}
 
-	return path.join(xdgConfigHome, 'quazipanacea', 'server.json')
+	return path.join(xdgConfigHome, 'quasipanacea', 'server.json')
 }

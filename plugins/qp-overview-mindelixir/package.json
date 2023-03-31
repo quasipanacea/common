@@ -1,9 +1,9 @@
 {
-	"name": "@quazipanacea/overview-mindelixir",
+	"name": "@quasipanacea/overview-mindelixir",
 	"dependencies": {
-		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-components": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*",
+		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/plugin-utility": "workspace:*",
 		"mind-elixir": "^1.2.0"
 	}
 }

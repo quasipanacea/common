@@ -1,8 +1,8 @@
 {
-	"name": "@quazipanacea/pod-debug",
+	"name": "@quasipanacea/pod-debug",
 	"dependencies": {
-		"@quazipanacea/common": "workspace:*",
-		"@quazipanacea/plugin-components": "workspace:*",
-		"@quazipanacea/plugin-utility": "workspace:*"
+		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/plugin-utility": "workspace:*"
 	}
 }

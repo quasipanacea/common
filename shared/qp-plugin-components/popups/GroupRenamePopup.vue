@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 
-import { apiObj as api } from '@quazipanacea/common/trpcClient.ts'
+import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
 
-import type * as t from '@quazipanacea/common/types.js'
+import type * as t from '@quasipanacea/common/types.js'
 import PopupComponent from '../PopupComponent.vue'
 
 const emit = defineEmits(['cancel', 'submit'])

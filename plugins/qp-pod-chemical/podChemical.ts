@@ -1,7 +1,7 @@
 import { z, path, Router, send } from '@server/mod.ts'
 
-import * as t from './dependencies/@quazipanacea/common/types.ts'
-import * as pluginUtility from '@quazipanacea/plugin-utility/util.ts'
+import * as t from './dependencies/@quasipanacea/common/types.ts'
+import * as pluginUtility from '@quasipanacea/plugin-utility/util.ts'
 
 export type State = {
 	dataFile: string

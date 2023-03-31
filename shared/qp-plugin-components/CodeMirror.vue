@@ -38,7 +38,7 @@ import { indentWithTab, defaultKeymap } from '@codemirror/commands'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { basicLight } from 'cm6-theme-basic-light'
 
-import ConfigurableContext from '@quazipanacea/plugin-components/ConfigurableContext.vue'
+import ConfigurableContext from '@quasipanacea/plugin-components/ConfigurableContext.vue'
 
 const emit = defineEmits(['contentUpdate'])
 const props = defineProps<{
