@@ -1,3 +1,14 @@
 {
-	"extends": "../../../../tsconfig.json"
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"types": [
+			"./node_modules/@quasipanacea/types/cytoscape-cola",
+			"./node_modules/@quasipanacea/types/cytoscape-fcose",
+			"./node_modules/@quasipanacea/types/cytoscape-lasso",
+			"./node_modules/@quasipanacea/types/cytoscape-cxtmenu",
+			"./node_modules/@quasipanacea/types/cytoscape-undo-redo",
+			"./node_modules/@quasipanacea/types/cytoscape-edgehandles",
+			"./node_modules/@quasipanacea/types/cytoscape-compound-drag-and-drop"
+		]
+	}
 }

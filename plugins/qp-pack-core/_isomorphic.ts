@@ -1,3 +1,4 @@
 export const metadata = {
-	id: 'graph-vis',
+	id: 'core',
+	kind: 'pack',
 }

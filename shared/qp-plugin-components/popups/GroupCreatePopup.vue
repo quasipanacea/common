@@ -6,19 +6,14 @@
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
-					<input type="text" id="name" required v-model="formData.name" />
+					<input type="text" id="name" required v-model="form.name" />
 				</div>
 
 				<div class="pure-control-group">
-					<label for="plugin-id">Plugin ID</label>
-					<select
-						name="pluginId"
-						id="plugin-id"
-						v-model="formData.pluginId"
-						required
-					>
+					<label for="plugin">Plugin</label>
+					<select name="plugin" id="plugin" v-model="form.plugin" required>
 						<option
-							v-for="(plugin, i) in groupPluginOptions"
+							v-for="plugin in groupPluginOptions"
 							:value="plugin.value"
 							:key="plugin.value"
 						>
@@ -56,7 +51,6 @@ const emit = defineEmits(['cancel', 'submit'])
 
 const groupPluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
-	console.log((await api.core.pluginList.query()).plugins)
 	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
 		.filter((item) => item.kind === 'group')
 		.map((item) => ({
@@ -65,18 +59,18 @@ onMounted(async () => {
 		}))
 })
 
-const formData = reactive<{
+const form = reactive<{
 	name: string
-	pluginId: string
+	plugin: string
 	groupUuid: string
 }>({
 	name: '',
-	pluginId: '',
+	plugin: '',
 	groupUuid: '',
 })
 
 async function doSubmit() {
-	await api.core.groupAdd.mutate(formData)
+	await api.core.groupAdd.mutate(form)
 	emit('submit')
 }
 </script>

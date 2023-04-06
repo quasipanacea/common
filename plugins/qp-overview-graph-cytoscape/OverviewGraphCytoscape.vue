@@ -1,6 +1,15 @@
 <template>
 	<div ref="cytoscapeContainer" style="height: 100%"></div>
 	<div style="position: absolute; top: 0; right: 0">
+		<span>{{
+			currentMode === 'default'
+				? 'Node Move'
+				: currentMode === 'shift'
+				? 'Draw Connection'
+				: currentMode === 'control'
+				? 'Node Add/Remove'
+				: 'Node Move'
+		}}</span>
 		<div class="dropdown is-right is-hoverable">
 			<div class="dropdown-trigger">
 				<button
@@ -15,9 +24,6 @@
 				</button>
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
-				<div class="dropdown-content">
-					<a @click="saveCytoscapeLayout" class="dropdown-item">Save Layout</a>
-				</div>
 				<div class="dropdown-content">
 					<a @click="showGuidePopup" class="dropdown-item">Show Guide</a>
 				</div>
@@ -68,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import cytoscape from 'cytoscape'
@@ -82,6 +88,7 @@ import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
 import type * as t from '@quasipanacea/common/types'
+import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import { PopupComponent } from '@quasipanacea/plugin-components/index'
 import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopup.vue'
 import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
@@ -90,6 +97,8 @@ import GroupRenamePopup from '@quasipanacea/plugin-components/popups/GroupRename
 import CoverCreatePopup from '@quasipanacea/plugin-components/popups/CoverCreatePopup.vue'
 
 const router = useRouter()
+
+const currentMode = ref<'default' | 'shift' | 'control'>('default')
 
 let groups = ref<t.Group_t[]>([])
 let groupsObj = reactive<Record<string, t.Pod_t[]>>({})
@@ -104,86 +113,47 @@ const cyLayout: cytoscape.LayoutOptions = {
 }
 
 onMounted(async () => {
+	if (!cytoscapeContainer.value)
+		throw new Error('cytoscape container not defined')
+
 	cy = cytoscape({
 		container: cytoscapeContainer.value,
-		style: [
-			{
-				selector: 'node[label]',
-				style: {
-					label: 'data(label)',
-				},
-			},
-			{
-				selector: 'edge',
-				style: {
-					'curve-style': 'bezier',
-					'target-arrow-shape': 'triangle',
-				},
-			},
-			{
-				selector: 'edge[label]',
-				style: {
-					label: 'data(label)',
-					width: 3,
-				},
-			},
-
-			// edge handle
-			{
-				selector: '.eh-handle',
-				style: {
-					'background-color': 'red',
-					width: 12,
-					height: 12,
-					shape: 'ellipse',
-					'overlay-opacity': 0,
-					'border-width': 12, // makes the handle easier to hit
-					'border-opacity': 0,
-				},
-			},
-
-			{
-				selector: '.eh-hover',
-				style: {
-					'background-color': 'red',
-				},
-			},
-
-			{
-				selector: '.eh-source',
-				style: {
-					'border-width': 2,
-					'border-color': 'red',
-				},
-			},
-
-			{
-				selector: '.eh-target',
-				style: {
-					'border-width': 2,
-					'border-color': 'red',
-				},
-			},
-
-			{
-				selector: '.eh-preview, .eh-ghost-edge',
-				style: {
-					'background-color': 'red',
-					'line-color': 'red',
-					'target-arrow-color': 'red',
-					'source-arrow-color': 'red',
-				},
-			},
-
-			{
-				selector: '.eh-ghost-edge.eh-preview-active',
-				style: {
-					opacity: 0,
-				},
-			},
-		],
+		style: defaultTheme.cytoscape,
 		minZoom: 0.5,
 		maxZoom: 3,
+		boxSelectionEnabled: false,
+	})
+
+	let isReady = false
+	cy.on('ready', () => {
+		isReady = true
+	})
+	cy.on('position', async (ev) => {
+		// Prevent spam of event on initial load
+		if (!isReady) return
+
+		const el = ev.target
+		const json = el.json()
+
+		if (json.data.my.resource === 'pod') {
+			await api.core.podMutate.mutate({
+				uuid: json.data.my.podUuid,
+				newData: {
+					datas: {
+						position: json.position,
+					},
+				},
+			})
+		} else if (json.data.my.resource === 'group') {
+			await api.core.groupMutate.mutate({
+				uuid: json.data.my.groupUuid,
+				newData: {
+					datas: {
+						position: json.position,
+					},
+				},
+			})
+		}
 	})
 
 	{
@@ -210,7 +180,7 @@ onMounted(async () => {
 		const cyDND = cy.compoundDragAndDrop()
 		cyDND.disable()
 
-		cy.lassoSelectionEnabled(true)
+		cy.lassoSelectionEnabled(false)
 
 		// edge handle
 		const cyEdgeHandle = cy.edgehandles({
@@ -236,12 +206,45 @@ onMounted(async () => {
 			await api.core.podAdd.mutate({
 				type: 'edge',
 				name: '?',
-				pluginId: 'markdown',
+				plugin: 'markdown',
 				sourceUuid: edge.data.source,
 				targetUuid: edge.data.target,
 			})
 
 			await updateGroups()
+		})
+		const abortController1 = new AbortController()
+		const abortController2 = new AbortController()
+		document.addEventListener(
+			'keydown',
+			(ev) => {
+				if (ev.shiftKey) {
+					cyEdgeHandle.enableDrawMode()
+					cyEdgeHandle.enable()
+					currentMode.value = 'shift'
+				} else if (ev.ctrlKey) {
+					cyDND.enable()
+					currentMode.value = 'control'
+				}
+			},
+			{ signal: abortController1.signal },
+		)
+		document.addEventListener(
+			'keyup',
+			(ev) => {
+				if (ev.key === 'Shift') {
+					cyEdgeHandle.disableDrawMode()
+					cyEdgeHandle.disable()
+				} else if (ev.key === 'Control') {
+					cyDND.disable()
+				}
+				currentMode.value = 'default'
+			},
+			{ signal: abortController1.signal },
+		)
+		onUnmounted(() => {
+			abortController1.abort()
+			abortController2.abort()
 		})
 
 		// context menu
@@ -376,32 +379,6 @@ onMounted(async () => {
 						showGroupCreatePopup()
 					},
 				},
-				{
-					content: 'Enable DND',
-					select() {
-						cyDND.enable()
-					},
-				},
-				{
-					content: 'Disable DND',
-					select() {
-						cyDND.disable()
-					},
-				},
-				{
-					content: 'Enable Edge handle',
-					select() {
-						cyEdgeHandle.enableDrawMode()
-						cyEdgeHandle.enable()
-					},
-				},
-				{
-					content: 'Disable Edge handle',
-					select() {
-						cyEdgeHandle.disable()
-						cyEdgeHandle.disableDrawMode()
-					},
-				},
 			],
 		})
 	}
@@ -482,7 +459,7 @@ async function updateGroups() {
 					id: pod.uuid,
 					source: pod.sourceUuid,
 					target: pod.targetUuid,
-					pluginId: pod.pluginId,
+					plugin: pod.plugin,
 					uuid: pod.uuid,
 					my: {
 						podUuid: pod.uuid,
@@ -495,55 +472,6 @@ async function updateGroups() {
 	cy.remove(cy.nodes('*'))
 	cy.add(elements)
 	cy.layout(cyLayout).run()
-}
-
-async function saveCytoscapeLayout() {
-	if (!cy) throw new Error('cy is undefined')
-
-	const json = cy.json()
-	for (const node of json.elements?.nodes || []) {
-		if (node.data.my.resource === 'pod') {
-			await api.core.podMutate.mutate({
-				uuid: node.data.my.podUuid,
-				newData: {
-					datas: {
-						position: node.position,
-					},
-				},
-			})
-		} else if (node.data.my.resource === 'group') {
-			await api.core.groupMutate.mutate({
-				uuid: node.data.my.groupUuid,
-				newData: {
-					datas: {
-						position: node.position,
-					},
-				},
-			})
-		}
-	}
-	for (const edge of json.elements?.edges || []) {
-		if (edge.data.my?.podUuid) {
-			await api.core.podMutate.mutate({
-				uuid: edge.data.my.podUuid,
-				newData: {
-					type: 'edge',
-					name: '?',
-					pluginId: 'markdown',
-					sourceUuid: edge.data.source,
-					targetUuid: edge.data.target,
-				},
-			})
-		} else {
-			await api.core.podAdd.mutate({
-				type: 'edge',
-				name: '?',
-				pluginId: 'markdown',
-				sourceUuid: edge.data.source,
-				targetUuid: edge.data.target,
-			})
-		}
-	}
 }
 
 // popup: create cover

@@ -6,19 +6,14 @@
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
-					<input type="text" id="name" required v-model="formData.name" />
+					<input type="text" id="name" required v-model="form.name" />
 				</div>
 
 				<div class="pure-control-group">
-					<label for="plugin-id">Plugin ID</label>
-					<select
-						name="pluginId"
-						id="plugin-id"
-						v-model="formData.pluginId"
-						required
-					>
+					<label for="plugin">Plugin</label>
+					<select name="plugin" id="plugin" v-model="form.plugin" required>
 						<option
-							v-for="(plugin, i) in groupPluginOptions"
+							v-for="plugin in groupPluginOptions"
 							:value="plugin.value"
 							:key="plugin.value"
 						>
@@ -32,7 +27,7 @@
 					<input
 						id="group-uuid"
 						type="text"
-						v-model="formData.groupUuid"
+						v-model="form.groupUuid"
 						required
 						disabled
 					/>
@@ -77,21 +72,21 @@ onMounted(async () => {
 		}))
 })
 
-const formData = reactive<{
+const form = reactive<{
 	name: string
-	pluginId: string
+	plugin: string
 	groupUuid: string
 }>({
 	name: '',
-	pluginId: '',
+	plugin: '',
 	groupUuid: '',
 })
 watch(props, (val) => {
-	formData.groupUuid = val.data.groupUuid
+	form.groupUuid = val.data.groupUuid
 })
 
 async function doSubmit() {
-	await api.core.coverAdd.mutate(formData)
+	await api.core.coverAdd.mutate(form)
 	emit('submit')
 }
 </script>

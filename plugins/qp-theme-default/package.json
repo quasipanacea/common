@@ -1,12 +1,11 @@
 {
-	"name": "@quasipanacea/overview-graph-vis",
+	"name": "@quasipanacea/theme-default",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
-		"vis-data": "^7.1.6",
-		"vis-network": "^9.1.6",
-		"vis-util": "^5.0.3"
+		"github-markdown-css": "^5.2.0",
+		"katex": "^0.16.4"
 	},
 	"devDependencies": {
 		"vue": "^3.2.47",

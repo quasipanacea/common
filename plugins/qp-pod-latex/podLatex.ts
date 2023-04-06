@@ -82,11 +82,11 @@ export const trpcRouter = trpc.router({
 				p.stderrOutput(),
 			])
 			p.close()
-			console.log(
+			console.info(
 				status,
 				new TextDecoder().decode(stdout),
 				new TextDecoder().decode(stderr),
 			)
-			console.log('----- DONE')
+			console.info('----- DONE')
 		}),
 })

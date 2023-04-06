@@ -1,7 +1,7 @@
 import { path } from './mod.ts'
 
 import * as util from './util.ts'
-import type * as t from './types.ts'
+import * as t from './types.ts'
 
 export async function getHooks(
 	pluginId: string,
@@ -18,7 +18,7 @@ export async function getHooks(
 
 	const tsFile = path.join(
 		plugin.dir,
-		'pod' + pluginId[0].toUpperCase() + pluginId.slice(1) + '.ts',
+		'pod' + plugin[0].toUpperCase() + plugin.slice(1) + '.ts',
 	)
 	const module = (await import(tsFile)) as t.PluginModule
 
@@ -29,20 +29,36 @@ export async function getPluginList(): Promise<t.Plugin_t[]> {
 	const plugins: t.Plugin_t[] = []
 
 	const pluginsDir = path.join(util.getPluginsDir())
-	for await (const pluginEntry of await Deno.readDir(pluginsDir)) {
-		const pluginDir = path.join(pluginsDir, pluginEntry.name)
-		if (!pluginEntry.isDirectory) {
+	for await (const entry of await Deno.readDir(pluginsDir)) {
+		const pluginDir = path.join(pluginsDir, entry.name)
+		if (!entry.isDirectory) {
 			continue
 		}
+		let isomorphicFile = path.join(pluginDir, '_isomorphic.ts')
 
-		const kind = pluginEntry.name.split('-')[1]
-		if (kind === 'pack') {
+		let pModule: t.PluginExportIsomorphic_t
+		try {
+			pModule = await import(isomorphicFile)
+
+			util.validateSchema<typeof t.PluginExportIsomorphic>(
+				pModule,
+				t.PluginExportIsomorphic,
+			)
+		} catch (err) {
+			if (err instanceof Deno.errors.NotFound) {
+				throw new Error(`Expected file: ${isomorphicFile}`)
+			} else {
+				throw err
+			}
+		}
+
+		if (pModule.metadata.id === 'pack') {
 			continue
 		}
 
 		plugins.push({
-			id: pluginEntry.name.split('-')[2],
-			kind,
+			id: pModule.metadata.id,
+			kind: pModule.metadata.kind,
 			dir: pluginDir,
 		})
 	}

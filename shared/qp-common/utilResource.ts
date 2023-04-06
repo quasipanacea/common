@@ -3,23 +3,97 @@ import { z, path } from './mod.ts'
 import * as util from './util.ts'
 import * as t from './types.ts'
 
-// types
-const SchemaPodsJson = z.object({
-	pods: z.record(t.Uuid, t.Pod.omit({ uuid: true })),
-})
-type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
+// generic
+export async function resourceAdd(
+	input: Record<string, unknown>,
+	rJsonFile: string,
+	rJsonFn: () => Promise<Record<string, any>>,
+	key: string,
+): Promise<string> {
+	const uuid = crypto.randomUUID()
 
-const SchemaGroupsJson = z.object({
-	groups: z.record(t.Uuid, t.Group.omit({ uuid: true })),
-})
-type SchemaGroupsJson_t = z.infer<typeof SchemaGroupsJson>
+	const rJson = await rJsonFn()
+	rJson[key][uuid] = {
+		...input,
+	}
+	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 
-const SchemaCoversJson = z.object({
-	covers: z.record(t.Uuid, t.Cover.omit({ uuid: true })),
-})
-type SchemaCoversJson_t = z.infer<typeof SchemaCoversJson>
+	return uuid
+}
+
+export async function resourceRemove(
+	input: { uuid: string },
+	rJsonFile: string,
+	rJsonFn: () => Promise<Record<string, any>>,
+	key: string,
+): Promise<void> {
+	const rJson = await rJsonFn()
+
+	if (rJson[key][input.uuid]) {
+		delete rJson[key][input.uuid]
+	}
+	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+}
+
+export async function resourceModify<Resource_t>(
+	input: {
+		uuid: string
+		data: Record<string, unknown>
+	},
+	rJsonFile: string,
+	rJsonFn: () => Promise<Record<string, any>>,
+	key: string,
+): Promise<Resource_t> {
+	const rJson = await rJsonFn()
+
+	if (!(input.uuid in rJson.pods)) {
+		throw new Error(`Failed to find uuid ${input.uuid}`)
+	}
+
+	rJson[key][input.uuid] = {
+		...rJson[key][input.uuid],
+		...input.data,
+	}
+	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+
+	return {
+		...rJson.pods[input.uuid],
+		uuid: input.uuid,
+	}
+}
+
+export async function resourceList<Resource_t>(
+	rJsonFn: () => Promise<Record<string, any>>,
+	key: string,
+): Promise<Resource_t[]> {
+	const rJson = await rJsonFn()
+
+	const resources = []
+	for (const [uuid, obj] of Object.entries<Record<string, unknown>>(
+		rJson[key],
+	)) {
+		resources.push({
+			...obj,
+			uuid,
+		})
+	}
+
+	return resources as Resource_t[]
+}
 
 // dir
+export function getOrbsDir(): string {
+	return path.join(util.getDataDir(), 'orbs')
+}
+
+export function getLinksDir(): string {
+	return path.join(util.getDataDir(), 'links')
+}
+
+export function getAnchorsDir(): string {
+	return path.join(util.getDataDir(), 'anchors')
+}
+
 export function getPodsDir(): string {
 	return path.join(util.getDataDir(), 'pods')
 }
@@ -33,6 +107,18 @@ export function getCoversDir(): string {
 }
 
 // file
+export function getOrbsJsonFile(): string {
+	return path.join(util.getDataDir(), 'orbs.json')
+}
+
+export function getLinksJsonFile(): string {
+	return path.join(util.getDataDir(), 'links.json')
+}
+
+export function getAnchorsJsonFile(): string {
+	return path.join(util.getDataDir(), 'anchors.json')
+}
+
 export function getPodsJsonFile(): string {
 	return path.join(util.getDataDir(), 'pods.json')
 }
@@ -46,6 +132,18 @@ export function getCoversJsonFile(): string {
 }
 
 // dir (instance)
+export function getOrbDir(uuid: string): string {
+	return path.join(getOrbsDir(), uuid.slice(0, 2), uuid.slice(2))
+}
+
+export function getLinkDir(uuid: string): string {
+	return path.join(getLinksDir(), uuid.slice(0, 2), uuid.slice(2))
+}
+
+export function getAnchorDir(uuid: string): string {
+	return path.join(getAnchorsDir(), uuid.slice(0, 2), uuid.slice(2))
+}
+
 export function getPodDir(uuid: string): string {
 	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
@@ -59,7 +157,67 @@ export function getCoverDir(uuid: string): string {
 }
 
 // json
-export async function getPodsJson(): Promise<SchemaPodsJson_t> {
+export async function getOrbsJson(): Promise<t.SchemaOrbsJson_t> {
+	const jsonFile = getOrbsJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "documents": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaOrbsJson>(
+		JSON.parse(content),
+		t.SchemaOrbsJson,
+	)
+}
+
+export async function getLinksJson(): Promise<t.SchemaLinksJson_t> {
+	const jsonFile = getLinksJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "links": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaLinksJson>(
+		JSON.parse(content),
+		t.SchemaLinksJson,
+	)
+}
+
+export async function getAnchorsJson(): Promise<t.SchemaAnchorsJson_t> {
+	const jsonFile = getAnchorsJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "anchors": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaAnchorsJson>(
+		JSON.parse(content),
+		t.SchemaAnchorsJson,
+	)
+}
+
+export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	const jsonFile = getPodsJsonFile()
 	let content
 	try {
@@ -73,13 +231,13 @@ export async function getPodsJson(): Promise<SchemaPodsJson_t> {
 		}
 	}
 
-	return util.validateSchema<typeof SchemaPodsJson>(
+	return util.validateSchema<typeof t.SchemaPodsJson>(
 		JSON.parse(content),
-		SchemaPodsJson,
+		t.SchemaPodsJson,
 	)
 }
 
-export async function getGroupsJson(): Promise<SchemaGroupsJson_t> {
+export async function getGroupsJson(): Promise<t.SchemaGroupsJson_t> {
 	const jsonFile = getGroupsJsonFile()
 	let content
 	try {
@@ -93,13 +251,13 @@ export async function getGroupsJson(): Promise<SchemaGroupsJson_t> {
 		}
 	}
 
-	return util.validateSchema<typeof SchemaGroupsJson>(
+	return util.validateSchema<typeof t.SchemaGroupsJson>(
 		JSON.parse(content),
-		SchemaGroupsJson,
+		t.SchemaGroupsJson,
 	)
 }
 
-export async function getCoversJson(): Promise<SchemaCoversJson_t> {
+export async function getCoversJson(): Promise<t.SchemaCoversJson_t> {
 	const jsonFile = getCoversJsonFile()
 	let content
 	try {
@@ -113,8 +271,8 @@ export async function getCoversJson(): Promise<SchemaCoversJson_t> {
 		}
 	}
 
-	return util.validateSchema<typeof SchemaCoversJson>(
+	return util.validateSchema<typeof t.SchemaCoversJson>(
 		JSON.parse(content),
-		SchemaCoversJson,
+		t.SchemaCoversJson,
 	)
 }

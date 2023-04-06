@@ -1,14 +1,15 @@
 {
 	"name": "@quasipanacea/pack-core",
 	"dependencies": {
+		"@quasipanacea/anchor-default": "workspace:*",
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/cover-list": "workspace:*",
 		"@quasipanacea/cover-markmap": "workspace:*",
 		"@quasipanacea/group-line": "workspace:*",
 		"@quasipanacea/overview-by-group": "workspace:*",
 		"@quasipanacea/overview-debug": "workspace:*",
+		"@quasipanacea/overview-graph": "workspace:*",
 		"@quasipanacea/overview-graph-cytoscape": "workspace:*",
-		"@quasipanacea/overview-graph-vis": "workspace:*",
 		"@quasipanacea/overview-mindelixir": "workspace:*",
 		"@quasipanacea/pod-chemical": "workspace:*",
 		"@quasipanacea/pod-debug": "workspace:*",

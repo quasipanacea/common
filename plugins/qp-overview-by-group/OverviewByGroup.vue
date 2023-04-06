@@ -13,10 +13,10 @@
 				</button>
 				<div style="width: 200px; margin: 5px">
 					<h2 style="display: inline">{{ group.name }}</h2>
-					<span> ({{ group.pluginId }})</span>
+					<span> ({{ group.plugin }})</span>
 					<div v-for="pod of groupsObj[group.uuid]">
 						<a :href="'/pod/' + pod.uuid">{{ pod.name }} </a>
-						<span> ({{ pod.pluginId }})</span>
+						<span> ({{ pod.plugin }})</span>
 					</div>
 				</div>
 			</div>
@@ -58,7 +58,7 @@ let groups = ref<t.Group_t[]>([])
 let groupsObj = reactive<Record<string, t.Pod_t[]>>({})
 
 const groupPluginOptions = ref<{ label: string; value: string }[]>([])
-const groupFormData = reactive({ name: '', pluginId: '' })
+const groupFormData = reactive({ name: '', plugin: '' })
 
 onMounted(async () => {
 	await updateGroups()

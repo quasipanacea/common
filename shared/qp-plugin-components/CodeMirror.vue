@@ -33,12 +33,12 @@ import { debounce } from 'lodash'
 import { basicSetup } from 'codemirror'
 import { indentUnit } from '@codemirror/language'
 import { EditorState, Compartment, Facet } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
+import { EditorView, ViewPlugin, keymap } from '@codemirror/view'
 import { indentWithTab, defaultKeymap } from '@codemirror/commands'
 import { markdown as mirrorMarkdown } from '@codemirror/lang-markdown'
 import { basicLight } from 'cm6-theme-basic-light'
 
-import ConfigurableContext from '@quasipanacea/plugin-components/ConfigurableContext.vue'
+import ConfigurableContext from './ConfigurableContext.vue'
 
 const emit = defineEmits(['contentUpdate'])
 const props = defineProps<{
@@ -69,7 +69,11 @@ onMounted(async () => {
 
 				...(props.extensions || []),
 
-				tabSizeCompartment.of(EditorState.tabSize.of(9)),
+				// SpellCheck
+				EditorView.contentAttributes.of({ spellcheck: 'true' }),
+
+				// tab / indentation
+				tabSizeCompartment.of(EditorState.tabSize.of(2)),
 				indentUnitCompartment.of(indentUnit.of('\t')),
 				keymap.of([indentWithTab]),
 

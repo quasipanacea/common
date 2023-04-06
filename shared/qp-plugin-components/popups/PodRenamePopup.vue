@@ -10,12 +10,7 @@
 
 				<div class="pure-control-group">
 					<label for="new-name">New Name</label>
-					<input
-						id="new-name"
-						type="text"
-						v-model="formData.newName"
-						required
-					/>
+					<input id="new-name" type="text" v-model="form.newName" required />
 				</div>
 
 				<div class="pure-controls">
@@ -41,7 +36,7 @@ const props = defineProps<{
 	podUuid: string
 }>()
 
-const formData = reactive<{
+const form = reactive<{
 	newName: string
 }>({
 	newName: '',
@@ -50,7 +45,7 @@ const formData = reactive<{
 async function doSubmit() {
 	await api.core.podRename.mutate({
 		uuid: props.podUuid,
-		newName: formData.newName,
+		newName: form.newName,
 	})
 	emit('submit')
 }

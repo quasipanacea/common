@@ -15,5 +15,14 @@
 		"lodash": "^4.17.21",
 		"mind-elixir": "^1.2.0",
 		"split-grid": "^1.0.11"
+	},
+	"devDependencies": {
+		"@types/cytoscape": "^3.19.9",
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
+	},
+	"peerDependencies": {
+		"vue": "^3.2.47",
+		"vue-router": "^4.1.6"
 	}
 }

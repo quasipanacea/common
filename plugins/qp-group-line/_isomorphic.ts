@@ -1,3 +1,4 @@
 export const metadata = {
-	id: 'by-line',
+	id: 'line',
+	kind: 'group',
 }
