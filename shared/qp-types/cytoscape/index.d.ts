@@ -553,7 +553,7 @@ declare module 'cytoscape' {
 			 *
 			 * @param name The name of the field to get.
 			 */
-			data(name?: string): any
+			data(name?: string): unknown
 			/**
 			 * Set a particular data field.
 			 * @alias attr
@@ -1680,7 +1680,7 @@ declare module 'cytoscape' {
 			 * Get a particular data field for the element.
 			 * @param name The name of the field to get.
 			 */
-			data(name?: string): any
+			data(name?: string): unknown
 			/**
 			 * Set a particular data field for the element.
 			 * @param name The name of the field to set.

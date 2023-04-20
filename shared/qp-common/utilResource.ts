@@ -46,7 +46,7 @@ export async function resourceModify<Resource_t>(
 ): Promise<Resource_t> {
 	const rJson = await rJsonFn()
 
-	if (!(input.uuid in rJson.pods)) {
+	if (!(input.uuid in rJson[key])) {
 		throw new Error(`Failed to find uuid ${input.uuid}`)
 	}
 
@@ -57,7 +57,7 @@ export async function resourceModify<Resource_t>(
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 
 	return {
-		...rJson.pods[input.uuid],
+		...rJson[key][input.uuid],
 		uuid: input.uuid,
 	}
 }
@@ -164,7 +164,7 @@ export async function getOrbsJson(): Promise<t.SchemaOrbsJson_t> {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "documents": {} }'
+			content = '{ "orbs": {} }'
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err

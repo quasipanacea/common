@@ -11,6 +11,7 @@ import * as PodMarkdown from '@quasipanacea/pod-markdown/_client.js'
 import * as PodPlaintext from '@quasipanacea/pod-plaintext/_client.js'
 
 import * as AnchorDefault from '@quasipanacea/anchor-default/_client.ts'
+import * as AnchorGroupSimple from '@quasipanacea/anchor-group-simple/_client.ts'
 
 import * as GroupLine from '@quasipanacea/group-line/_client.js'
 
@@ -35,7 +36,7 @@ export const podPlugins = [
 	PodPlaintext,
 ]
 
-export const anchorPlugins = [AnchorDefault]
+export const anchorPlugins = [AnchorDefault, AnchorGroupSimple]
 
 export const groupPlugins = [GroupLine]
 

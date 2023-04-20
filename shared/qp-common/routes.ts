@@ -156,14 +156,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Anchor)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.Anchor_t>(
+			const resource = await utilResource.resourceModify<t.Anchor_t>(
 				input,
 				utilResource.getAnchorsJsonFile(),
 				utilResource.getAnchorsJson,
 				'anchors',
 			)
 
-			return r
+			return resource
 		}),
 	anchorList: trpc.procedure
 		.input(z.void())

@@ -2,6 +2,7 @@
 	"name": "@quasipanacea/pack-core",
 	"dependencies": {
 		"@quasipanacea/anchor-default": "workspace:*",
+		"@quasipanacea/anchor-group-simple": "workspace:*",
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/cover-list": "workspace:*",
 		"@quasipanacea/cover-markmap": "workspace:*",

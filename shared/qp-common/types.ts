@@ -7,20 +7,44 @@ export const String = z.string().min(1)
 // Object: Zod Schema
 export const Orb = z.object({
 	uuid: Uuid,
-	pod: Uuid,
+	name: String.optional(),
+	anchor: z.object({
+		uuid: Uuid,
+	}),
+	pod: z.optional(z.object({
+		uuid: Uuid
+	})),
+	extras: z.optional(z.object({
+		position: z.optional(z.object({
+			x: z.number(),
+			y: z.number(),
+		}))
+	}))
 })
 
 export const Link = z.object({
 	uuid: Uuid,
 	name: String.optional(),
-	sourcePod: Uuid,
-	targetPod: Uuid,
+	source: z.object({
+		resource: String,
+		uuid: Uuid,
+	}),
+	target: z.object({
+		resource: String,
+		uuid: Uuid,
+	})
 })
 
 export const Anchor = z.object({
 	uuid: Uuid,
 	name: String.optional(),
 	plugin: Id,
+	extras: z.optional(z.object({
+		position: z.optional(z.object({
+			x: z.number(),
+			y: z.number(),
+		}))
+	}))
 })
 
 export const Group = z.object({
@@ -83,7 +107,7 @@ export type Plugin_t = z.infer<typeof Plugin>
 
 // JSON File: Zod Schema
 export const SchemaOrbsJson = z.object({
-	documents: z.record(Uuid, Orb.omit({ uuid: true })),
+	orbs: z.record(Uuid, Orb.omit({ uuid: true })),
 })
 export const SchemaLinksJson = z.object({
 	links: z.record(Uuid, Link.omit({ uuid: true })),
@@ -158,3 +182,36 @@ export const NodeLayout = z.object({
 		y: z.number(),
 	}),
 })
+
+export type CytoscapeElementJson = {
+	classes?: string
+	data: CytoscapeElementData
+	grabbable: boolean
+	group: string
+	locked: boolean
+	pannable: boolean
+	position: {
+		x: number
+		y: number
+	}
+	removed: boolean
+	selectable: boolean
+	selected: boolean
+}
+
+export type CytoscapeElementData = {
+	id?: string
+	label?: string
+	resource: 'orb'
+	resourceData: Orb_t
+} | {
+	id?: string
+	label?: string
+	resource: 'link'
+	resourceData: Link_t
+} | {
+	id?: string
+	label?: string
+	resource: 'anchor'
+	resourceData: Anchor_t
+}

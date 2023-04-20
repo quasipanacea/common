@@ -42,18 +42,6 @@
 		@submit="afterCoverCreate"
 		@cancel="() => (boolCoverCreate = false)"
 	/>
-	<GroupCreatePopup
-		:show="boolGroupCreate"
-		:data="dataGroupCreate"
-		@submit="afterGroupCreate"
-		@cancel="() => (boolGroupCreate = false)"
-	/>
-	<GroupRenamePopup
-		:show="boolGroupRename"
-		:data="dataGroupRename"
-		@submit="afterGroupRename"
-		@cancel="() => (boolGroupRename = false)"
-	/>
 	<PodCreatePopup
 		:show="boolPodCreate"
 		:data="dataPodCreate"
@@ -107,9 +95,6 @@ import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopu
 const router = useRouter()
 
 const currentMode = ref<'default' | 'shift' | 'control'>('default')
-let groups = ref<t.Group_t[]>([])
-let groupsObj = reactive<Record<string, t.Pod_t[]>>({})
-let pods = ref<t.Pod_t[]>([])
 
 let cy: cytoscape.Core | null = null
 let cytoscapeEl = ref<HTMLElement>()
@@ -130,37 +115,35 @@ onMounted(async () => {
 		boxSelectionEnabled: false,
 	})
 
-	let isReady = false
-	cy.on('ready', () => {
-		isReady = true
-	})
-	cy.on('position', async (ev) => {
-		// Prevent spam of event on initial load
-		if (!isReady) return
+	cy.on('dragfree', async (ev) => {
+		const elJson = ev.target.json() as t.CytoscapeElementJson
+		const elData = ev.target.data() as t.CytoscapeElementData
 
-		const el = ev.target
-		console.log(el)
-		const json = el.json()
-
-		// if (json.data.my.resource === 'pod') {
-		// 	await api.core.podMutate.mutate({
-		// 		uuid: json.data.my.podUuid,
-		// 		newData: {
-		// 			datas: {
-		// 				position: json.position,
-		// 			},
-		// 		},
-		// 	})
-		// } else if (json.data.my.resource === 'group') {
-		// 	await api.core.groupMutate.mutate({
-		// 		uuid: json.data.my.groupUuid,
-		// 		newData: {
-		// 			datas: {
-		// 				position: json.position,
-		// 			},
-		// 		},
-		// 	})
-		// }
+		if (elData.resource === 'orb') {
+			await api.core.orbModify.mutate({
+				uuid: elData.resourceData.uuid,
+				data: {
+					extras: {
+						position: {
+							x: elJson.position.x,
+							y: elJson.position.y,
+						},
+					},
+				},
+			})
+		} else if (elData.resource === 'anchor') {
+			await api.core.anchorModify.mutate({
+				uuid: elData.resourceData.uuid,
+				data: {
+					extras: {
+						position: {
+							x: elJson.position.x,
+							y: elJson.position.y,
+						},
+					},
+				},
+			})
+		}
 	})
 
 	{
@@ -187,10 +170,6 @@ onMounted(async () => {
 			cytoscape.use(cytoscapeCola)
 		}
 
-		cy.layout({
-			name: 'fcose',
-		}).run()
-
 		const cyDND = cy.compoundDragAndDrop()
 		cyDND.disable()
 
@@ -215,50 +194,38 @@ onMounted(async () => {
 			disableBrowserGestures: true,
 		})
 		cy.on('ehcomplete', async (event, sourceNode, targetNode, addedEdge) => {
-			const edge = addedEdge.json()
+			const edge = addedEdge.json() as t.CytoscapeElementJson
 
-			// await api.core.podAdd.mutate({
-			// 	type: 'edge',
-			// 	name: '?',
-			// 	plugin: 'markdown',
-			// 	sourceUuid: edge.data.source,
-			// 	targetUuid: edge.data.target,
-			// })
+			await api.core.linkAdd.mutate({})
 
-			await updateGraph()
+			await updateOverview()
 		})
-		const abortController1 = new AbortController()
-		const abortController2 = new AbortController()
-		document.addEventListener(
-			'keydown',
-			(ev) => {
-				if (ev.shiftKey) {
-					cyEdgeHandle.enableDrawMode()
-					cyEdgeHandle.enable()
-					currentMode.value = 'shift'
-				} else if (ev.ctrlKey) {
-					cyDND.enable()
-					currentMode.value = 'control'
-				}
-			},
-			{ signal: abortController1.signal },
-		)
-		document.addEventListener(
-			'keyup',
-			(ev) => {
-				if (ev.key === 'Shift') {
-					cyEdgeHandle.disableDrawMode()
-					cyEdgeHandle.disable()
-				} else if (ev.key === 'Control') {
-					cyDND.disable()
-				}
-				currentMode.value = 'default'
-			},
-			{ signal: abortController1.signal },
-		)
+
+		function keydownFn(ev: KeyboardEvent) {
+			if (ev.shiftKey) {
+				cyEdgeHandle.enableDrawMode()
+				cyEdgeHandle.enable()
+				currentMode.value = 'shift'
+			} else if (ev.ctrlKey) {
+				cyDND.enable()
+				currentMode.value = 'control'
+			}
+		}
+		function keyupFn(ev: KeyboardEvent) {
+			if (ev.key === 'Shift') {
+				cyEdgeHandle.disableDrawMode()
+				cyEdgeHandle.disable()
+			} else if (ev.key === 'Control') {
+				cyDND.disable()
+			}
+			currentMode.value = 'default'
+		}
+
+		document.addEventListener('keydown', keydownFn)
+		document.addEventListener('keyup', keyupFn)
 		onUnmounted(() => {
-			abortController1.abort()
-			abortController2.abort()
+			document.removeEventListener('keydown', keydownFn)
+			document.removeEventListener('keyup', keyupFn)
 		})
 
 		// context menu
@@ -269,123 +236,42 @@ onMounted(async () => {
 			selector: 'node',
 			...ctxMenuDefaults,
 			commands(el) {
-				type TempJson = {
-					classes?: string
-					data: TempData
-					grabbable: boolean
-					group: string
-					locked: boolean
-					pannable: boolean
-					position: {
-						x: number
-						y: number
-					}
-					removed: boolean
-					selectable: boolean
-					selected: boolean
-				}
-				type TempData = {
-					id?: string
-					label?: string
-					resource: string
-					resourceData: Record<string, unknown>
-				}
-				const json = el.json() as TempJson
-				const data = el.data() as TempData
-				console.log('data', data)
-				console.log('json', json)
+				const elData = el.data() as t.CytoscapeElementData
 
-				if (data.resource === 'anchor') {
+				if (elData.resource === 'orb') {
+					if (elData.resourceData.pod) {
+						return [
+							{
+								content: 'Go to Orb',
+								select(el) {
+									const data = el.data()
+								},
+							},
+						]
+					} else {
+						return []
+					}
+				} else if (elData.resource === 'anchor') {
 					return [
 						{
 							content: 'Go to Anchor',
 							select(el) {
-								const json = el.json()
 								const data = el.data()
 
 								router.push(`/anchor/${data.resourceData.uuid}`)
 							},
 						},
-					]
-				} else if (data.resource === 'group') {
-					return [
 						{
-							content: 'Add Pod',
-							select(el) {
-								const json = el.json()
-
-								showPodCreatePopup(json.data.my.groupUuid)
-							},
-						},
-						{
-							content: 'Add Cover',
-							select(el) {
-								const json = el.json()
-
-								showCoverCreatePopup(json.data.my.groupUuid)
-							},
-						},
-						{
-							content: 'Go to Group',
-							select(el) {
-								const json = el.json()
-
-								router.push(`/group/${json.data.my.groupUuid}`)
-							},
-						},
-						{
-							content: 'Delete Group',
+							content: 'Create child Orb',
 							async select(el) {
-								const json = el.json()
+								const data = el.data()
 
-								if (globalThis.confirm('Are you sure')) {
-									await api.core.groupRemove.mutate({
-										uuid: json?.data?.my?.groupUuid,
-									})
-									await updateGraph()
-								}
-							},
-						},
-						{
-							content: 'Rename Group',
-							async select(el) {
-								const json = el.json()
-
-								showGroupRenamePopup(json.data.my.groupUuid, json.data.label)
-							},
-						},
-					]
-				} else if (data.resource === 'pod') {
-					return [
-						{
-							content: 'Go To Pod',
-							select(el) {
-								const json = el.json()
-								const podUuid = json.data.my.podUuid
-
-								router.push(`/pod/${podUuid}`)
-							},
-						},
-						{
-							content: 'Rename Pod',
-							async select(el) {
-								const json = el.json()
-
-								showPodRenamePopup(json.data.my.podUuid, json.data.label)
-							},
-						},
-						{
-							content: 'Delete Pod',
-							async select(el) {
-								if (globalThis.confirm('Are you sure?')) {
-									const json = el.json()
-									const podUuid = json.data.my.podUuid
-
-									await api.core.podRemove.mutate({
-										uuid: podUuid,
-									})
-									await updateGraph()
-								}
+								await api.core.orbAdd.mutate({
+									anchor: {
+										uuid: elData.resourceData.uuid,
+									},
+								})
+								await updateOverview()
 							},
 						},
 					]
@@ -412,7 +298,7 @@ onMounted(async () => {
 									uuid: json?.data?.my?.podUuid,
 								})
 							}
-							await updateGraph()
+							await updateOverview()
 						},
 					},
 				]
@@ -423,12 +309,6 @@ onMounted(async () => {
 			...ctxMenuDefaults,
 			commands: [
 				{
-					content: 'Create Group',
-					select() {
-						showGroupCreatePopup()
-					},
-				},
-				{
 					content: 'Create Anchor',
 					select() {
 						showAnchorCreatePopup()
@@ -438,18 +318,65 @@ onMounted(async () => {
 		})
 	}
 
-	await updateGraph()
+	await updateOverview()
 })
 
-async function updateGraph() {
+async function updateOverview() {
 	if (!cy) throw new Error('cy is undefined')
 
 	let elements: cytoscape.ElementDefinition[] = []
 
+	// orbs
+	const { orbs } = await api.core.orbList.query()
+	for (const orb of orbs) {
+		elements.push({
+			group: 'nodes',
+			classes: [
+				'qp-orb',
+				...(orb.pod ? ['qp-orb-with-pod'] : ['qp-orb-without-pod']),
+			],
+			...{
+				position: orb?.extras?.position && {
+					x: orb.extras.position.x,
+					y: orb.extras.position.y,
+				},
+			},
+			data: {
+				id: orb.uuid,
+				label: orb.name,
+				resource: 'orb',
+				resourceData: orb,
+			},
+		})
+	}
+
+	// links
+	for (const orb of orbs) {
+		elements.push({
+			group: 'edges',
+			classes: 'qp-link',
+			data: {
+				id: crypto.randomUUID(),
+				source: orb.uuid,
+				target: orb.anchor.uuid,
+			},
+		})
+	}
+
+	// anchors
 	const { anchors } = await api.core.anchorList.query()
 	for (const anchor of anchors) {
 		elements.push({
+			group: 'nodes',
+			classes: 'qp-anchor',
+			...{
+				position: anchor?.extras?.position && {
+					x: anchor.extras.position.x,
+					y: anchor.extras.position.y,
+				},
+			},
 			data: {
+				id: anchor.uuid,
 				label: anchor.name,
 				resource: 'anchor',
 				resourceData: anchor,
@@ -468,9 +395,9 @@ const dataAnchorCreate = reactive({ groupUuid: '' })
 function showAnchorCreatePopup() {
 	boolAnchorCreate.value = true
 }
-async function afterAnchorCreate(value: unknown) {
+async function afterAnchorCreate() {
 	boolAnchorCreate.value = false
-	await updateGraph()
+	await updateOverview()
 }
 
 // popup: cover create
@@ -480,33 +407,9 @@ function showCoverCreatePopup(uuid: string) {
 	dataCoverCreate.groupUuid = uuid
 	boolCoverCreate.value = true
 }
-async function afterCoverCreate(value: unknown) {
+async function afterCoverCreate() {
 	boolCoverCreate.value = false
-	await updateGraph()
-}
-
-// popup: group create
-const boolGroupCreate = ref(false)
-const dataGroupCreate = reactive({})
-function showGroupCreatePopup() {
-	boolGroupCreate.value = true
-}
-async function afterGroupCreate(value: unknown) {
-	boolGroupCreate.value = false
-	await updateGraph()
-}
-
-// popup: group rename
-const boolGroupRename = ref(false)
-const dataGroupRename = reactive({ groupUuid: '', oldName: '' })
-function showGroupRenamePopup(uuid: string, oldName: string) {
-	dataGroupRename.groupUuid = uuid
-	dataGroupRename.oldName = oldName
-	boolGroupRename.value = true
-}
-async function afterGroupRename(value: unknown) {
-	boolGroupRename.value = false
-	await updateGraph()
+	await updateOverview()
 }
 
 // popup: pod create
@@ -516,9 +419,9 @@ function showPodCreatePopup(uuid: string) {
 	dataPodCreate.groupUuid = uuid
 	boolPodCreate.value = true
 }
-async function afterPodCreate(value: unknown) {
+async function afterPodCreate() {
 	boolPodCreate.value = false
-	await updateGraph()
+	await updateOverview()
 }
 
 // popup: pod rename
@@ -529,7 +432,7 @@ function showPodRenamePopup(podUuid: string, oldName: string) {
 	dataPodRename.oldName = oldName
 	boolPodRename.value = true
 }
-async function afterPodRename(value: unknown) {
+async function afterPodRename() {
 	boolPodRename.value = false
 }
 

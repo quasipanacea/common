@@ -10,10 +10,29 @@ export const defaultTheme = {
 			},
 		},
 		{
+			selector: 'node.qp-anchor',
+			style: {
+				shape: 'rectangle',
+			}
+		},
+		{
+			selector: 'node.qp-orb-without-pod',
+			style: {
+				'background-color': '#ccc',
+			}
+		},
+		{
 			selector: 'edge[label]',
 			style: {
 				label: 'data(label)',
 			},
+		},
+		{
+			selector: 'edge.qp-link',
+			style: {
+				'line-color': '#333',
+				'target-arrow-color': '#333',
+			}
 		},
 		{
 			selector: 'edge',
