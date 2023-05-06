@@ -30,11 +30,23 @@
 			</div>
 		</div>
 	</div>
+	<AnchorCreateChildPopup
+		:show="boolAnchorCreateChild"
+		:data="dataAnchorCreateChild"
+		@submit="afterAnchorCreateChild"
+		@cancel="() => (boolAnchorCreateChild = false)"
+	/>
 	<AnchorCreatePopup
 		:show="boolAnchorCreate"
 		:data="dataAnchorCreate"
 		@submit="afterAnchorCreate"
 		@cancel="() => (boolAnchorCreate = false)"
+	/>
+	<AnchorEditPropertiesPopup
+		:show="boolAnchorEditProperties"
+		:data="dataAnchorEditProperties"
+		@submit="afterAnchorEditProperties"
+		@cancel="() => (boolAnchorEditProperties = false)"
 	/>
 	<CoverCreatePopup
 		:show="boolCoverCreate"
@@ -85,10 +97,10 @@ import { apiObj as api } from '@quasipanacea/common/trpcClient'
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import { PopupComponent } from '@quasipanacea/plugin-components/index'
+import AnchorCreateChildPopup from '@quasipanacea/plugin-components/popups/AnchorCreateChildPopup.vue'
 import AnchorCreatePopup from '@quasipanacea/plugin-components/popups/AnchorCreatePopup.vue'
+import AnchorEditPropertiesPopup from '@quasipanacea/plugin-components/popups/AnchorEditPropertiesPopup.vue'
 import CoverCreatePopup from '@quasipanacea/plugin-components/popups/CoverCreatePopup.vue'
-import GroupCreatePopup from '@quasipanacea/plugin-components/popups/GroupCreatePopup.vue'
-import GroupRenamePopup from '@quasipanacea/plugin-components/popups/GroupRenamePopup.vue'
 import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopup.vue'
 import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
 
@@ -121,6 +133,18 @@ onMounted(async () => {
 
 		if (elData.resource === 'orb') {
 			await api.core.orbModify.mutate({
+				uuid: elData.resourceData.uuid,
+				data: {
+					extras: {
+						position: {
+							x: elJson.position.x,
+							y: elJson.position.y,
+						},
+					},
+				},
+			})
+		} else if (elData.resource === 'pod') {
+			await api.core.podModify.mutate({
 				uuid: elData.resourceData.uuid,
 				data: {
 					extras: {
@@ -242,36 +266,57 @@ onMounted(async () => {
 					if (elData.resourceData.pod) {
 						return [
 							{
-								content: 'Go to Orb',
+								content: 'Go to Pod',
 								select(el) {
-									const data = el.data()
+									const data = el.data() as t.CytoscapeElementData
 								},
 							},
 						]
 					} else {
-						return []
+						return [
+							{
+								content: 'Delete Orb',
+								async select(el) {
+									const data = el.data() as t.CytoscapeElementData
+
+									await api.core.orbRemove.mutate({
+										uuid: data.resourceData.uuid,
+									})
+									await updateOverview()
+								},
+							},
+						]
 					}
 				} else if (elData.resource === 'anchor') {
 					return [
 						{
-							content: 'Go to Anchor',
+							content: 'Anchor: Go To',
 							select(el) {
-								const data = el.data()
+								const data = el.data() as t.CytoscapeElementData
 
 								router.push(`/anchor/${data.resourceData.uuid}`)
 							},
 						},
 						{
-							content: 'Create child Orb',
-							async select(el) {
-								const data = el.data()
+							content: 'Anchor: Edit Properties',
+							select(el) {
+								const data = el.data() as t.CytoscapeElementData
 
-								await api.core.orbAdd.mutate({
-									anchor: {
-										uuid: elData.resourceData.uuid,
-									},
-								})
-								await updateOverview()
+								showAnchorEditPropertiesPopup(data.resourceData)
+							},
+						},
+						{
+							content: 'Anchor: Create Child',
+							async select(el) {
+								const data = el.data() as t.CytoscapeElementData
+
+								const anchorPlugin = await import(
+									'@quasipanacea/anchor-group-simple/_client'
+								)
+								showAnchorCreateChildPopup(
+									data.resourceData,
+									anchorPlugin.validateNewChild,
+								)
 							},
 						},
 					]
@@ -326,43 +371,6 @@ async function updateOverview() {
 
 	let elements: cytoscape.ElementDefinition[] = []
 
-	// orbs
-	const { orbs } = await api.core.orbList.query()
-	for (const orb of orbs) {
-		elements.push({
-			group: 'nodes',
-			classes: [
-				'qp-orb',
-				...(orb.pod ? ['qp-orb-with-pod'] : ['qp-orb-without-pod']),
-			],
-			...{
-				position: orb?.extras?.position && {
-					x: orb.extras.position.x,
-					y: orb.extras.position.y,
-				},
-			},
-			data: {
-				id: orb.uuid,
-				label: orb.name,
-				resource: 'orb',
-				resourceData: orb,
-			},
-		})
-	}
-
-	// links
-	for (const orb of orbs) {
-		elements.push({
-			group: 'edges',
-			classes: 'qp-link',
-			data: {
-				id: crypto.randomUUID(),
-				source: orb.uuid,
-				target: orb.anchor.uuid,
-			},
-		})
-	}
-
 	// anchors
 	const { anchors } = await api.core.anchorList.query()
 	for (const anchor of anchors) {
@@ -382,6 +390,24 @@ async function updateOverview() {
 				resourceData: anchor,
 			},
 		})
+
+		// orbs (attached by anchors)
+		const { orbs } = await api.core.orbList.query({
+			anchor: { uuid: anchor.uuid },
+		})
+		const { pods } = await api.core.podList.query({
+			anchor: { uuid: anchor.uuid },
+		})
+
+		const anchorPlugin = await import(
+			'@quasipanacea/anchor-group-simple/_client'
+		)
+		const { elements: newElements } = anchorPlugin.arrangeElements(
+			anchor,
+			pods,
+			orbs,
+		)
+		elements = elements.concat(newElements)
 	}
 
 	cy.remove(cy.nodes('*'))
@@ -397,6 +423,34 @@ function showAnchorCreatePopup() {
 }
 async function afterAnchorCreate() {
 	boolAnchorCreate.value = false
+	await updateOverview()
+}
+
+// popup: anchor edit properties
+const boolAnchorEditProperties = ref(false)
+const dataAnchorEditProperties = reactive({ uuid: '', oldName: '' })
+function showAnchorEditPropertiesPopup(anchor: t.Anchor_t) {
+	dataAnchorEditProperties.uuid = anchor.uuid
+	dataAnchorEditProperties.oldName = anchor.name || ''
+	boolAnchorEditProperties.value = true
+}
+async function afterAnchorEditProperties() {
+	boolAnchorEditProperties.value = false
+	await updateOverview()
+}
+
+// popup: anchor create child
+const boolAnchorCreateChild = ref(false)
+const dataAnchorCreateChild = reactive({ anchorUuid: '' })
+function showAnchorCreateChildPopup(
+	anchor: t.Anchor_t,
+	validationFn: t.PluginExportClient_t['validateNewChild'],
+) {
+	dataAnchorCreateChild.anchorUuid = anchor.uuid
+	boolAnchorCreateChild.value = true
+}
+async function afterAnchorCreateChild() {
+	boolAnchorCreateChild.value = false
 	await updateOverview()
 }
 

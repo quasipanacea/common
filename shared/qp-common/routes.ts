@@ -50,17 +50,25 @@ export const coreRouter = trpc.router({
 			return r
 		}),
 	orbList: trpc.procedure
-		.input(z.void())
+		.input(z.object({
+			anchor: z.object({
+				uuid: t.Uuid,
+			}),
+		}).optional())
 		.output(
 			z.object({
 				orbs: z.array(t.Orb),
 			}),
 		)
-		.query(async () => {
-			const orbs = await utilResource.resourceList<t.Orb_t>(
+		.query(async ({ input }) => {
+			let orbs = await utilResource.resourceList<t.Orb_t>(
 				utilResource.getOrbsJson,
 				'orbs',
 			)
+
+			if (input?.anchor?.uuid) {
+				orbs = orbs.filter((orb) => orb.anchor.uuid === input.anchor.uuid)
+			}
 
 			return { orbs }
 		}),
@@ -316,22 +324,31 @@ export const coreRouter = trpc.router({
 			}
 		}),
 	podList: trpc.procedure
-		.input(z.void())
+		.input(z.object({
+			anchor: z.object({
+				uuid: t.Uuid
+			})
+		}).optional())
 		.output(
 			z.object({
 				pods: z.array(t.Pod),
 			}),
 		)
-		.query(async () => {
+		.query(async ({ input }) => {
 			const rJson = await utilResource.getPodsJson()
 
-			const pods: t.Pod_t[] = []
+			let pods: t.Pod_t[] = []
 			for (const [uuid, obj] of Object.entries(rJson.pods)) {
 				pods.push({
 					uuid,
 					...obj,
 				})
 			}
+
+			if (input?.anchor?.uuid) {
+				pods = pods.filter((p) => p.anchor?.uuid === input?.anchor?.uuid)
+			}
+
 			return { pods }
 		}),
 

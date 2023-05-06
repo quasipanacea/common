@@ -18,7 +18,7 @@ export async function getHooks(
 
 	const tsFile = path.join(
 		plugin.dir,
-		'pod' + plugin[0].toUpperCase() + plugin.slice(1) + '.ts',
+		'pod' + plugin.id[0].toUpperCase() + plugin.id.slice(1) + '.ts',
 	)
 	const module = (await import(tsFile)) as t.PluginModule
 
@@ -29,12 +29,12 @@ export async function getPluginList(): Promise<t.Plugin_t[]> {
 	const plugins: t.Plugin_t[] = []
 
 	const pluginsDir = path.join(util.getPluginsDir())
-	for await (const entry of await Deno.readDir(pluginsDir)) {
+	for await (const entry of Deno.readDir(pluginsDir)) {
 		const pluginDir = path.join(pluginsDir, entry.name)
 		if (!entry.isDirectory) {
 			continue
 		}
-		let isomorphicFile = path.join(pluginDir, '_isomorphic.ts')
+		const isomorphicFile = path.join(pluginDir, '_isomorphic.ts')
 
 		let pModule: t.PluginExportIsomorphic_t
 		try {

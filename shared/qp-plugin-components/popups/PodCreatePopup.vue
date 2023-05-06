@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Create Pod</h2></legend>
+				<legend><h2>Pod: Create</h2></legend>
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>

@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Rename Pod</h2></legend>
+				<legend><h2>Pod: Rename</h2></legend>
 				<div class="pure-control-group">
 					<label for="old-name">Old Name</label>
 					<input id="old-name" type="text" v-model="props.oldName" disabled />

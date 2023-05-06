@@ -60,13 +60,22 @@ export const Group = z.object({
 })
 
 export const Pod = z.object({
-	type: z.enum(['node', 'edge']),
+	type: z.enum(['node', 'edge']).optional(),
 	uuid: Uuid,
 	name: String,
 	plugin: Id,
+	anchor: z.object({
+		uuid: Uuid,
+	}).optional(), // TODO: remove optional
 	groupUuid: Uuid.optional(),
 	sourceUuid: Uuid.optional(),
 	targetUuid: Uuid.optional(),
+	extras: z.optional(z.object({
+		position: z.optional(z.object({
+			x: z.number(),
+			y: z.number(),
+		}))
+	})),
 	datas: z
 		.object({
 			common: z.any(),
@@ -157,6 +166,8 @@ export const PluginExportIsomorphic = z.object({
 })
 export const PluginExportClient = z.object({
 	component: z.any(),
+	arrangeElements: z.function().args(Anchor, z.array(Pod), z.array(Orb)).returns(z.array(z.object({ elements: z.unknown() }))),
+	validateNewChild: z.function().args().returns(z.boolean())
 })
 export const PluginExportServer = z.object({})
 
@@ -209,6 +220,11 @@ export type CytoscapeElementData = {
 	label?: string
 	resource: 'link'
 	resourceData: Link_t
+} | {
+	id?: string
+	label?: string
+	resource: 'pod',
+	resourceData: Pod_t
 } | {
 	id?: string
 	label?: string

@@ -11,7 +11,7 @@
 			height: calc(100% - (2 * var(--space)));
 			padding: 10px;
 			border-radius: 5px;
-			background-color: var(--oc-gray-1);
+			/* background-color: var(--oc-gray-1); */
 			box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1),
 				0px 10px 15px -3px rgba(0, 0, 0, 0.1),
 				0px 10px 15px -3px rgba(0, 0, 0, 0.1);
