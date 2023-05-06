@@ -1,6 +1,6 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<h2 class="title is-4">Anchor: Edit Properties</h2>
+		<h2 class="title is-4">Model: Edit Properties</h2>
 		<div class="field">
 			<label class="label">Uuid</label>
 			<div class="control">
@@ -67,7 +67,7 @@ watch(props, (val) => {
 })
 
 async function doSubmit() {
-	await api.core.anchorModify.mutate({
+	await api.core.modelModify.mutate({
 		uuid: props.data.uuid,
 		data: {
 			name: form.newName,

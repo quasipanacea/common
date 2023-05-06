@@ -1,7 +1,7 @@
 {
 	"name": "@quasipanacea/overview-graph",
 	"dependencies": {
-		"@quasipanacea/anchor-group-simple": "workspace:^",
+		"@quasipanacea/model-group-simple": "workspace:^",
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",

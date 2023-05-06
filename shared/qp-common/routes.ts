@@ -51,7 +51,7 @@ export const coreRouter = trpc.router({
 		}),
 	orbList: trpc.procedure
 		.input(z.object({
-			anchor: z.object({
+			model: z.object({
 				uuid: t.Uuid,
 			}),
 		}).optional())
@@ -66,8 +66,8 @@ export const coreRouter = trpc.router({
 				'orbs',
 			)
 
-			if (input?.anchor?.uuid) {
-				orbs = orbs.filter((orb) => orb.anchor.uuid === input.anchor.uuid)
+			if (input?.model?.uuid) {
+				orbs = orbs.filter((orb) => orb.model.uuid === input.model.uuid)
 			}
 
 			return { orbs }
@@ -131,62 +131,62 @@ export const coreRouter = trpc.router({
 			return { links }
 		}),
 
-	anchorAdd: trpc.procedure
-		.input(t.Anchor.omit({ uuid: true }))
+	modelAdd: trpc.procedure
+		.input(t.Model.omit({ uuid: true }))
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
 				input,
-				utilResource.getAnchorsJsonFile(),
-				utilResource.getAnchorsJson,
-				'anchors',
+				utilResource.getModelsJsonFile(),
+				utilResource.getModelsJson,
+				'models',
 			)
 
 			return { uuid }
 		}),
-	anchorRemove: trpc.procedure
+	modelRemove: trpc.procedure
 		.input(z.object({ uuid: t.Uuid }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
 				input,
-				utilResource.getAnchorsJsonFile(),
-				utilResource.getAnchorsJson,
-				'anchors',
+				utilResource.getModelsJsonFile(),
+				utilResource.getModelsJson,
+				'models',
 			)
 		}),
-	anchorModify: trpc.procedure
+	modelModify: trpc.procedure
 		.input(
 			z.object({
 				uuid: t.Uuid,
-				data: t.Anchor.omit({ uuid: true }).partial(),
+				data: t.Model.omit({ uuid: true }).partial(),
 			}),
 		)
-		.output(t.Anchor)
+		.output(t.Model)
 		.mutation(async ({ input }) => {
-			const resource = await utilResource.resourceModify<t.Anchor_t>(
+			const resource = await utilResource.resourceModify<t.Model_t>(
 				input,
-				utilResource.getAnchorsJsonFile(),
-				utilResource.getAnchorsJson,
-				'anchors',
+				utilResource.getModelsJsonFile(),
+				utilResource.getModelsJson,
+				'models',
 			)
 
 			return resource
 		}),
-	anchorList: trpc.procedure
+	modelList: trpc.procedure
 		.input(z.void())
 		.output(
 			z.object({
-				anchors: z.array(t.Anchor),
+				models: z.array(t.Model),
 			}),
 		)
 		.query(async () => {
-			const anchors = await utilResource.resourceList<t.Anchor_t>(
-				utilResource.getAnchorsJson,
-				'anchors',
+			const models = await utilResource.resourceList<t.Model_t>(
+				utilResource.getModelsJson,
+				'models',
 			)
 
-			return { anchors }
+			return { models }
 		}),
 
 	podAdd: trpc.procedure
@@ -325,7 +325,7 @@ export const coreRouter = trpc.router({
 		}),
 	podList: trpc.procedure
 		.input(z.object({
-			anchor: z.object({
+			model: z.object({
 				uuid: t.Uuid
 			})
 		}).optional())
@@ -345,8 +345,8 @@ export const coreRouter = trpc.router({
 				})
 			}
 
-			if (input?.anchor?.uuid) {
-				pods = pods.filter((p) => p.anchor?.uuid === input?.anchor?.uuid)
+			if (input?.model?.uuid) {
+				pods = pods.filter((p) => p.model?.uuid === input?.model?.uuid)
 			}
 
 			return { pods }

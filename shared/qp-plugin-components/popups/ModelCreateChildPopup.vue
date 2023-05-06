@@ -1,6 +1,6 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<h2 class="title is-4">Anchor: Create Child</h2>
+		<h2 class="title is-4">Model: Create Child</h2>
 
 		<div class="control">
 			<label class="label">Name</label>
@@ -49,7 +49,7 @@ const emit = defineEmits(['cancel', 'submit'])
 const props = defineProps<{
 	show: boolean
 	data: {
-		anchorUuid: string
+		modelUuid: string
 	}
 }>()
 
@@ -75,16 +75,16 @@ async function doSubmit() {
 	if (form.childType === 'orb') {
 		await api.core.orbAdd.mutate({
 			name: form.name,
-			anchor: {
-				uuid: props.data.anchorUuid,
+			model: {
+				uuid: props.data.modelUuid,
 			},
 		})
 	} else if (form.childType === 'pod') {
 		await api.core.podAdd.mutate({
 			name: form.name,
 			plugin: form.podPlugin,
-			anchor: {
-				uuid: props.data.anchorUuid,
+			model: {
+				uuid: props.data.modelUuid,
 			},
 		})
 	}

@@ -90,8 +90,8 @@ export function getLinksDir(): string {
 	return path.join(util.getDataDir(), 'links')
 }
 
-export function getAnchorsDir(): string {
-	return path.join(util.getDataDir(), 'anchors')
+export function getModelsDir(): string {
+	return path.join(util.getDataDir(), 'models')
 }
 
 export function getPodsDir(): string {
@@ -115,8 +115,8 @@ export function getLinksJsonFile(): string {
 	return path.join(util.getDataDir(), 'links.json')
 }
 
-export function getAnchorsJsonFile(): string {
-	return path.join(util.getDataDir(), 'anchors.json')
+export function getModelsJsonFile(): string {
+	return path.join(util.getDataDir(), 'models.json')
 }
 
 export function getPodsJsonFile(): string {
@@ -140,8 +140,8 @@ export function getLinkDir(uuid: string): string {
 	return path.join(getLinksDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
-export function getAnchorDir(uuid: string): string {
-	return path.join(getAnchorsDir(), uuid.slice(0, 2), uuid.slice(2))
+export function getModelDir(uuid: string): string {
+	return path.join(getModelsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
 export function getPodDir(uuid: string): string {
@@ -197,23 +197,23 @@ export async function getLinksJson(): Promise<t.SchemaLinksJson_t> {
 	)
 }
 
-export async function getAnchorsJson(): Promise<t.SchemaAnchorsJson_t> {
-	const jsonFile = getAnchorsJsonFile()
+export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
+	const jsonFile = getModelsJsonFile()
 	let content
 	try {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "anchors": {} }'
+			content = '{ "models": {} }'
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err
 		}
 	}
 
-	return util.validateSchema<typeof t.SchemaAnchorsJson>(
+	return util.validateSchema<typeof t.SchemaModelsJson>(
 		JSON.parse(content),
-		t.SchemaAnchorsJson,
+		t.SchemaModelsJson,
 	)
 }
 

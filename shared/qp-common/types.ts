@@ -8,7 +8,7 @@ export const String = z.string().min(1)
 export const Orb = z.object({
 	uuid: Uuid,
 	name: String.optional(),
-	anchor: z.object({
+	model: z.object({
 		uuid: Uuid,
 	}),
 	pod: z.optional(z.object({
@@ -35,7 +35,7 @@ export const Link = z.object({
 	})
 })
 
-export const Anchor = z.object({
+export const Model = z.object({
 	uuid: Uuid,
 	name: String.optional(),
 	plugin: Id,
@@ -64,7 +64,7 @@ export const Pod = z.object({
 	uuid: Uuid,
 	name: String,
 	plugin: Id,
-	anchor: z.object({
+	model: z.object({
 		uuid: Uuid,
 	}).optional(), // TODO: remove optional
 	groupUuid: Uuid.optional(),
@@ -107,7 +107,7 @@ export const Plugin = z.object({
 // Object: Type
 export type Orb_t = z.infer<typeof Orb>
 export type Link_t = z.infer<typeof Link>
-export type Anchor_t = z.infer<typeof Anchor>
+export type Model_t = z.infer<typeof Model>
 export type Group_t = z.infer<typeof Group>
 export type Pod_t = z.infer<typeof Pod>
 export type PodDir_t = z.infer<typeof PodDir>
@@ -121,8 +121,8 @@ export const SchemaOrbsJson = z.object({
 export const SchemaLinksJson = z.object({
 	links: z.record(Uuid, Link.omit({ uuid: true })),
 })
-export const SchemaAnchorsJson = z.object({
-	anchors: z.record(Uuid, Anchor.omit({ uuid: true })),
+export const SchemaModelsJson = z.object({
+	models: z.record(Uuid, Model.omit({ uuid: true })),
 })
 export const SchemaGroupsJson = z.object({
 	groups: z.record(Uuid, Group.omit({ uuid: true })),
@@ -137,7 +137,7 @@ export const SchemaCoversJson = z.object({
 // JSON File: Type
 export type SchemaOrbsJson_t = z.infer<typeof SchemaOrbsJson>
 export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
-export type SchemaAnchorsJson_t = z.infer<typeof SchemaAnchorsJson>
+export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
 export type SchemaGroupsJson_t = z.infer<typeof SchemaGroupsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
 export type SchemaCoversJson_t = z.infer<typeof SchemaCoversJson>
@@ -166,7 +166,7 @@ export const PluginExportIsomorphic = z.object({
 })
 export const PluginExportClient = z.object({
 	component: z.any(),
-	arrangeElements: z.function().args(Anchor, z.array(Pod), z.array(Orb)).returns(z.array(z.object({ elements: z.unknown() }))),
+	arrangeElements: z.function().args(Model, z.array(Pod), z.array(Orb)).returns(z.array(z.object({ elements: z.unknown() }))),
 	validateNewChild: z.function().args().returns(z.boolean())
 })
 export const PluginExportServer = z.object({})
@@ -228,6 +228,6 @@ export type CytoscapeElementData = {
 } | {
 	id?: string
 	label?: string
-	resource: 'anchor'
-	resourceData: Anchor_t
+	resource: 'model'
+	resourceData: Model_t
 }

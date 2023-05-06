@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Anchor: Create</h2></legend>
+				<legend><h2>Model: Create</h2></legend>
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
@@ -50,7 +50,7 @@ const emit = defineEmits(['cancel', 'submit'])
 
 const plugins = ref<t.Plugin_t[]>([])
 onMounted(async () => {
-	plugins.value = (await api.core.pluginList.query({ kind: 'anchor' })).plugins
+	plugins.value = (await api.core.pluginList.query({ kind: 'model' })).plugins
 })
 
 const form = reactive<{
@@ -62,7 +62,7 @@ const form = reactive<{
 })
 
 async function doSubmit() {
-	await api.core.anchorAdd.mutate(form)
+	await api.core.modelAdd.mutate(form)
 	emit('submit')
 }
 </script>

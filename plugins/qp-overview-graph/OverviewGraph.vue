@@ -30,29 +30,29 @@
 			</div>
 		</div>
 	</div>
-	<AnchorCreateChildPopup
-		:show="boolAnchorCreateChild"
-		:data="dataAnchorCreateChild"
-		@submit="afterAnchorCreateChild"
-		@cancel="() => (boolAnchorCreateChild = false)"
-	/>
-	<AnchorCreatePopup
-		:show="boolAnchorCreate"
-		:data="dataAnchorCreate"
-		@submit="afterAnchorCreate"
-		@cancel="() => (boolAnchorCreate = false)"
-	/>
-	<AnchorEditPropertiesPopup
-		:show="boolAnchorEditProperties"
-		:data="dataAnchorEditProperties"
-		@submit="afterAnchorEditProperties"
-		@cancel="() => (boolAnchorEditProperties = false)"
-	/>
 	<CoverCreatePopup
 		:show="boolCoverCreate"
 		:data="dataCoverCreate"
 		@submit="afterCoverCreate"
 		@cancel="() => (boolCoverCreate = false)"
+	/>
+	<ModelCreateChildPopup
+		:show="boolModelCreateChild"
+		:data="dataModelCreateChild"
+		@submit="afterModelCreateChild"
+		@cancel="() => (boolModelCreateChild = false)"
+	/>
+	<ModelCreatePopup
+		:show="boolModelCreate"
+		:data="dataModelCreate"
+		@submit="afterModelCreate"
+		@cancel="() => (boolModelCreate = false)"
+	/>
+	<ModelEditPropertiesPopup
+		:show="boolModelEditProperties"
+		:data="dataModelEditProperties"
+		@submit="afterModelEditProperties"
+		@cancel="() => (boolModelEditProperties = false)"
 	/>
 	<PodCreatePopup
 		:show="boolPodCreate"
@@ -97,10 +97,10 @@ import { apiObj as api } from '@quasipanacea/common/trpcClient'
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import { PopupComponent } from '@quasipanacea/plugin-components/index'
-import AnchorCreateChildPopup from '@quasipanacea/plugin-components/popups/AnchorCreateChildPopup.vue'
-import AnchorCreatePopup from '@quasipanacea/plugin-components/popups/AnchorCreatePopup.vue'
-import AnchorEditPropertiesPopup from '@quasipanacea/plugin-components/popups/AnchorEditPropertiesPopup.vue'
 import CoverCreatePopup from '@quasipanacea/plugin-components/popups/CoverCreatePopup.vue'
+import ModelCreateChildPopup from '@quasipanacea/plugin-components/popups/ModelCreateChildPopup.vue'
+import ModelCreatePopup from '@quasipanacea/plugin-components/popups/ModelCreatePopup.vue'
+import ModelEditPropertiesPopup from '@quasipanacea/plugin-components/popups/ModelEditPropertiesPopup.vue'
 import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopup.vue'
 import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
 
@@ -155,8 +155,8 @@ onMounted(async () => {
 					},
 				},
 			})
-		} else if (elData.resource === 'anchor') {
-			await api.core.anchorModify.mutate({
+		} else if (elData.resource === 'model') {
+			await api.core.modelModify.mutate({
 				uuid: elData.resourceData.uuid,
 				data: {
 					extras: {
@@ -287,35 +287,35 @@ onMounted(async () => {
 							},
 						]
 					}
-				} else if (elData.resource === 'anchor') {
+				} else if (elData.resource === 'model') {
 					return [
 						{
-							content: 'Anchor: Go To',
+							content: 'Model: Go To',
 							select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								router.push(`/anchor/${data.resourceData.uuid}`)
+								router.push(`/model/${data.resourceData.uuid}`)
 							},
 						},
 						{
-							content: 'Anchor: Edit Properties',
+							content: 'Model: Edit Properties',
 							select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								showAnchorEditPropertiesPopup(data.resourceData)
+								showModelEditPropertiesPopup(data.resourceData)
 							},
 						},
 						{
-							content: 'Anchor: Create Child',
+							content: 'Model: Create Child',
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								const anchorPlugin = await import(
-									'@quasipanacea/anchor-group-simple/_client'
+								const modelPlugin = await import(
+									'@quasipanacea/model-group-simple/_client'
 								)
-								showAnchorCreateChildPopup(
+								showModelCreateChildPopup(
 									data.resourceData,
-									anchorPlugin.validateNewChild,
+									modelPlugin.validateNewChild,
 								)
 							},
 						},
@@ -354,9 +354,9 @@ onMounted(async () => {
 			...ctxMenuDefaults,
 			commands: [
 				{
-					content: 'Create Anchor',
+					content: 'Create Model',
 					select() {
-						showAnchorCreatePopup()
+						showModelCreatePopup()
 					},
 				},
 			],
@@ -371,39 +371,37 @@ async function updateOverview() {
 
 	let elements: cytoscape.ElementDefinition[] = []
 
-	// anchors
-	const { anchors } = await api.core.anchorList.query()
-	for (const anchor of anchors) {
+	// models
+	const { models } = await api.core.modelList.query()
+	for (const model of models) {
 		elements.push({
 			group: 'nodes',
-			classes: 'qp-anchor',
+			classes: 'qp-model',
 			...{
-				position: anchor?.extras?.position && {
-					x: anchor.extras.position.x,
-					y: anchor.extras.position.y,
+				position: model?.extras?.position && {
+					x: model.extras.position.x,
+					y: model.extras.position.y,
 				},
 			},
 			data: {
-				id: anchor.uuid,
-				label: anchor.name,
-				resource: 'anchor',
-				resourceData: anchor,
+				id: model.uuid,
+				label: model.name,
+				resource: 'model',
+				resourceData: model,
 			},
 		})
 
-		// orbs (attached by anchors)
+		// orbs (attached by models)
 		const { orbs } = await api.core.orbList.query({
-			anchor: { uuid: anchor.uuid },
+			model: { uuid: model.uuid },
 		})
 		const { pods } = await api.core.podList.query({
-			anchor: { uuid: anchor.uuid },
+			model: { uuid: model.uuid },
 		})
 
-		const anchorPlugin = await import(
-			'@quasipanacea/anchor-group-simple/_client'
-		)
-		const { elements: newElements } = anchorPlugin.arrangeElements(
-			anchor,
+		const modelPlugin = await import('@quasipanacea/model-group-simple/_client')
+		const { elements: newElements } = modelPlugin.arrangeElements(
+			model,
 			pods,
 			orbs,
 		)
@@ -415,45 +413,6 @@ async function updateOverview() {
 	cy.layout(cyLayout).run()
 }
 
-// popup: anchor create
-const boolAnchorCreate = ref(false)
-const dataAnchorCreate = reactive({ groupUuid: '' })
-function showAnchorCreatePopup() {
-	boolAnchorCreate.value = true
-}
-async function afterAnchorCreate() {
-	boolAnchorCreate.value = false
-	await updateOverview()
-}
-
-// popup: anchor edit properties
-const boolAnchorEditProperties = ref(false)
-const dataAnchorEditProperties = reactive({ uuid: '', oldName: '' })
-function showAnchorEditPropertiesPopup(anchor: t.Anchor_t) {
-	dataAnchorEditProperties.uuid = anchor.uuid
-	dataAnchorEditProperties.oldName = anchor.name || ''
-	boolAnchorEditProperties.value = true
-}
-async function afterAnchorEditProperties() {
-	boolAnchorEditProperties.value = false
-	await updateOverview()
-}
-
-// popup: anchor create child
-const boolAnchorCreateChild = ref(false)
-const dataAnchorCreateChild = reactive({ anchorUuid: '' })
-function showAnchorCreateChildPopup(
-	anchor: t.Anchor_t,
-	validationFn: t.PluginExportClient_t['validateNewChild'],
-) {
-	dataAnchorCreateChild.anchorUuid = anchor.uuid
-	boolAnchorCreateChild.value = true
-}
-async function afterAnchorCreateChild() {
-	boolAnchorCreateChild.value = false
-	await updateOverview()
-}
-
 // popup: cover create
 const boolCoverCreate = ref(false)
 const dataCoverCreate = reactive({ groupUuid: '' })
@@ -463,6 +422,45 @@ function showCoverCreatePopup(uuid: string) {
 }
 async function afterCoverCreate() {
 	boolCoverCreate.value = false
+	await updateOverview()
+}
+
+// popup: model create
+const boolModelCreate = ref(false)
+const dataModelCreate = reactive({ groupUuid: '' })
+function showModelCreatePopup() {
+	boolModelCreate.value = true
+}
+async function afterModelCreate() {
+	boolModelCreate.value = false
+	await updateOverview()
+}
+
+// popup: model edit properties
+const boolModelEditProperties = ref(false)
+const dataModelEditProperties = reactive({ uuid: '', oldName: '' })
+function showModelEditPropertiesPopup(model: t.Model_t) {
+	dataModelEditProperties.uuid = model.uuid
+	dataModelEditProperties.oldName = model.name || ''
+	boolModelEditProperties.value = true
+}
+async function afterModelEditProperties() {
+	boolModelEditProperties.value = false
+	await updateOverview()
+}
+
+// popup: model create child
+const boolModelCreateChild = ref(false)
+const dataModelCreateChild = reactive({ modelUuid: '' })
+function showModelCreateChildPopup(
+	model: t.Model_t,
+	validationFn: t.PluginExportClient_t['validateNewChild'],
+) {
+	dataModelCreateChild.modelUuid = model.uuid
+	boolModelCreateChild.value = true
+}
+async function afterModelCreateChild() {
+	boolModelCreateChild.value = false
 	await updateOverview()
 }
 

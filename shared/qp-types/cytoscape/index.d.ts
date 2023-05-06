@@ -4863,7 +4863,7 @@ declare module 'cytoscape' {
 				 * A rotation angle that is applied to the label.
 				 *  * Rotations are clockwise.
 				 *  * For edges, the special value `autorotate` can be used to align the label to the edge.
-				 *  * For nodes, the label is rotated along its anchor point on the node, so a label margin may help for some usecases.
+				 *  * For nodes, the label is rotated along its model point on the node, so a label margin may help for some usecases.
 				 *  * The special value `none` can be used to denote 0deg.
 				 *  * Rotations works best with left-to-right text.
 				 */

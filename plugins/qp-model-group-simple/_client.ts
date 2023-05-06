@@ -1,10 +1,10 @@
-export * from './_isomorphic.ts'
-export { default as component } from './AnchorGroupSimple.vue'
+export * from './_isomorphic.js'
+export { default as component } from './ModelGroupSimple.vue'
 
 import type * as t from '@quasipanacea/common/types.ts'
 import type cytoscape from 'cytoscape'
 
-export function arrangeElements(anchor: t.Anchor_t, pods: t.Pod_t[], orbs: t.Orb_t[]): { elements: cytoscape.ElementDefinition[] } {
+export function arrangeElements(model: t.Model_t, pods: t.Pod_t[], orbs: t.Orb_t[]): { elements: cytoscape.ElementDefinition[] } {
 	const elements: cytoscape.ElementDefinition[] = []
 
 	// pods
@@ -35,7 +35,7 @@ export function arrangeElements(anchor: t.Anchor_t, pods: t.Pod_t[], orbs: t.Orb
 			data: {
 				id: crypto.randomUUID(),
 				source: pod.uuid,
-				target: pod.anchor.uuid,
+				target: pod.model.uuid,
 			},
 		})
 	}
@@ -68,7 +68,7 @@ export function arrangeElements(anchor: t.Anchor_t, pods: t.Pod_t[], orbs: t.Orb
 			data: {
 				id: crypto.randomUUID(),
 				source: orb.uuid,
-				target: orb.anchor.uuid,
+				target: orb.model.uuid,
 			},
 		})
 	}

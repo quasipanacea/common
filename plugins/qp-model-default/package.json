@@ -1,5 +1,5 @@
 {
-	"name": "@quasipanacea/anchor-group-simple",
+	"name": "@quasipanacea/model-default",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",

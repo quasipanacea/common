@@ -10,7 +10,7 @@ export const defaultTheme = {
 			},
 		},
 		{
-			selector: 'node.qp-anchor',
+			selector: 'node.qp-model',
 			style: {
 				shape: 'rectangle',
 			}
