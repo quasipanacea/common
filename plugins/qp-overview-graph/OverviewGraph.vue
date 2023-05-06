@@ -30,11 +30,11 @@
 			</div>
 		</div>
 	</div>
-	<CoverCreatePopup
-		:show="boolCoverCreate"
-		:data="dataCoverCreate"
-		@submit="afterCoverCreate"
-		@cancel="() => (boolCoverCreate = false)"
+	<ViewCreatePopup
+		:show="boolViewCreate"
+		:data="dataViewCreate"
+		@submit="afterViewCreate"
+		@cancel="() => (boolViewCreate = false)"
 	/>
 	<ModelCreateChildPopup
 		:show="boolModelCreateChild"
@@ -97,7 +97,7 @@ import { apiObj as api } from '@quasipanacea/common/trpcClient'
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import { PopupComponent } from '@quasipanacea/plugin-components/index'
-import CoverCreatePopup from '@quasipanacea/plugin-components/popups/CoverCreatePopup.vue'
+import ViewCreatePopup from '@quasipanacea/plugin-components/popups/ViewCreatePopup.vue'
 import ModelCreateChildPopup from '@quasipanacea/plugin-components/popups/ModelCreateChildPopup.vue'
 import ModelCreatePopup from '@quasipanacea/plugin-components/popups/ModelCreatePopup.vue'
 import ModelEditPropertiesPopup from '@quasipanacea/plugin-components/popups/ModelEditPropertiesPopup.vue'
@@ -413,15 +413,15 @@ async function updateOverview() {
 	cy.layout(cyLayout).run()
 }
 
-// popup: cover create
-const boolCoverCreate = ref(false)
-const dataCoverCreate = reactive({ groupUuid: '' })
-function showCoverCreatePopup(uuid: string) {
-	dataCoverCreate.groupUuid = uuid
-	boolCoverCreate.value = true
+// popup: view create
+const boolViewCreate = ref(false)
+const dataViewCreate = reactive({ groupUuid: '' })
+function showViewCreatePopup(uuid: string) {
+	dataViewCreate.groupUuid = uuid
+	boolViewCreate.value = true
 }
-async function afterCoverCreate() {
-	boolCoverCreate.value = false
+async function afterViewCreate() {
+	boolViewCreate.value = false
 	await updateOverview()
 }
 

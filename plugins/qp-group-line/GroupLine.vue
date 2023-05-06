@@ -1,7 +1,7 @@
 <template>
 	<ul>
-		<li v-for="cover in currentCovers">
-			<router-link :to="'/cover/' + cover.uuid">{{ cover.name }}</router-link>
+		<li v-for="view in currentViews">
+			<router-link :to="'/view/' + view.uuid">{{ view.name }}</router-link>
 		</li>
 	</ul>
 </template>
@@ -13,7 +13,7 @@ import { useRoute } from 'vue-router'
 import type * as t from '@quasipanacea/common/types.js'
 import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
-const currentCovers = ref<null | t.Group_t[]>()
+const currentViews = ref<null | t.Group_t[]>()
 onMounted(async () => {
 	const route = useRoute()
 	function getUuid(): string {
@@ -24,7 +24,7 @@ onMounted(async () => {
 	}
 	const uuid = getUuid()
 
-	const { covers } = await api.core.coverList.query()
-	currentCovers.value = covers.filter((cover) => cover.groupUuid === uuid)
+	const { views } = await api.core.viewList.query()
+	currentViews.value = views.filter((view) => view.groupUuid === uuid)
 })
 </script>

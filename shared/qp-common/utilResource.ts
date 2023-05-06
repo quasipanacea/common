@@ -102,8 +102,8 @@ export function getGroupsDir(): string {
 	return path.join(util.getDataDir(), 'groups')
 }
 
-export function getCoversDir(): string {
-	return path.join(util.getDataDir(), 'covers')
+export function getViewsDir(): string {
+	return path.join(util.getDataDir(), 'views')
 }
 
 // file
@@ -127,8 +127,8 @@ export function getGroupsJsonFile(): string {
 	return path.join(util.getDataDir(), 'groups.json')
 }
 
-export function getCoversJsonFile(): string {
-	return path.join(util.getDataDir(), 'covers.json')
+export function getViewsJsonFile(): string {
+	return path.join(util.getDataDir(), 'views.json')
 }
 
 // dir (instance)
@@ -152,8 +152,8 @@ export function getGroupDir(uuid: string): string {
 	return path.join(getGroupsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
-export function getCoverDir(uuid: string): string {
-	return path.join(getCoversDir(), uuid.slice(0, 2), uuid.slice(2))
+export function getViewDir(uuid: string): string {
+	return path.join(getViewsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
 // json
@@ -257,22 +257,22 @@ export async function getGroupsJson(): Promise<t.SchemaGroupsJson_t> {
 	)
 }
 
-export async function getCoversJson(): Promise<t.SchemaCoversJson_t> {
-	const jsonFile = getCoversJsonFile()
+export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
+	const jsonFile = getViewsJsonFile()
 	let content
 	try {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "covers": {} }'
+			content = '{ "views": {} }'
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err
 		}
 	}
 
-	return util.validateSchema<typeof t.SchemaCoversJson>(
+	return util.validateSchema<typeof t.SchemaViewsJson>(
 		JSON.parse(content),
-		t.SchemaCoversJson,
+		t.SchemaViewsJson,
 	)
 }

@@ -2,7 +2,7 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<form class="pure-form pure-form-aligned">
 			<fieldset>
-				<legend><h2>Cover: Create</h2></legend>
+				<legend><h2>View: Create</h2></legend>
 
 				<div class="pure-control-group">
 					<label for="name">Name</label>
@@ -65,7 +65,7 @@ const emit = defineEmits(['cancel', 'submit'])
 const groupPluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
 	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
-		.filter((item) => item.kind === 'cover')
+		.filter((item) => item.kind === 'view')
 		.map((item) => ({
 			label: item.id,
 			value: item.id,
@@ -86,7 +86,7 @@ watch(props, (val) => {
 })
 
 async function doSubmit() {
-	await api.core.coverAdd.mutate(form)
+	await api.core.viewAdd.mutate(form)
 	emit('submit')
 }
 </script>

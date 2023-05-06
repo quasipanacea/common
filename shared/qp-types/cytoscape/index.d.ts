@@ -4121,10 +4121,10 @@ declare module 'cytoscape' {
 				 * How the background image is fit to the node;
 				 * may be none for original size,
 				 * contain to fit inside node,
-				 * or cover to cover the node.
+				 * or view to view the node.
 				 */
 				'background-fit'?:
-					| PropertyValueNode<'none' | 'contain' | 'cover'>
+					| PropertyValueNode<'none' | 'contain' | 'view'>
 					| undefined
 				/**
 				 * Whether to repeat the background image;

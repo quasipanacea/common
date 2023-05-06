@@ -15,8 +15,8 @@ import * as ModelGroupSimple from '@quasipanacea/model-group-simple/_client.ts'
 
 import * as GroupLine from '@quasipanacea/group-line/_client.js'
 
-import * as CoverList from '@quasipanacea/cover-list/_client.js'
-import * as CoverMarkmap from '@quasipanacea/cover-markmap/_client.js'
+import * as ViewList from '@quasipanacea/view-list/_client.js'
+import * as ViewMarkmap from '@quasipanacea/view-markmap/_client.js'
 
 export * from './_isomorphic.ts'
 
@@ -40,4 +40,4 @@ export const modelPlugins = [ModelDefault, ModelGroupSimple]
 
 export const groupPlugins = [GroupLine]
 
-export const coverPlugins = [CoverList, CoverMarkmap]
+export const viewPlugins = [ViewList, ViewMarkmap]

@@ -91,7 +91,7 @@ export const PodDir = z.intersection(
 	}),
 )
 
-export const Cover = z.object({
+export const View = z.object({
 	uuid: Uuid,
 	name: String,
 	plugin: Id,
@@ -111,7 +111,7 @@ export type Model_t = z.infer<typeof Model>
 export type Group_t = z.infer<typeof Group>
 export type Pod_t = z.infer<typeof Pod>
 export type PodDir_t = z.infer<typeof PodDir>
-export type Cover_t = z.infer<typeof Cover>
+export type View_t = z.infer<typeof View>
 export type Plugin_t = z.infer<typeof Plugin>
 
 // JSON File: Zod Schema
@@ -130,8 +130,8 @@ export const SchemaGroupsJson = z.object({
 export const SchemaPodsJson = z.object({
 	pods: z.record(Uuid, Pod.omit({ uuid: true })),
 })
-export const SchemaCoversJson = z.object({
-	covers: z.record(Uuid, Cover.omit({ uuid: true })),
+export const SchemaViewsJson = z.object({
+	views: z.record(Uuid, View.omit({ uuid: true })),
 })
 
 // JSON File: Type
@@ -140,7 +140,7 @@ export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
 export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
 export type SchemaGroupsJson_t = z.infer<typeof SchemaGroupsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
-export type SchemaCoversJson_t = z.infer<typeof SchemaCoversJson>
+export type SchemaViewsJson_t = z.infer<typeof SchemaViewsJson>
 
 // Module
 export type MakeState<State extends Record<string, unknown>> = (

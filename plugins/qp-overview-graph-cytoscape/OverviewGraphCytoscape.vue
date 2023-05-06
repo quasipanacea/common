@@ -43,11 +43,11 @@
 		@submit="afterRenamePod"
 		@cancel="() => (boolRenamePod = false)"
 	/>
-	<CoverCreatePopup
-		:show="boolCreateCover"
-		:data="dataCreateCover"
-		@submit="afterCreateCover"
-		@cancel="() => (boolCreateCover = false)"
+	<ViewCreatePopup
+		:show="boolCreateView"
+		:data="dataCreateView"
+		@submit="afterCreateView"
+		@cancel="() => (boolCreateView = false)"
 	/>
 	<GroupCreatePopup
 		:show="boolGroupCreate"
@@ -94,7 +94,7 @@ import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopu
 import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
 import GroupCreatePopup from '@quasipanacea/plugin-components/popups/GroupCreatePopup.vue'
 import GroupRenamePopup from '@quasipanacea/plugin-components/popups/GroupRenamePopup.vue'
-import CoverCreatePopup from '@quasipanacea/plugin-components/popups/CoverCreatePopup.vue'
+import ViewCreatePopup from '@quasipanacea/plugin-components/popups/ViewCreatePopup.vue'
 
 const router = useRouter()
 
@@ -269,11 +269,11 @@ onMounted(async () => {
 							},
 						},
 						{
-							content: 'Add Cover',
+							content: 'Add View',
 							select(el) {
 								const json = el.json()
 
-								showCreateCoverPopup(json.data.my.groupUuid)
+								showCreateViewPopup(json.data.my.groupUuid)
 							},
 						},
 						{
@@ -474,15 +474,15 @@ async function updateGroups() {
 	cy.layout(cyLayout).run()
 }
 
-// popup: create cover
-const boolCreateCover = ref(false)
-const dataCreateCover = reactive({ groupUuid: '' })
-function showCreateCoverPopup(uuid: string) {
-	dataCreateCover.groupUuid = uuid
-	boolCreateCover.value = true
+// popup: create view
+const boolCreateView = ref(false)
+const dataCreateView = reactive({ groupUuid: '' })
+function showCreateViewPopup(uuid: string) {
+	dataCreateView.groupUuid = uuid
+	boolCreateView.value = true
 }
-async function afterCreateCover(value: unknown) {
-	boolCreateCover.value = false
+async function afterCreateView(value: unknown) {
+	boolCreateView.value = false
 	await updateGroups()
 }
 

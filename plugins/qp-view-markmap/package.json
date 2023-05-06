@@ -1,9 +1,13 @@
 {
-	"name": "@quasipanacea/cover-list",
+	"name": "@quasipanacea/view-markmap",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",
-		"@quasipanacea/plugin-utility": "workspace:*"
+		"@quasipanacea/plugin-utility": "workspace:*",
+		"markmap-common": "^0.14.2",
+		"markmap-lib": "^0.14.4",
+		"markmap-toolbar": "^0.14.4",
+		"markmap-view": "^0.14.4"
 	},
 	"devDependencies": {
 		"vue": "^3.2.47",

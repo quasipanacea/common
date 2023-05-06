@@ -472,17 +472,17 @@ export const coreRouter = trpc.router({
 			return { groups }
 		}),
 
-	coverAdd: trpc.procedure
-		.input(t.Cover.omit({ uuid: true }))
+	viewAdd: trpc.procedure
+		.input(t.View.omit({ uuid: true }))
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = crypto.randomUUID()
-			const rDir = utilResource.getCoverDir(uuid)
-			const rJsonFile = utilResource.getCoversJsonFile()
-			const rJson = await utilResource.getCoversJson()
+			const rDir = utilResource.getViewDir(uuid)
+			const rJsonFile = utilResource.getViewsJsonFile()
+			const rJson = await utilResource.getViewsJson()
 
 			// work
-			rJson.covers[uuid] = {
+			rJson.views[uuid] = {
 				name: input.name,
 				plugin: input.plugin,
 				groupUuid: input.groupUuid,
@@ -496,42 +496,42 @@ export const coreRouter = trpc.router({
 				uuid,
 			}
 		}),
-	coverRemove: trpc.procedure
+	viewRemove: trpc.procedure
 		.input(z.object({ uuid: t.Uuid }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const rDir = utilResource.getCoverDir(input.uuid)
-			const rJsonFile = utilResource.getCoversJsonFile()
-			const rJson = await utilResource.getCoversJson()
+			const rDir = utilResource.getViewDir(input.uuid)
+			const rJsonFile = utilResource.getViewsJsonFile()
+			const rJson = await utilResource.getViewsJson()
 
 			// hook
 
 			// work
 			await Deno.remove(rDir, { recursive: true })
-			if (rJson.covers[input.uuid]) {
-				delete rJson.covers[input.uuid]
+			if (rJson.views[input.uuid]) {
+				delete rJson.views[input.uuid]
 			}
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 		}),
-	coverModify: trpc.procedure
+	viewModify: trpc.procedure
 		.input(
 			z.object({
 				uuid: t.Uuid,
-				data: t.Cover.omit({ uuid: true }).partial(),
+				data: t.View.omit({ uuid: true }).partial(),
 			}),
 		)
-		.output(t.Cover)
+		.output(t.View)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.Cover_t>(
+			const r = await utilResource.resourceModify<t.View_t>(
 				input,
-				utilResource.getCoversJsonFile(),
-				utilResource.getCoversJson,
-				'covers',
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
 			)
 
 			return r
 		}),
-	coverRename: trpc.procedure
+	viewRename: trpc.procedure
 		.input(
 			z.object({
 				uuid: t.Uuid,
@@ -540,31 +540,31 @@ export const coreRouter = trpc.router({
 		)
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const rJsonFile = utilResource.getCoversJsonFile()
-			const rJson = await utilResource.getCoversJson()
+			const rJsonFile = utilResource.getViewsJsonFile()
+			const rJson = await utilResource.getViewsJson()
 
-			rJson.covers[input.uuid].name = input.newName
+			rJson.views[input.uuid].name = input.newName
 			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 		}),
-	coverList: trpc.procedure
+	viewList: trpc.procedure
 		.input(z.void())
 		.output(
 			z.object({
-				covers: z.array(t.Cover),
+				views: z.array(t.View),
 			}),
 		)
 		.query(async () => {
-			const rJson = await utilResource.getCoversJson()
+			const rJson = await utilResource.getViewsJson()
 
 			// work
-			const covers: t.Cover_t[] = []
-			for (const [uuid, obj] of Object.entries(rJson.covers)) {
-				covers.push({
+			const views: t.View_t[] = []
+			for (const [uuid, obj] of Object.entries(rJson.views)) {
+				views.push({
 					uuid,
 					...obj,
 				})
 			}
-			return { covers }
+			return { views }
 		}),
 
 	pluginList: trpc.procedure
