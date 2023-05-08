@@ -3,15 +3,12 @@
 		:open="show"
 		class="dialog"
 		style="
-			--space: 250px;
 			position: fixed;
-			top: var(--space);
-			left: var(--space);
-			width: calc(100% - (2 * var(--space)));
-			height: calc(100% - (2 * var(--space)));
-			padding: 10px;
-			border-radius: 5px;
-			/* background-color: var(--oc-gray-1); */
+			top: 8vh;
+			width: 80vw;
+			height: 80vh;
+			z-index: 1000;
+			padding: 0;
 			box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1),
 				0px 10px 15px -3px rgba(0, 0, 0, 0.1),
 				0px 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -19,23 +16,24 @@
 	>
 		<div
 			style="
-				position: absolute;
-				top: -50px;
-				left: 0;
-				box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1),
-					0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+				height: 100%;
+				margin: 0;
+				display: grid;
+				grid-template-rows: auto 1fr;
 			"
 		>
-			<button class="pure-button pure-button-primary" @click="$emit('cancel')">
-				Close
-			</button>
+			<div style="margin: 0; padding: 5px; border-bottom: 3px solid black">
+				<button class="button is-black" @click="$emit('cancel')">Close</button>
+			</div>
+			<div style="padding: 16px; margin: 0; overflow: auto">
+				<slot />
+			</div>
 		</div>
-		<slot />
 	</dialog>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
 	show: boolean
 }>()
 defineEmits(['cancel'])

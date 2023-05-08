@@ -27,7 +27,7 @@
 					<input
 						id="group-uuid"
 						type="text"
-						v-model="form.groupUuid"
+						v-model="form.model.uuid"
 						required
 						disabled
 					/>
@@ -57,7 +57,7 @@ import PopupComponent from '../PopupComponent.vue'
 const props = defineProps<{
 	show: boolean
 	data: {
-		groupUuid: string
+		modelUuid: string
 	}
 }>()
 const emit = defineEmits(['cancel', 'submit'])
@@ -75,15 +75,19 @@ const form = reactive<{
 	name: string
 	type: string
 	plugin: string
-	groupUuid: string
+	model: {
+		uuid: string
+	}
 }>({
 	name: '',
 	type: 'node',
 	plugin: '',
-	groupUuid: '',
+	model: {
+		uuid: '',
+	},
 })
 watch(props, (val) => {
-	form.groupUuid = val.data.groupUuid
+	form.model.uuid = val.data.modelUuid
 })
 
 async function doSubmit() {

@@ -1,12 +1,12 @@
 <template>
-	<GoldenLayoutVue :layoutConfig="goldenLayoutConfig">
-		<template #ComponentA>
+	<SemanticInputOutput>
+		<template #input>
 			<CodeMirror :content="inputCode" @contentUpdate="codeUpdate" />
 		</template>
-		<template #ComponentB>
+		<template #output>
 			<div class="markdown-body" v-html="outputHtml"></div>
 		</template>
-	</GoldenLayoutVue>
+	</SemanticInputOutput>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +16,7 @@ import { useRoute } from 'vue-router'
 import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
 import 'katex/dist/katex.min.css'
 
+import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
 import GoldenLayoutVue, {
 	type CustomLayoutConfig,
 } from '@quasipanacea/plugin-components/GoldenLayoutVue.vue'

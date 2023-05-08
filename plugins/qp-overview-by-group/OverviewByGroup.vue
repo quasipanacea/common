@@ -105,9 +105,9 @@ async function deleteGroup(uuid: string) {
 
 // popup: create pod
 const boolCreatePod = ref(false)
-const dataCreatePod = reactive({ groupUuid: '' })
+const dataCreatePod = reactive({ modelUuid: '' })
 function showPodCreatePopup(uuid: string) {
-	dataCreatePod.groupUuid = uuid
+	dataCreatePod.modelUuid = uuid
 	boolCreatePod.value = true
 }
 async function afterCreatePod(value: unknown) {

@@ -11,17 +11,22 @@ export const Orb = z.object({
 	model: z.object({
 		uuid: Uuid,
 	}),
-	pod: z.optional(z.object({
-		uuid: Uuid
-	})),
-	extras: z.optional(z.object({
-		position: z.optional(z.object({
-			x: z.number(),
-			y: z.number(),
-		}))
-	}))
+	pod: z
+		.object({
+			uuid: Uuid,
+		})
+		.optional(),
+	extra: z
+		.object({
+			position: z
+				.object({
+					x: z.number(),
+					y: z.number(),
+				})
+				.optional(),
+		})
+		.optional(),
 })
-
 export const Link = z.object({
 	uuid: Uuid,
 	name: String.optional(),
@@ -32,72 +37,56 @@ export const Link = z.object({
 	target: z.object({
 		resource: String,
 		uuid: Uuid,
-	})
+	}),
+	extra: z.object({}).optional(),
 })
-
 export const Model = z.object({
 	uuid: Uuid,
 	name: String.optional(),
 	plugin: Id,
-	extras: z.optional(z.object({
-		position: z.optional(z.object({
-			x: z.number(),
-			y: z.number(),
-		}))
-	}))
-})
-
-export const Group = z.object({
-	uuid: Uuid,
-	name: String,
-	plugin: Id,
-	datas: z
+	extra: z
 		.object({
-			common: z.any(),
+			position: z
+				.object({
+					x: z.number(),
+					y: z.number(),
+				})
+				.optional(),
 		})
-		.passthrough()
 		.optional(),
 })
-
 export const Pod = z.object({
-	type: z.enum(['node', 'edge']).optional(),
 	uuid: Uuid,
 	name: String,
 	plugin: Id,
 	model: z.object({
 		uuid: Uuid,
-	}).optional(), // TODO: remove optional
-	groupUuid: Uuid.optional(),
-	sourceUuid: Uuid.optional(),
-	targetUuid: Uuid.optional(),
-	extras: z.optional(z.object({
-		position: z.optional(z.object({
-			x: z.number(),
-			y: z.number(),
-		}))
-	})),
-	datas: z
+	}),
+	extra: z
 		.object({
-			common: z.any(),
+			position: z
+				.object({
+					x: z.number(),
+					y: z.number(),
+				})
+				.optional(),
 		})
-		.passthrough()
 		.optional(),
 })
-
 export const PodDir = z.intersection(
 	Pod,
 	z.object({
 		dir: String,
 	}),
 )
-
 export const View = z.object({
 	uuid: Uuid,
 	name: String,
 	plugin: Id,
-	groupUuid: Uuid,
+	model: z.object({
+		uuid: Uuid,
+	}),
 })
-
 export const Plugin = z.object({
 	id: Id,
 	kind: String,
@@ -108,7 +97,6 @@ export const Plugin = z.object({
 export type Orb_t = z.infer<typeof Orb>
 export type Link_t = z.infer<typeof Link>
 export type Model_t = z.infer<typeof Model>
-export type Group_t = z.infer<typeof Group>
 export type Pod_t = z.infer<typeof Pod>
 export type PodDir_t = z.infer<typeof PodDir>
 export type View_t = z.infer<typeof View>
@@ -124,9 +112,6 @@ export const SchemaLinksJson = z.object({
 export const SchemaModelsJson = z.object({
 	models: z.record(Uuid, Model.omit({ uuid: true })),
 })
-export const SchemaGroupsJson = z.object({
-	groups: z.record(Uuid, Group.omit({ uuid: true })),
-})
 export const SchemaPodsJson = z.object({
 	pods: z.record(Uuid, Pod.omit({ uuid: true })),
 })
@@ -138,7 +123,6 @@ export const SchemaViewsJson = z.object({
 export type SchemaOrbsJson_t = z.infer<typeof SchemaOrbsJson>
 export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
 export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
-export type SchemaGroupsJson_t = z.infer<typeof SchemaGroupsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
 export type SchemaViewsJson_t = z.infer<typeof SchemaViewsJson>
 
@@ -166,8 +150,11 @@ export const PluginExportIsomorphic = z.object({
 })
 export const PluginExportClient = z.object({
 	component: z.any(),
-	arrangeElements: z.function().args(Model, z.array(Pod), z.array(Orb)).returns(z.array(z.object({ elements: z.unknown() }))),
-	validateNewChild: z.function().args().returns(z.boolean())
+	arrangeElements: z
+		.function()
+		.args(Model, z.array(Pod), z.array(Orb))
+		.returns(z.array(z.object({ elements: z.unknown() }))),
+	validateNewChild: z.function().args().returns(z.boolean()),
 })
 export const PluginExportServer = z.object({})
 
@@ -210,24 +197,28 @@ export type CytoscapeElementJson = {
 	selected: boolean
 }
 
-export type CytoscapeElementData = {
-	id?: string
-	label?: string
-	resource: 'orb'
-	resourceData: Orb_t
-} | {
-	id?: string
-	label?: string
-	resource: 'link'
-	resourceData: Link_t
-} | {
-	id?: string
-	label?: string
-	resource: 'pod',
-	resourceData: Pod_t
-} | {
-	id?: string
-	label?: string
-	resource: 'model'
-	resourceData: Model_t
-}
+export type CytoscapeElementData =
+	| {
+			id?: string
+			label?: string
+			resource: 'orb'
+			resourceData: Orb_t
+	  }
+	| {
+			id?: string
+			label?: string
+			resource: 'link'
+			resourceData: Link_t
+	  }
+	| {
+			id?: string
+			label?: string
+			resource: 'pod'
+			resourceData: Pod_t
+	  }
+	| {
+			id?: string
+			label?: string
+			resource: 'model'
+			resourceData: Model_t
+	  }

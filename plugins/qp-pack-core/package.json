@@ -10,7 +10,6 @@
 		"@quasipanacea/overview-by-group": "workspace:*",
 		"@quasipanacea/overview-debug": "workspace:*",
 		"@quasipanacea/overview-graph": "workspace:*",
-		"@quasipanacea/overview-graph-cytoscape": "workspace:*",
 		"@quasipanacea/overview-mindelixir": "workspace:*",
 		"@quasipanacea/pod-chemical": "workspace:*",
 		"@quasipanacea/pod-debug": "workspace:*",

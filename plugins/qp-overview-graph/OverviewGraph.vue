@@ -135,7 +135,7 @@ onMounted(async () => {
 			await api.core.orbModify.mutate({
 				uuid: elData.resourceData.uuid,
 				data: {
-					extras: {
+					extra: {
 						position: {
 							x: elJson.position.x,
 							y: elJson.position.y,
@@ -147,7 +147,7 @@ onMounted(async () => {
 			await api.core.podModify.mutate({
 				uuid: elData.resourceData.uuid,
 				data: {
-					extras: {
+					extra: {
 						position: {
 							x: elJson.position.x,
 							y: elJson.position.y,
@@ -159,7 +159,7 @@ onMounted(async () => {
 			await api.core.modelModify.mutate({
 				uuid: elData.resourceData.uuid,
 				data: {
-					extras: {
+					extra: {
 						position: {
 							x: elJson.position.x,
 							y: elJson.position.y,
@@ -287,10 +287,21 @@ onMounted(async () => {
 							},
 						]
 					}
+				} else if (elData.resource === 'pod') {
+					return [
+						{
+							content: 'Go To',
+							select(el) {
+								const data = el.data() as t.CytoscapeElementData
+
+								router.push(`/pod/${data.resourceData.uuid}`)
+							},
+						},
+					]
 				} else if (elData.resource === 'model') {
 					return [
 						{
-							content: 'Model: Go To',
+							content: 'Go To',
 							select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
@@ -298,7 +309,7 @@ onMounted(async () => {
 							},
 						},
 						{
-							content: 'Model: Edit Properties',
+							content: 'Edit Properties',
 							select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
@@ -306,7 +317,7 @@ onMounted(async () => {
 							},
 						},
 						{
-							content: 'Model: Create Child',
+							content: 'Create Child',
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
@@ -378,9 +389,9 @@ async function updateOverview() {
 			group: 'nodes',
 			classes: 'qp-model',
 			...{
-				position: model?.extras?.position && {
-					x: model.extras.position.x,
-					y: model.extras.position.y,
+				position: model?.extra?.position && {
+					x: model.extra.position.x,
+					y: model.extra.position.y,
 				},
 			},
 			data: {
@@ -466,9 +477,9 @@ async function afterModelCreateChild() {
 
 // popup: pod create
 const boolPodCreate = ref(false)
-const dataPodCreate = reactive({ groupUuid: '' })
+const dataPodCreate = reactive({ modelUuid: '' })
 function showPodCreatePopup(uuid: string) {
-	dataPodCreate.groupUuid = uuid
+	dataPodCreate.modelUuid = uuid
 	boolPodCreate.value = true
 }
 async function afterPodCreate() {

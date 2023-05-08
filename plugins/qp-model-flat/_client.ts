@@ -1,5 +1,5 @@
 export * from './_isomorphic.js'
-export { default as component } from './ModelGroupSimple.vue'
+export { default as component } from './ModelFlat.vue'
 
 import type * as t from '@quasipanacea/common/types.ts'
 import type cytoscape from 'cytoscape'

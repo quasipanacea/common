@@ -29,10 +29,8 @@ export const oakRouter = new Router().get('/get-pdf/:podId', async (ctx) => {
 	const pod = await util.getPod(podId)
 
 	const pdfFile = path.join(pod.dir, 'main.pdf')
-	console.log(pdfFile)
-
 	await send(ctx, pdfFile.slice('/home/edwin'.length), {
-		root: '/home/edwin',
+		root: '/home/edwin', // TODO
 	})
 })
 
@@ -70,23 +68,32 @@ export const trpcRouter = trpc.router({
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content)
 
-			const p = await Deno.run({
-				stdout: 'piped',
-				stderr: 'piped',
-				cwd: (ctx as any).pod.dir,
-				cmd: ['pdflatex', ctx.state.latexFile, ctx.state.pdfFile],
-			})
-			const [status, stdout, stderr] = await Promise.all([
-				p.status(),
-				p.output(),
-				p.stderrOutput(),
-			])
-			p.close()
-			console.info(
-				status,
-				new TextDecoder().decode(stdout),
-				new TextDecoder().decode(stderr),
+			await convertLatexToPdf(
+				ctx.pod.dir,
+				ctx.state.latexFile,
+				ctx.state.pdfFile,
 			)
-			console.info('----- DONE')
 		}),
 })
+
+async function convertLatexToPdf(
+	podDir: string,
+	latexFile: string,
+	pdfFile: string,
+) {
+	console.log('converting', podDir, latexFile, pdfFile)
+
+	const command = new Deno.Command('pdflatex', {
+		args: [latexFile, pdfFile],
+		cwd: podDir,
+		stdout: 'piped',
+		stderr: 'piped',
+	})
+	const { code, stdout, stderr } = await command.output()
+	console.info(
+		code,
+		new TextDecoder().decode(stdout),
+		new TextDecoder().decode(stderr),
+	)
+	console.info('----- DONE')
+}

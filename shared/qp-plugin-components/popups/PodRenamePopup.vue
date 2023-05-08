@@ -43,9 +43,11 @@ const form = reactive<{
 })
 
 async function doSubmit() {
-	await api.core.podRename.mutate({
+	await api.core.podModify.mutate({
 		uuid: props.podUuid,
-		newName: form.newName,
+		data: {
+			name: form.newName,
+		},
 	})
 	emit('submit')
 }
