@@ -97,12 +97,14 @@ import { apiObj as api } from '@quasipanacea/common/trpcClient'
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import { PopupComponent } from '@quasipanacea/plugin-components/index'
-import ViewCreatePopup from '@quasipanacea/plugin-components/popups/ViewCreatePopup.vue'
-import ModelCreateChildPopup from '@quasipanacea/plugin-components/popups/ModelCreateChildPopup.vue'
-import ModelCreatePopup from '@quasipanacea/plugin-components/popups/ModelCreatePopup.vue'
-import ModelEditPropertiesPopup from '@quasipanacea/plugin-components/popups/ModelEditPropertiesPopup.vue'
-import PodCreatePopup from '@quasipanacea/plugin-components/popups/PodCreatePopup.vue'
-import PodRenamePopup from '@quasipanacea/plugin-components/popups/PodRenamePopup.vue'
+import {
+	ViewCreatePopup,
+	ModelCreateChildPopup,
+	ModelCreatePopup,
+	ModelEditPropertiesPopup,
+	PodCreatePopup,
+	PodRenamePopup,
+} from '@quasipanacea/plugin-components/popups/index.js'
 
 const router = useRouter()
 

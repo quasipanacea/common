@@ -1,10 +1,10 @@
 <template>
 	<div>
+		<h1 class="title" style="margin-block-end: 0">{{ model?.name }}</h1>
 		<button class="button" @click="router.back()">Back</button>
-		<h1 class="title">{{ model?.name }}</h1>
 		<button class="button" @click="showPodCreatePopup">New</button>
 
-		<h2 class="subtitle is-4">Pods</h2>
+		<h2 class="subtitle">Pods</h2>
 		<div v-for="pod of pods" :key="pod.uuid">
 			<div class="card" style="width: 300px">
 				<div class="card-content">
