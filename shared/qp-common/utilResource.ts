@@ -62,6 +62,42 @@ export async function resourceModify<Resource_t>(
 	}
 }
 
+export async function resourceModifyExtra<Resource_t>(
+	input: {
+		uuid: string
+		field: string
+		data: Record<string, unknown>
+	},
+	rJsonFile: string,
+	rJsonFn: () => Promise<Record<string, any>>,
+	key: string,
+): Promise<Resource_t> {
+	const rJson = await rJsonFn()
+
+	if (!(input.uuid in rJson[key])) {
+		throw new Error(`Failed to find uuid ${input.uuid}`)
+	}
+
+	if (!('extra' in rJson[key][input.uuid])) {
+		rJson[key][input.uuid].extra = {}
+	}
+
+	if (!(input.field in rJson[key][input.uuid].extra)) {
+		rJson[key][input.uuid].extra[input.field] = {}
+	}
+
+	rJson[key][input.uuid].extra[input.field] = {
+		...rJson[key][input.uuid].extra[input.field],
+		...input.data,
+	}
+	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+
+	return {
+		...rJson[key][input.uuid],
+		uuid: input.uuid,
+	}
+}
+
 export async function resourceList<Resource_t>(
 	rJsonFn: () => Promise<Record<string, any>>,
 	key: string,

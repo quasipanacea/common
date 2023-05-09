@@ -15,18 +15,39 @@
 						</div>
 					</div>
 					<div class="content">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-						nec iaculis mauris. <a>@bulmaio</a>. <a href="#">#css</a>
-						<a href="#">#responsive</a>
-						<br />
-						<time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+						<template v-if="pod.extra?.['model.flat']?.description">
+							{{ pod.extra?.['model.flat']?.description }}
+						</template>
+						<template v-else>
+							<em>No description</em>
+						</template>
+						<div class="tags">
+							<span
+								v-for="tag of pod.extra?.['model.flat']?.tags"
+								class="tag"
+								:key="tag"
+							>
+								{{ tag }}
+							</span>
+						</div>
 					</div>
 				</div>
 				<footer class="card-footer">
 					<router-link :to="'/pod/' + pod.uuid" class="card-footer-item">
 						View
 					</router-link>
-					<a class="card-footer-item" @click="podEditMetaData">Edit Metadata</a>
+					<a
+						class="card-footer-item"
+						@click="
+							podEditMetaData(
+								pod.uuid,
+								pod.name,
+								pod.extra?.['model.flat']?.description,
+								pod.extra?.['model.flat']?.tags,
+							)
+						"
+						>Edit Metadata</a
+					>
 				</footer>
 			</div>
 		</div>
@@ -66,6 +87,10 @@ const pods = ref<t.Pod_t[]>([])
 const orbs = ref<t.Orb_t[]>([])
 
 onMounted(async () => {
+	await updateView()
+})
+
+async function updateView() {
 	const { models: modelsRes } = await api.core.modelList.query({
 		uuid: props.uuid,
 	})
@@ -83,7 +108,7 @@ onMounted(async () => {
 	model.value = modelsRes[0]
 	pods.value = podsRes
 	orbs.value = orbsRes
-})
+}
 
 // popup: pod create
 const boolPodCreate = ref(false)
@@ -98,17 +123,31 @@ async function afterPodCreate() {
 
 // popup: pod edit metadata
 const boolPodEditMetadata = ref(false)
-const dataPodEditMetadata = reactive({
+const dataPodEditMetadata = reactive<{
+	uuid: string
+	name: string
+	description: string
+	tags: string[]
+}>({
 	uuid: '',
 	name: '',
+	description: '',
+	tags: [],
 })
-function podEditMetaData() {
-	dataPodEditMetadata.uuid = model.value?.uuid
-	dataPodEditMetadata.name = model.value?.name
+function podEditMetaData(
+	uuid: string,
+	name: string,
+	description: string,
+	tags: string[],
+) {
+	dataPodEditMetadata.uuid = uuid ?? ''
+	dataPodEditMetadata.name = name ?? ''
+	dataPodEditMetadata.description = description ?? ''
+	dataPodEditMetadata.tags = tags ?? []
 	boolPodEditMetadata.value = true
 }
 async function afterPodEditMetadata() {
-	console.log('close')
 	boolPodEditMetadata.value = false
+	await updateView()
 }
 </script>

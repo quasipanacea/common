@@ -286,14 +286,35 @@ export const coreRouter = trpc.router({
 
 			return r
 		}),
+	podModifyExtra: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				field: t.String,
+				data: z.record(t.String, z.unknown()),
+			}),
+		)
+		.output(t.Pod)
+		.mutation(async ({ ctx, input }) => {
+			const r = await utilResource.resourceModifyExtra<t.Pod_t>(
+				input,
+				utilResource.getPodsJsonFile(),
+				utilResource.getPodsJson,
+				'pods',
+			)
+
+			return r
+		}),
 	podList: trpc.procedure
 		.input(
 			z
 				.object({
+					uuid: t.Uuid,
 					model: z.object({
 						uuid: t.Uuid,
 					}),
 				})
+				.deepPartial()
 				.optional(),
 		)
 		.output(
@@ -310,6 +331,10 @@ export const coreRouter = trpc.router({
 					uuid,
 					...obj,
 				})
+			}
+
+			if (input?.uuid) {
+				pods = pods.filter((p) => p.uuid === input.uuid)
 			}
 
 			if (input?.model?.uuid) {

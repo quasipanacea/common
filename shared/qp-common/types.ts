@@ -70,6 +70,12 @@ export const Pod = z.object({
 					y: z.number(),
 				})
 				.optional(),
+			'model.flat': z // TODO
+				.object({
+					description: z.string(),
+					tags: z.array(String),
+				})
+				.optional(),
 		})
 		.optional(),
 })
