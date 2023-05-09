@@ -1,4 +1,3 @@
-import * as OverviewByGroup from '@quasipanacea/overview-by-group/_client.js'
 import * as OverviewDebug from '@quasipanacea/overview-debug/_client.js'
 import * as OverviewGraph from '@quasipanacea/overview-graph/_client.js'
 import * as OverviewMindelixir from '@quasipanacea/overview-mindelixir/_client.js'
@@ -21,7 +20,6 @@ import * as ViewMarkmap from '@quasipanacea/view-markmap/_client.js'
 export * from './_isomorphic.ts'
 
 export const overviewPlugins = [
-	OverviewByGroup,
 	OverviewDebug,
 	OverviewGraph,
 	OverviewMindelixir,

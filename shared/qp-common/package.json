@@ -4,14 +4,14 @@
 		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
 		"@quasipanacea/types": "workspace:^",
-		"@trpc/client": "^10.11.0",
-		"@trpc/server": "^10.11.0",
+		"@trpc/client": "^10.18.0",
+		"@trpc/server": "^10.18.0",
 		"mind-elixir": "^1.2.0"
 	},
 	"devDependencies": {
-		"zod": "^3.21.4"
+		"zod": "^3.19.1"
 	},
 	"peerDependencies": {
-		"zod": "^3.21.4"
+		"zod": "^3.19.1"
 	}
 }
