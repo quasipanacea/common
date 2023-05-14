@@ -319,11 +319,17 @@ onMounted(async () => {
 
 								const modelPlugin = await import(
 									'@quasipanacea/model-group-simple/_client'
-								)
+								) // TODO
 								showModelCreateChildPopup(
 									data.resourceData,
 									modelPlugin.validateNewChild,
 								)
+							},
+						},
+						{
+							content: 'Create Child NEW',
+							async select(el) {
+								const data = el.data() as t.CytoscapeElementData
 							},
 						},
 					]
@@ -422,7 +428,7 @@ async function updateOverview() {
 
 // popup: model create
 const boolModelCreate = ref(false)
-const dataModelCreate = reactive({ groupUuid: '' })
+const dataModelCreate = reactive({})
 function showModelCreatePopup() {
 	boolModelCreate.value = true
 }

@@ -33,7 +33,7 @@
 		</div>
 
 		<div class="field">
-			<label class="label" for="group-uuid">Group UUID</label>
+			<label class="label" for="group-uuid">Model UUID</label>
 			<div class="control">
 				<input
 					class="input"
