@@ -1,7 +1,7 @@
 <template>
 	<SemanticInputOutput>
 		<template #input>
-			<CodeMirror :content="inputCode" @contentUpdate="codeUpdate" />
+			<CodeMirror :content="inputCode" @contentUpdate="markdownWrite" />
 		</template>
 		<template #output>
 			<div class="markdown-body" v-html="outputHtml"></div>
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
@@ -69,16 +69,25 @@ const goldenLayoutConfig: CustomLayoutConfig = {
 }
 
 onMounted(async () => {
+	await markdownRead()
+
+	const n = setInterval(async () => {
+		await markdownRead()
+	}, 5000)
+	onUnmounted(() => {
+		clearTimeout(n)
+	})
+})
+
+async function markdownRead(): Promise<void> {
 	const result = await api.plugins.pods.markdown.read.query({
 		uuid: uuid,
 	})
 	inputCode.value = result.content
-
 	outputHtml.value = await convert.markdownToHtml(inputCode.value)
-})
+}
 
-//
-async function codeUpdate(text: string): Promise<void> {
+async function markdownWrite(text: string): Promise<void> {
 	if (text) {
 		await api.plugins.pods.markdown.write.mutate({
 			uuid: uuid,

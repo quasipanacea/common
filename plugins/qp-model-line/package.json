@@ -1,5 +1,5 @@
 {
-	"name": "@quasipanacea/group-line",
+	"name": "@quasipanacea/model-line",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",

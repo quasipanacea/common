@@ -2,37 +2,45 @@
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
 		<h2 class="title is-4">Model: Create Child</h2>
 
-		<div class="control">
+		<div class="field">
 			<label class="label">Name</label>
-			<input class="input" type="text" v-model="form.name" />
+			<div class="control">
+				<input class="input" type="text" v-model="form.name" />
+			</div>
 		</div>
 
-		<div class="control">
+		<div class="field">
 			<label class="label">Type</label>
-			<div class="select">
-				<select v-model="form.childType">
-					<option v-for="value of childTypes" :id="value">
-						{{ value }}
-					</option>
-				</select>
+			<div class="control">
+				<div class="select">
+					<select v-model="form.childType">
+						<option v-for="value of childTypes" :id="value">
+							{{ value }}
+						</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
-		<div class="control">
+		<div v-if="form.childType === 'pod'" class="field">
 			<label class="label">Plugin</label>
-			<div class="select" v-if="form.childType === 'pod'">
-				<select v-model="form.podPlugin">
-					<option v-for="value of podPlugins" :value="value">
-						{{ value }}
-					</option>
-				</select>
+			<div class="control">
+				<div class="select">
+					<select v-model="form.podPlugin">
+						<option v-for="value of podPlugins" :value="value">
+							{{ value }}
+						</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
-		<div class="control">
-			<button class="button is-primary" @click.prevent="doSubmit">
-				Submit
-			</button>
+		<div class="field">
+			<div class="control">
+				<button class="button is-primary" @click.prevent="doSubmit">
+					Submit
+				</button>
+			</div>
 		</div>
 	</PopupComponent>
 </template>

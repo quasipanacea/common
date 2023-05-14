@@ -8,11 +8,10 @@ import * as PodLatex from '@quasipanacea/pod-latex/_client.js'
 import * as PodMarkdown from '@quasipanacea/pod-markdown/_client.js'
 import * as PodPlaintext from '@quasipanacea/pod-plaintext/_client.js'
 
-import * as ModelDefault from '../qp-model-default/_client.ts'
-import * as ModelFlat from '../qp-model-flat/_client.ts'
+import * as ModelDefault from '@quasipanacea/model-default/_client.ts'
+import * as ModelFlat from '@quasipanacea/model-flat/_client.ts'
 import * as ModelGroupSimple from '@quasipanacea/model-group-simple/_client.ts'
-
-import * as GroupLine from '../qp-model-line/_client.js'
+import * as ModelLine from '@quasipanacea/model-line/_client.js'
 
 import * as ViewList from '@quasipanacea/view-list/_client.js'
 import * as ViewMarkmap from '@quasipanacea/view-markmap/_client.js'
@@ -33,8 +32,11 @@ export const podPlugins = [
 	PodPlaintext,
 ]
 
-export const modelPlugins = [ModelDefault, ModelFlat, ModelGroupSimple]
-
-export const groupPlugins = [GroupLine]
+export const modelPlugins = [
+	ModelDefault,
+	ModelFlat,
+	ModelGroupSimple,
+	ModelLine,
+]
 
 export const viewPlugins = [ViewList, ViewMarkmap]

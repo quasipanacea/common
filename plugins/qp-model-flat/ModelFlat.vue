@@ -1,54 +1,61 @@
 <template>
 	<div>
-		<h1 class="title" style="margin-block-end: 0">{{ model?.name }}</h1>
-		<button class="button" @click="router.back()">Back</button>
-		<button class="button" @click="showPodCreatePopup">New</button>
+		<div class="m-3">
+			<h1 class="title" style="margin-block-end: 0">{{ model?.name }}</h1>
+			<button class="button" @click="router.back()">Back</button>
 
-		<h2 class="subtitle">Pods</h2>
-		<div v-for="pod of pods" :key="pod.uuid">
-			<div class="card" style="width: 300px">
-				<div class="card-content">
-					<div class="media">
-						<div class="media-content">
-							<p class="title is-3">{{ pod.name }}</p>
-							<p class="subtitle is-6">%{{ pod.plugin }}</p>
+			<h2 class="title mb-1">Views</h2>
+			<button class="button" @click="showViewCreatePopup">New</button>
+
+			<h2 class="title mb-1">Pods</h2>
+			<button class="button" @click="showPodCreatePopup">New</button>
+			<div class="columns is-multiline">
+				<div v-for="pod of pods" :key="pod.uuid" class="column is-one-quarter">
+					<div class="card">
+						<div class="card-content">
+							<div class="media">
+								<div class="media-content">
+									<p class="title is-3">{{ pod.name }}</p>
+									<p class="subtitle is-6">%{{ pod.plugin }}</p>
+								</div>
+							</div>
+							<div class="content">
+								<template v-if="pod.extra?.['model.flat']?.description">
+									{{ pod.extra['model.flat'].description }}
+								</template>
+								<template v-else>
+									<em>No description</em>
+								</template>
+								<div class="tags">
+									<span
+										v-for="tag of pod.extra?.['model.flat']?.tags"
+										class="tag"
+										:key="tag"
+									>
+										{{ tag }}
+									</span>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="content">
-						<template v-if="pod.extra?.['model.flat']?.description">
-							{{ pod.extra?.['model.flat']?.description }}
-						</template>
-						<template v-else>
-							<em>No description</em>
-						</template>
-						<div class="tags">
-							<span
-								v-for="tag of pod.extra?.['model.flat']?.tags"
-								class="tag"
-								:key="tag"
+						<footer class="card-footer">
+							<router-link :to="'/pod/' + pod.uuid" class="card-footer-item">
+								View
+							</router-link>
+							<a
+								class="card-footer-item"
+								@click="
+									podEditMetaData(
+										pod.uuid,
+										pod.name,
+										pod.extra?.['model.flat']?.description,
+										pod.extra?.['model.flat']?.tags,
+									)
+								"
+								>Edit Metadata</a
 							>
-								{{ tag }}
-							</span>
-						</div>
+						</footer>
 					</div>
 				</div>
-				<footer class="card-footer">
-					<router-link :to="'/pod/' + pod.uuid" class="card-footer-item">
-						View
-					</router-link>
-					<a
-						class="card-footer-item"
-						@click="
-							podEditMetaData(
-								pod.uuid,
-								pod.name,
-								pod.extra?.['model.flat']?.description,
-								pod.extra?.['model.flat']?.tags,
-							)
-						"
-						>Edit Metadata</a
-					>
-				</footer>
 			</div>
 		</div>
 	</div>
@@ -58,11 +65,17 @@
 		@submit="afterPodCreate"
 		@cancel="() => (boolPodCreate = false)"
 	/>
-	<PodEditMetadata
+	<PodEditMetadataPopup
 		:show="boolPodEditMetadata"
 		:data="dataPodEditMetadata"
 		@submit="afterPodEditMetadata"
 		@cancel="() => (boolPodEditMetadata = false)"
+	/>
+	<ViewCreatePopup
+		:show="boolViewCreate"
+		:data="dataViewCreate"
+		@submit="afterViewCreate"
+		@cancel="() => (boolViewCreate = false)"
 	/>
 </template>
 
@@ -73,8 +86,11 @@ import { useRouter } from 'vue-router'
 import { apiObj as api } from '@quasipanacea/common/trpcClient.js'
 import type * as t from '@quasipanacea/common/types.js'
 
-import { PodCreatePopup } from '@quasipanacea/plugin-components/popups/index.js'
-import PodEditMetadata from './util/PodEditMetadata.vue'
+import {
+	PodCreatePopup,
+	ViewCreatePopup,
+} from '@quasipanacea/plugin-components/popups/index.js'
+import PodEditMetadataPopup from './util/PodEditMetadata.vue'
 
 const props = defineProps<{
 	uuid: string
@@ -118,6 +134,7 @@ function showPodCreatePopup() {
 	boolPodCreate.value = true
 }
 async function afterPodCreate() {
+	await updateView()
 	boolPodCreate.value = false
 }
 
@@ -147,7 +164,19 @@ function podEditMetaData(
 	boolPodEditMetadata.value = true
 }
 async function afterPodEditMetadata() {
-	boolPodEditMetadata.value = false
 	await updateView()
+	boolPodEditMetadata.value = false
+}
+
+// popup: view create
+const boolViewCreate = ref(false)
+const dataViewCreate = reactive({ modelUuid: '' })
+function showViewCreatePopup() {
+	dataViewCreate.modelUuid = props.uuid
+	boolViewCreate.value = true
+}
+async function afterViewCreate() {
+	await updateView()
+	boolViewCreate.value = false
 }
 </script>

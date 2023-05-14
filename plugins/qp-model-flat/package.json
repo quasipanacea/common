@@ -1,5 +1,5 @@
 {
-	"name": "@quasipanacea/model-group-simple",
+	"name": "@quasipanacea/model-flat",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",

@@ -30,12 +30,6 @@
 			</div>
 		</div>
 	</div>
-	<ViewCreatePopup
-		:show="boolViewCreate"
-		:data="dataViewCreate"
-		@submit="afterViewCreate"
-		@cancel="() => (boolViewCreate = false)"
-	/>
 	<ModelCreateChildPopup
 		:show="boolModelCreateChild"
 		:data="dataModelCreateChild"
@@ -424,18 +418,6 @@ async function updateOverview() {
 	cy.remove(cy.nodes('*'))
 	cy.add(elements)
 	cy.layout(cyLayout).run()
-}
-
-// popup: view create
-const boolViewCreate = ref(false)
-const dataViewCreate = reactive({ groupUuid: '' })
-function showViewCreatePopup(uuid: string) {
-	dataViewCreate.groupUuid = uuid
-	boolViewCreate.value = true
-}
-async function afterViewCreate() {
-	boolViewCreate.value = false
-	await updateOverview()
 }
 
 // popup: model create

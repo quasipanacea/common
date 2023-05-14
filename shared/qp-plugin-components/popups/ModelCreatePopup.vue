@@ -1,16 +1,24 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<form class="pure-form pure-form-aligned">
-			<fieldset>
-				<legend><h2>Model: Create</h2></legend>
+		<h2 class="title is-3 mb-0">Model: Create</h2>
 
-				<div class="pure-control-group">
-					<label for="name">Name</label>
-					<input type="text" id="name" required v-model="form.name" />
-				</div>
+		<div class="field">
+			<label class="label" for="name">Name</label>
+			<div class="control">
+				<input
+					class="input"
+					type="text"
+					id="name"
+					required
+					v-model="form.name"
+				/>
+			</div>
+		</div>
 
-				<div class="pure-control-group">
-					<label for="plugin-id">Plugin</label>
+		<div class="field">
+			<label class="label" for="plugin-id">Plugin</label>
+			<div class="control">
+				<div class="select">
 					<select name="pluginId" id="plugin-id" v-model="form.plugin" required>
 						<option
 							v-for="plugin in plugins"
@@ -21,17 +29,19 @@
 						</option>
 					</select>
 				</div>
+			</div>
+		</div>
 
-				<div class="pure-controls">
-					<input
-						type="submit"
-						value="Create"
-						class="pure-button"
-						@click.prevent="doSubmit"
-					/>
-				</div>
-			</fieldset>
-		</form>
+		<div class="field">
+			<div class="control">
+				<input
+					class="button is-primary"
+					type="submit"
+					value="Create"
+					@click.prevent="doSubmit"
+				/>
+			</div>
+		</div>
 	</PopupComponent>
 </template>
 

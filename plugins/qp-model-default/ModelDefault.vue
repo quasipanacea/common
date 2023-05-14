@@ -2,7 +2,7 @@
 	<button class="button" @click="router.back()">Back</button>
 	<h1 class="title is-3">{{ model?.name }}</h1>
 	<div style="border: 1px solid #333">
-		<h2 class="subtitle is-4" style="margin-block-end: 0">Schema</h2>
+		<h2 class="subtitle is-4 m-0">Schema</h2>
 		<button class="button">New List</button>
 
 		<p>Lists</p>

@@ -1,23 +1,42 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<form class="pure-form pure-form-aligned">
-			<fieldset>
-				<legend><h2>Pod: Rename</h2></legend>
-				<div class="pure-control-group">
-					<label for="old-name">Old Name</label>
-					<input id="old-name" type="text" v-model="props.oldName" disabled />
-				</div>
+		<h2 class="title as-2">Pod: Rename</h2>
 
-				<div class="pure-control-group">
-					<label for="new-name">New Name</label>
-					<input id="new-name" type="text" v-model="form.newName" required />
-				</div>
+		<div class="field">
+			<label class="label" for="old-name">Old Name</label>
+			<div class="control">
+				<input
+					class="input"
+					id="old-name"
+					type="text"
+					v-model="props.oldName"
+					disabled
+				/>
+			</div>
+		</div>
 
-				<div class="pure-controls">
-					<input type="submit" class="pure-button" @click.disabled="doSubmit" />
-				</div>
-			</fieldset>
-		</form>
+		<div class="field">
+			<label class="label" for="new-name">New Name</label>
+			<div class="control">
+				<input
+					class="input"
+					id="new-name"
+					type="text"
+					v-model="form.newName"
+					required
+				/>
+			</div>
+		</div>
+
+		<div class="field">
+			<div class="control">
+				<input
+					type="submit"
+					class="button is-primary"
+					@click.disabled="doSubmit"
+				/>
+			</div>
+		</div>
 	</PopupComponent>
 </template>
 

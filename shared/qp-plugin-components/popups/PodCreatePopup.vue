@@ -1,16 +1,23 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<form class="pure-form pure-form-aligned">
-			<fieldset>
-				<legend><h2>Pod: Create</h2></legend>
+		<h2 class="title as-2">Pod: Create</h2>
+		<div class="field">
+			<label class="label" for="name">Name</label>
+			<div class="control">
+				<input
+					class="input"
+					id="name"
+					type="text"
+					v-model="form.name"
+					required
+				/>
+			</div>
+		</div>
 
-				<div class="pure-control-group">
-					<label for="name">Name</label>
-					<input id="name" type="text" v-model="form.name" required />
-				</div>
-
-				<div class="pure-control-group">
-					<label for="plugin">Plugin</label>
+		<div class="field">
+			<label class="label" for="plugin">Plugin</label>
+			<div class="control">
+				<div class="select">
 					<select name="plugin" id="plugin" v-model="form.plugin" required>
 						<option
 							v-for="item in pluginOptions"
@@ -21,28 +28,33 @@
 						</option>
 					</select>
 				</div>
+			</div>
+		</div>
 
-				<div class="pure-control-group">
-					<label for="group-uuid">Group UUID</label>
-					<input
-						id="group-uuid"
-						type="text"
-						v-model="form.model.uuid"
-						required
-						disabled
-					/>
-				</div>
+		<div class="field">
+			<label clas="label" for="group-uuid">Model UUID</label>
+			<div class="control">
+				<input
+					class="input"
+					id="group-uuid"
+					type="text"
+					v-model="form.model.uuid"
+					required
+					disabled
+				/>
+			</div>
+		</div>
 
-				<div class="pure-controls">
-					<input
-						type="submit"
-						class="pure-button"
-						value="Create"
-						@click.prevent="doSubmit"
-					/>
-				</div>
-			</fieldset>
-		</form>
+		<div class="field">
+			<div class="control">
+				<input
+					class="button is-primary"
+					type="submit"
+					value="Create"
+					@click.prevent="doSubmit"
+				/>
+			</div>
+		</div>
 	</PopupComponent>
 </template>
 

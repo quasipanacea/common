@@ -1,48 +1,61 @@
 <template>
 	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<form class="pure-form pure-form-aligned">
-			<fieldset>
-				<legend><h2>View: Create</h2></legend>
+		<h2 class="title as-2">View: Create</h2>
 
-				<div class="pure-control-group">
-					<label for="name">Name</label>
-					<input type="text" id="name" required v-model="form.name" />
-				</div>
+		<div class="field">
+			<label class="label" for="name">Name</label>
+			<div class="control">
+				<input
+					class="input"
+					type="text"
+					id="name"
+					required
+					v-model="form.name"
+				/>
+			</div>
+		</div>
 
-				<div class="pure-control-group">
-					<label for="plugin">Plugin</label>
+		<div class="field">
+			<label class="label" for="plugin">Plugin</label>
+			<div class="control">
+				<div class="select">
 					<select name="plugin" id="plugin" v-model="form.plugin" required>
 						<option
-							v-for="plugin in groupPluginOptions"
-							:value="plugin.value"
-							:key="plugin.value"
+							v-for="plugin in viewPluginOptions"
+							:value="plugin"
+							:key="plugin"
 						>
-							{{ plugin.label }}
+							{{ plugin }}
 						</option>
 					</select>
 				</div>
+			</div>
+		</div>
 
-				<div class="pure-control-group">
-					<label for="group-uuid">Group UUID</label>
-					<input
-						id="group-uuid"
-						type="text"
-						v-model="form.groupUuid"
-						required
-						disabled
-					/>
-				</div>
+		<div class="field">
+			<label class="label" for="group-uuid">Group UUID</label>
+			<div class="control">
+				<input
+					class="input"
+					id="group-uuid"
+					type="text"
+					v-model="form.model.uuid"
+					required
+					disabled
+				/>
+			</div>
+		</div>
 
-				<div class="pure-controls">
-					<input
-						type="submit"
-						value="Create"
-						class="pure-button"
-						@click.prevent="doSubmit"
-					/>
-				</div>
-			</fieldset>
-		</form>
+		<div class="field">
+			<div class="control">
+				<input
+					class="button is-primary"
+					type="submit"
+					value="Create"
+					@click.prevent="doSubmit"
+				/>
+			</div>
+		</div>
 	</PopupComponent>
 </template>
 
@@ -57,32 +70,33 @@ import PopupComponent from '../PopupComponent.vue'
 const props = defineProps<{
 	show: boolean
 	data: {
-		groupUuid: string
+		modelUuid: string
 	}
 }>()
 const emit = defineEmits(['cancel', 'submit'])
 
-const groupPluginOptions = ref<{ label: string; value: string }[]>([])
+const viewPluginOptions = ref<string[]>([])
 onMounted(async () => {
-	groupPluginOptions.value = (await api.core.pluginList.query()).plugins
-		.filter((item) => item.kind === 'view')
-		.map((item) => ({
-			label: item.id,
-			value: item.id,
-		}))
+	viewPluginOptions.value = (
+		await api.core.pluginList.query({ kind: 'view' })
+	).plugins.map((item) => item.id)
 })
 
 const form = reactive<{
 	name: string
 	plugin: string
-	groupUuid: string
+	model: {
+		uuid: string
+	}
 }>({
 	name: '',
 	plugin: '',
-	groupUuid: '',
+	model: {
+		uuid: '',
+	},
 })
 watch(props, (val) => {
-	form.groupUuid = val.data.groupUuid
+	form.model.uuid = val.data.modelUuid
 })
 
 async function doSubmit() {
