@@ -6,6 +6,7 @@
 		"@quasipanacea/types": "workspace:^",
 		"@trpc/client": "^10.18.0",
 		"@trpc/server": "^10.18.0",
+		"evt": "^2.4.18",
 		"mind-elixir": "^1.2.0"
 	},
 	"devDependencies": {

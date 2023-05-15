@@ -28,7 +28,7 @@
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
 				<div class="dropdown-content">
-					<a @click="showGuidePopup" class="dropdown-item">Show Guide</a>
+					<a class="dropdown-item" @click="showPopup(GuidePopup)">Show Guide</a>
 				</div>
 				<div class="dropdown-content">
 					<div class="dropdown-item">
@@ -67,23 +67,6 @@
 		@submit="afterPodCreate"
 		@cancel="() => (boolPodCreate = false)"
 	/>
-	<PodRenamePopup
-		:show="boolPodRename"
-		:podUuid="dataPodRename.podUuid"
-		:oldName="dataPodRename.oldName"
-		@submit="afterPodRename"
-		@cancel="() => (boolPodRename = false)"
-	/>
-	<PopupComponent :show="boolGuide" @cancel="afterShowGuide">
-		<div class="content">
-			<h2>Guide</h2>
-			<ul>
-				<li>Left-click to pan</li>
-				<li>Left-click (hold) to connect nodes</li>
-				<li>Right-click for context menu</li>
-			</ul>
-		</div>
-	</PopupComponent>
 </template>
 
 <script setup lang="ts">
@@ -103,16 +86,14 @@ import { apiObj as api } from '@quasipanacea/common/trpcClient'
 
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
-import { PopupComponent } from '@quasipanacea/plugin-components/index'
 import {
-	ViewCreatePopup,
 	ModelCreateChildPopup,
 	ModelCreatePopup,
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
-	PodRenamePopup,
 } from '@quasipanacea/plugin-components/popups/index.js'
-
+import { showPopup } from '@quasipanacea/common/client/popup.js'
+import GuidePopup from './util/GuidePopup.vue'
 const router = useRouter()
 
 let cy: cytoscape.Core | null = null
@@ -507,26 +488,5 @@ function showPodCreatePopup(uuid: string) {
 async function afterPodCreate() {
 	boolPodCreate.value = false
 	await updateOverview()
-}
-
-// popup: pod rename
-const boolPodRename = ref(false)
-const dataPodRename = reactive({ podUuid: '', oldName: '' })
-function showPodRenamePopup(podUuid: string, oldName: string) {
-	dataPodRename.podUuid = podUuid
-	dataPodRename.oldName = oldName
-	boolPodRename.value = true
-}
-async function afterPodRename() {
-	boolPodRename.value = false
-}
-
-// popup: guide
-const boolGuide = ref(false)
-function showGuidePopup() {
-	boolGuide.value = true
-}
-function afterShowGuide() {
-	boolGuide.value = false
 }
 </script>
