@@ -1,9 +1,121 @@
 <template>
-	<h1>Group Simple</h1>
+	<h1 class="title as-2 mb-0">Group Simple</h1>
+	<button class="button" @click="router.back()">Back</button>
+
+	<h2 class="title mb-1">Pods</h2>
+	<button class="button" @click="showPodNewPopup">New</button>
+	<div class="columns is-multiline">
+		<div v-for="pod of pods" :key="pod.uuid" class="column is-one-quarter">
+			<div class="card">
+				<div class="card-content">
+					<div class="media">
+						<div class="media-content">
+							<p class="title is-3">{{ pod.name }}</p>
+							<p class="subtitle is-6">%{{ pod.plugin }}</p>
+						</div>
+					</div>
+					<div class="content">
+						<template v-if="pod.extra?.['model.flat']?.description">
+							{{ pod.extra['model.flat'].description }}
+						</template>
+						<template v-else>
+							<em>No description</em>
+						</template>
+						<div class="tags">
+							<span
+								v-for="tag of pod.extra?.['model.flat']?.tags"
+								class="tag"
+								:key="tag"
+							>
+								{{ tag }}
+							</span>
+						</div>
+					</div>
+				</div>
+				<footer class="card-footer">
+					<router-link :to="'/pod/' + pod.uuid" class="card-footer-item">
+						View
+					</router-link>
+					<a
+						class="card-footer-item"
+						@click="
+							podEditMetaData(
+								pod.uuid,
+								pod.name,
+								pod.extra?.['model.flat']?.description,
+								pod.extra?.['model.flat']?.tags,
+							)
+						"
+						>Edit Metadata</a
+					>
+				</footer>
+			</div>
+		</div>
+	</div>
+
+	<PodNewPopup
+		:show="boolPodNew"
+		:data="dataPodNew"
+		@submit="afterPodNew"
+		@cancel="() => (boolPodNew = false)"
+	/>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { apiObj as api } from '@quasipanacea/common/trpcClient.js'
+import type * as t from '@quasipanacea/common/types.js'
+
+import PodNewPopup from './util/PodNewPopup.vue'
+
 const props = defineProps<{
-	modelUuid: string
+	uuid: string
 }>()
+
+const router = useRouter()
+
+const model = ref<t.Model_t>()
+const pods = ref<t.Pod_t[]>([])
+const orbs = ref<t.Orb_t[]>([])
+
+onMounted(async () => {
+	await updateView()
+})
+
+async function updateView() {
+	const { models: modelsRes } = await api.core.modelList.query({
+		uuid: props.uuid,
+	})
+	const { pods: podsRes } = await api.core.podList.query({
+		model: {
+			uuid: props.uuid,
+		},
+	})
+	const { orbs: orbsRes } = await api.core.orbList.query({
+		model: {
+			uuid: props.uuid,
+		},
+	})
+
+	model.value = modelsRes[0]
+	pods.value = podsRes
+	orbs.value = orbsRes
+}
+
+// popup: pod new
+const boolPodNew = ref(false)
+const dataPodNew = reactive({
+	model: {
+		uuid: '',
+	},
+})
+function showPodNewPopup() {
+	dataPodNew.model.uuid = props.uuid
+	boolPodNew.value = true
+}
+async function afterPodNew() {
+	boolPodNew.value = false
+}
 </script>

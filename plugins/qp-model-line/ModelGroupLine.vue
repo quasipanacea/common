@@ -4,6 +4,6 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-	modelUuid: string
+	uuid: string
 }>()
 </script>

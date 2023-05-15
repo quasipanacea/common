@@ -47,7 +47,7 @@
 			</div>
 
 			<div class="control">
-				<button class="button is-primary" @click.prevent="doSubmit">
+				<button class="button is-primary" @click.prevent="sendRequest">
 					Submit
 				</button>
 			</div>
@@ -112,7 +112,7 @@ watch(props, async (val) => {
 	form.tags = val.data.tags
 })
 
-async function doSubmit() {
+async function sendRequest() {
 	await api.core.podModifyExtra.mutate({
 		uuid: props.data.uuid,
 		field: 'model.flat',

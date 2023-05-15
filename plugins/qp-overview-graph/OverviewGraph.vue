@@ -1,16 +1,19 @@
 <template>
 	<div ref="cytoscapeEl" style="height: 100%"></div>
 	<div style="position: absolute; top: 0; right: 0">
-		<span>{{
-			currentMode === 'default'
-				? 'Node Move'
-				: currentMode === 'shift'
-				? 'Draw Connection'
-				: currentMode === 'control'
-				? 'Node Add/Remove'
-				: 'Node Move'
-		}}</span>
-		<div class="dropdown is-right is-hoverable">
+		<span class="button" style="margin: 5px">
+			{{
+				currentMode === 'default'
+					? 'Node Move'
+					: currentMode === 'shift'
+					? 'Draw Connection'
+					: currentMode === 'control'
+					? 'Node Add/Remove'
+					: 'Node Move'
+			}}
+		</span>
+
+		<div class="dropdown is-right is-hoverable" style="margin: 5px">
 			<div class="dropdown-trigger">
 				<button
 					class="button"
@@ -26,6 +29,16 @@
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
 				<div class="dropdown-content">
 					<a @click="showGuidePopup" class="dropdown-item">Show Guide</a>
+				</div>
+				<div class="dropdown-content">
+					<div class="dropdown-item">
+						<div class="select">
+							<select v-model="currentLayout">
+								<option value="automatic">Automatic Layout</option>
+								<option value="manual">Manual Layout</option>
+							</select>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -74,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import cytoscape from 'cytoscape'
@@ -102,10 +115,27 @@ import {
 
 const router = useRouter()
 
-const currentMode = ref<'default' | 'shift' | 'control'>('default')
-
 let cy: cytoscape.Core | null = null
 let cytoscapeEl = ref<HTMLElement>()
+
+const currentMode = ref<'default' | 'shift' | 'control'>('default')
+
+const currentLayout = ref<'manual' | 'automatic'>('manual')
+watch(currentLayout, (val) => {
+	if (!cy) throw new Error('cy is undefined')
+
+	if (val === 'manual') {
+		cy.layout({
+			name: 'preset',
+			animate: true,
+		}).run()
+	} else if (val === 'automatic') {
+		cy.layout({
+			name: 'cola',
+			animate: true,
+		}).run()
+	}
+})
 
 const cyLayout: cytoscape.LayoutOptions = {
 	name: 'preset',
@@ -127,42 +157,44 @@ onMounted(async () => {
 		const elJson = ev.target.json() as t.CytoscapeElementJson
 		const elData = ev.target.data() as t.CytoscapeElementData
 
-		if (elData.resource === 'orb') {
-			await api.core.orbModify.mutate({
-				uuid: elData.resourceData.uuid,
-				data: {
-					extra: {
-						position: {
-							x: elJson.position.x,
-							y: elJson.position.y,
+		if (currentLayout.value === 'manual') {
+			if (elData.resource === 'orb') {
+				await api.core.orbModify.mutate({
+					uuid: elData.resourceData.uuid,
+					data: {
+						extra: {
+							position: {
+								x: elJson.position.x,
+								y: elJson.position.y,
+							},
 						},
 					},
-				},
-			})
-		} else if (elData.resource === 'pod') {
-			await api.core.podModify.mutate({
-				uuid: elData.resourceData.uuid,
-				data: {
-					extra: {
-						position: {
-							x: elJson.position.x,
-							y: elJson.position.y,
+				})
+			} else if (elData.resource === 'pod') {
+				await api.core.podModify.mutate({
+					uuid: elData.resourceData.uuid,
+					data: {
+						extra: {
+							position: {
+								x: elJson.position.x,
+								y: elJson.position.y,
+							},
 						},
 					},
-				},
-			})
-		} else if (elData.resource === 'model') {
-			await api.core.modelModify.mutate({
-				uuid: elData.resourceData.uuid,
-				data: {
-					extra: {
-						position: {
-							x: elJson.position.x,
-							y: elJson.position.y,
+				})
+			} else if (elData.resource === 'model') {
+				await api.core.modelModify.mutate({
+					uuid: elData.resourceData.uuid,
+					data: {
+						extra: {
+							position: {
+								x: elJson.position.x,
+								y: elJson.position.y,
+							},
 						},
 					},
-				},
-			})
+				})
+			}
 		}
 	})
 
