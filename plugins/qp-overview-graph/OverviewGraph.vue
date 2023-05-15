@@ -98,6 +98,8 @@ const router = useRouter()
 
 let cy: cytoscape.Core | null = null
 let cytoscapeEl = ref<HTMLElement>()
+let cyEdgeHandle: CytoscapeEdgeHandlesController | null = null
+let cyDND: CytoscapeCompoundDragAndDropController | null = null
 
 const currentMode = ref<'default' | 'shift' | 'control'>('default')
 
@@ -122,6 +124,40 @@ const cyLayout: cytoscape.LayoutOptions = {
 	name: 'preset',
 	animate: true,
 }
+
+function keydownFn(ev: KeyboardEvent) {
+	if (!cyEdgeHandle) throw new Error('cyEdgeHandle is undefined')
+	if (!cyDND) throw new Error('cyDND is undefined')
+
+	if (ev.shiftKey) {
+		cyEdgeHandle.enableDrawMode()
+		cyEdgeHandle.enable()
+		currentMode.value = 'shift'
+	} else if (ev.ctrlKey) {
+		cyDND.enable()
+		currentMode.value = 'control'
+	}
+}
+function keyupFn(ev: KeyboardEvent) {
+	if (!cyEdgeHandle) throw new Error('cyEdgeHandle is undefined')
+	if (!cyDND) throw new Error('cyDND is undefined')
+
+	if (ev.key === 'Shift') {
+		cyEdgeHandle.disableDrawMode()
+		cyEdgeHandle.disable()
+	} else if (ev.key === 'Control') {
+		cyDND.disable()
+	}
+	currentMode.value = 'default'
+}
+onMounted(() => {
+	document.addEventListener('keydown', keydownFn)
+	document.addEventListener('keyup', keyupFn)
+})
+onUnmounted(() => {
+	document.removeEventListener('keydown', keydownFn)
+	document.removeEventListener('keyup', keyupFn)
+})
 
 onMounted(async () => {
 	if (!cytoscapeEl.value) throw new Error('cytoscape container not defined')
@@ -203,13 +239,13 @@ onMounted(async () => {
 			cytoscape.use(cytoscapeCola)
 		}
 
-		const cyDND = cy.compoundDragAndDrop()
+		cyDND = cy.compoundDragAndDrop()
 		cyDND.disable()
 
 		cy.lassoSelectionEnabled(false)
 
 		// edge handle
-		const cyEdgeHandle = cy.edgehandles({
+		cyEdgeHandle = cy.edgehandles({
 			canConnect(sourceNode, targetNode) {
 				// whether an edge can be created between source and target
 				return !sourceNode.same(targetNode) // e.g. disallow loops
@@ -232,33 +268,6 @@ onMounted(async () => {
 			await api.core.linkAdd.mutate({})
 
 			await updateOverview()
-		})
-
-		function keydownFn(ev: KeyboardEvent) {
-			if (ev.shiftKey) {
-				cyEdgeHandle.enableDrawMode()
-				cyEdgeHandle.enable()
-				currentMode.value = 'shift'
-			} else if (ev.ctrlKey) {
-				cyDND.enable()
-				currentMode.value = 'control'
-			}
-		}
-		function keyupFn(ev: KeyboardEvent) {
-			if (ev.key === 'Shift') {
-				cyEdgeHandle.disableDrawMode()
-				cyEdgeHandle.disable()
-			} else if (ev.key === 'Control') {
-				cyDND.disable()
-			}
-			currentMode.value = 'default'
-		}
-
-		document.addEventListener('keydown', keydownFn)
-		document.addEventListener('keyup', keyupFn)
-		onUnmounted(() => {
-			document.removeEventListener('keydown', keydownFn)
-			document.removeEventListener('keyup', keyupFn)
 		})
 
 		// context menu

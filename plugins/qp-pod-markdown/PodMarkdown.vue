@@ -68,15 +68,14 @@ const goldenLayoutConfig: CustomLayoutConfig = {
 	},
 }
 
+const n = setInterval(async () => {
+	await markdownRead()
+}, 5000)
 onMounted(async () => {
 	await markdownRead()
-
-	const n = setInterval(async () => {
-		await markdownRead()
-	}, 5000)
-	onUnmounted(() => {
-		clearTimeout(n)
-	})
+})
+onUnmounted(() => {
+	clearTimeout(n)
 })
 
 async function markdownRead(): Promise<void> {

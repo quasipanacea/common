@@ -30,8 +30,7 @@ export async function showPopup<T extends keyof PopupEvents>(
 		component,
 		props,
 	})
-	const res = await popupEmitter.waitFor()
-	console.log('res', res)
+	await popupEmitter.waitFor()
 
 	isPopupVisible = false
 }
