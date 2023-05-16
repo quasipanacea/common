@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted } from 'vue'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
 import type * as t from '@quasipanacea/common/types.js'
 import PopupComponent from '@quasipanacea/plugin-components/PopupComponent.vue'
@@ -73,6 +73,8 @@ const props = defineProps<{
 		tags: string[]
 	}
 }>()
+
+const api = useApi3<BareAppRouter>()
 
 const currentPod = ref<t.Pod_t>()
 onMounted(async () => {

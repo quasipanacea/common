@@ -49,7 +49,7 @@
 import { onMounted, reactive, ref } from 'vue'
 
 import type * as t from '@quasipanacea/common/types'
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
 import PopupComponent from '../PopupComponent.vue'
 
@@ -57,6 +57,8 @@ const props = defineProps<{
 	show: boolean
 }>()
 const emit = defineEmits(['cancel', 'submit'])
+
+const api = useApi3<BareAppRouter>()
 
 const plugins = ref<t.Plugin_t[]>([])
 onMounted(async () => {

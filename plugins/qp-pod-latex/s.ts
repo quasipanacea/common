@@ -1,14 +1,14 @@
-import { trpc } from "@common/trpc.ts";
-import { coreRouter } from "@common/routes.ts";
+import { trpc } from '@common/trpc.ts'
+import { coreRouter } from '@common/routes.ts'
 
-import { trpcRouter } from "./podLatex.js";
+import { trpcRouter } from './podLatex.js'
 
-export const inferenceOnlyAppRouter = trpc.router({
+const inferenceOnlyAppRouter = trpc.router({
 	core: coreRouter,
 	plugins: trpc.router({
 		pods: trpc.router({
 			latex: trpcRouter,
 		}),
 	}),
-});
-export type InferenceOnlyAppRouter = typeof inferenceOnlyAppRouter;
+})
+export type InferenceOnlyAppRouter = typeof inferenceOnlyAppRouter

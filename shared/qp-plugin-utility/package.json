@@ -1,6 +1,7 @@
 {
 	"name": "@quasipanacea/plugin-utility",
 	"dependencies": {
+		"katex": "^0.16.4",
 		"mind-elixir": "^1.2.0",
 		"rehype-external-links": "^2.0.1",
 		"rehype-katex": "^6.0.2",
@@ -12,5 +13,14 @@
 		"remark-rehype": "^10.1.0",
 		"remark-toc": "^8.0.1",
 		"unified": "^10.1.2"
+	},
+	"devDependencies": {
+		"@trpc/client": "^10.18.0",
+		"@trpc/server": "^10.18.0",
+		"@types/katex": "^0.16.0"
+	},
+	"peerDependencies": {
+		"@trpc/client": "^10.18.0",
+		"@trpc/server": "^10.18.0"
 	}
 }

@@ -65,7 +65,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.js'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.js'
 import type * as t from '@quasipanacea/common/types.js'
 
 import PodNewPopup from './util/PodNewPopup.vue'
@@ -74,6 +74,7 @@ const props = defineProps<{
 	uuid: string
 }>()
 
+const api = useApi3<BareAppRouter>()
 const router = useRouter()
 
 const model = ref<t.Model_t>()

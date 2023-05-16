@@ -8,10 +8,12 @@
 		"katex": "^0.16.4"
 	},
 	"devDependencies": {
+		"@trpc/client": "^10.18.0",
 		"vue": "^3.2.47",
 		"vue-router": "^4.1.6"
 	},
 	"peerDependencies": {
+		"@trpc/client": "^10.18.0",
 		"vue": "^3.2.47",
 		"vue-router": "^4.1.6"
 	}

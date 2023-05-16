@@ -82,7 +82,7 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient'
 
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
@@ -94,7 +94,9 @@ import {
 } from '@quasipanacea/plugin-components/popups/index.js'
 import { showPopup } from '@quasipanacea/common/client/popup.js'
 import GuidePopup from './util/GuidePopup.vue'
+
 const router = useRouter()
+const api = useApi3<BareAppRouter>()
 
 let cy: cytoscape.Core | null = null
 let cytoscapeEl = ref<HTMLElement>()

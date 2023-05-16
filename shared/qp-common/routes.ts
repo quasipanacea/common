@@ -5,6 +5,12 @@ import * as utilResource from './utilResource.ts'
 import * as utilPlugin from './utilPlugin.ts'
 import * as t from './types.ts'
 import { trpc } from './trpc.ts'
+import type { AnyRouter } from '@trpc/server'
+import {
+	createTRPCProxyClient,
+	type CreateTRPCClientOptions,
+	httpBatchLink,
+} from '@trpc/client'
 
 export const coreRouter = trpc.router({
 	orbAdd: trpc.procedure
@@ -450,7 +456,7 @@ export const coreRouter = trpc.router({
 		}),
 })
 
-export const bareAppRouter = trpc.router({
+const bareAppRouter = trpc.router({
 	core: coreRouter,
 })
 export type BareAppRouter = typeof bareAppRouter

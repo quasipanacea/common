@@ -19,11 +19,10 @@ import { useRoute } from 'vue-router'
 
 import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
 import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
-import { apiObj } from '@quasipanacea/common/trpcClient'
-import { useApi } from '@quasipanacea/plugin-utility/c'
-import type { InferenceOnlyApi } from './c'
+import { useApi3 } from '@quasipanacea/common/trpcClient.js'
+import type { InferenceOnlyAppRouter } from './s'
 
-const api = useApi<InferenceOnlyApi>(apiObj)
+const api = useApi3<InferenceOnlyAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

@@ -12,14 +12,12 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
-import { apiObj } from '@quasipanacea/common/trpcClient.ts'
-import { useApi } from '@quasipanacea/plugin-utility/c'
+import { useApi3 } from '@quasipanacea/common/trpcClient.js'
 
-import type { InferenceOnlyApi } from './c'
+import type { InferenceOnlyAppRouter } from './s'
 import { onMounted, ref } from 'vue'
 
-const api = useApi<InferenceOnlyApi>(apiObj)
+const api = useApi3<InferenceOnlyAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

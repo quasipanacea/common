@@ -34,7 +34,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
 import type * as t from '@quasipanacea/common/types.js'
 
@@ -43,6 +43,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const api = useApi3<BareAppRouter>()
 
 const model = ref<t.Model_t>()
 const pods = ref<t.Pod_t[]>([])

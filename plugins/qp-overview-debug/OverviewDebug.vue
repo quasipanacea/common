@@ -2,23 +2,17 @@
 	<pre>{{ str }}</pre>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
-export default defineComponent({
-	setup() {
-		const str = ref('')
+const api = useApi3<BareAppRouter>()
 
-		onMounted(async () => {
-			const result = await api.core.podList.query()
-			str.value = JSON.stringify(result.pods, null, '\t')
-		})
+const str = ref('')
 
-		return {
-			str,
-		}
-	},
+onMounted(async () => {
+	const result = await api.core.podList.query()
+	str.value = JSON.stringify(result.pods, null, '\t')
 })
 </script>

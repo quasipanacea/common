@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 
-import { apiObj as api } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
 import type * as t from '@quasipanacea/common/types.js'
 import { popupEmitter } from '@quasipanacea/common/client/popup.js'
@@ -56,6 +56,8 @@ const form = reactive<{
 }>({
 	newName: '',
 })
+
+const api = useApi3<BareAppRouter>()
 
 async function doSubmit() {
 	await api.core.podModify.mutate({

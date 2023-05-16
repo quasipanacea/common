@@ -22,13 +22,13 @@ import GoldenLayoutVue, {
 } from '@quasipanacea/plugin-components/GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
-import { apiObj } from '@quasipanacea/common/trpcClient'
 import * as convert from '@quasipanacea/plugin-utility/convert'
-import { useApi } from '@quasipanacea/plugin-utility/c'
+import { useApi3 } from '@quasipanacea/common/trpcClient.js'
 
-import type { InferenceOnlyApi } from './c'
+import 'katex/dist/contrib/mhchem'
+import type { InferenceOnlyAppRouter } from './s'
 
-const api = useApi<InferenceOnlyApi>(apiObj)
+const api = useApi3<InferenceOnlyAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

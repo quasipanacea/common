@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import katex from 'katex'
+import 'katex/dist/contrib/mhchem'
 import 'katex/dist/katex.min.css'
 
 import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
