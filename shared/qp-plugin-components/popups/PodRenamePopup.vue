@@ -44,7 +44,7 @@ import { reactive } from 'vue'
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 
 import type * as t from '@quasipanacea/common/types.js'
-import { popupEmitter } from '@quasipanacea/common/client/popup.js'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup.js'
 
 const props = defineProps<{
 	oldName: string
@@ -66,8 +66,7 @@ async function doSubmit() {
 			name: form.newName,
 		},
 	})
-	popupEmitter.post({
-		id: 'hide-null',
-	})
+
+	hidePopupNoData('null')
 }
 </script>

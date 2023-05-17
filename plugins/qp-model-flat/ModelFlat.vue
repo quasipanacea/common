@@ -44,11 +44,13 @@
 							<a
 								class="card-footer-item"
 								@click="
-									podEditMetaData(
+									launchPopupPodEditMetadata(
 										pod.uuid,
 										pod.name,
-										pod.extra?.['model.flat']?.description,
-										pod.extra?.['model.flat']?.tags,
+										pod.extra?.['model.flat']?.description || '',
+										pod.extra?.['model.flat']?.tags
+											? pod.extra?.['model.flat'].tags
+											: [],
 									)
 								"
 								>Edit Metadata</a
@@ -64,12 +66,6 @@
 		:data="dataPodCreate"
 		@submit="afterPodCreate"
 		@cancel="() => (boolPodCreate = false)"
-	/>
-	<PodEditMetadataPopup
-		:show="boolPodEditMetadata"
-		:data="dataPodEditMetadata"
-		@submit="afterPodEditMetadata"
-		@cancel="() => (boolPodEditMetadata = false)"
 	/>
 	<ViewCreatePopup
 		:show="boolViewCreate"
@@ -91,6 +87,7 @@ import {
 	ViewCreatePopup,
 } from '@quasipanacea/plugin-components/popups/index.js'
 import PodEditMetadataPopup from './util/PodEditMetadataPopup.vue'
+import { showPopup } from '@quasipanacea/common/client/popup.js'
 
 const props = defineProps<{
 	uuid: string
@@ -139,34 +136,20 @@ async function afterPodCreate() {
 	boolPodCreate.value = false
 }
 
-// popup: pod edit metadata
-const boolPodEditMetadata = ref(false)
-const dataPodEditMetadata = reactive<{
-	uuid: string
-	name: string
-	description: string
-	tags: string[]
-}>({
-	uuid: '',
-	name: '',
-	description: '',
-	tags: [],
-})
-function podEditMetaData(
+async function launchPopupPodEditMetadata(
 	uuid: string,
 	name: string,
 	description: string,
 	tags: string[],
 ) {
-	dataPodEditMetadata.uuid = uuid ?? ''
-	dataPodEditMetadata.name = name ?? ''
-	dataPodEditMetadata.description = description ?? ''
-	dataPodEditMetadata.tags = tags ?? []
-	boolPodEditMetadata.value = true
-}
-async function afterPodEditMetadata() {
+	await showPopup('plugin-model-flat-pod-edit-metadata', PodEditMetadataPopup, {
+		uuid,
+		name,
+		description,
+		tags,
+	})
+
 	await updateView()
-	boolPodEditMetadata.value = false
 }
 
 // popup: view create

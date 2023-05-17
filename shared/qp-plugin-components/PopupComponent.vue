@@ -23,7 +23,7 @@
 			"
 		>
 			<div style="margin: 0; padding: 5px; border-bottom: 3px solid black">
-				<button class="button is-black" @click="$emit('cancel')">Close</button>
+				<button class="button is-black" @click="cancelPopup">Close</button>
 			</div>
 			<div style="padding: 16px; margin: 0; overflow: auto">
 				<slot />
@@ -33,8 +33,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
+
+defineProps<{
 	show: boolean
 }>()
-defineEmits(['cancel'])
+
+function cancelPopup() {
+	hidePopupNoData('null')
+}
 </script>
