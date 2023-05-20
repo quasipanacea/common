@@ -3,7 +3,7 @@
 	<button class="button" @click="router.back()">Back</button>
 
 	<h2 class="title mb-1">Pods</h2>
-	<button class="button" @click="showPodNewPopup">New</button>
+	<button class="button" @click="handlePopupPodNew">New</button>
 	<div class="columns is-multiline">
 		<div v-for="pod of pods" :key="pod.uuid" class="column is-one-quarter">
 			<div class="card">
@@ -52,13 +52,6 @@
 			</div>
 		</div>
 	</div>
-
-	<PodNewPopup
-		:show="boolPodNew"
-		:data="dataPodNew"
-		@submit="afterPodNew"
-		@cancel="() => (boolPodNew = false)"
-	/>
 </template>
 
 <script setup lang="ts">
@@ -69,6 +62,7 @@ import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.js'
 import type * as t from '@quasipanacea/common/types.js'
 
 import PodNewPopup from './util/PodNewPopup.vue'
+import { showPopup } from '@quasipanacea/common/client/popup'
 
 const props = defineProps<{
 	uuid: string
@@ -82,10 +76,10 @@ const pods = ref<t.Pod_t[]>([])
 const orbs = ref<t.Orb_t[]>([])
 
 onMounted(async () => {
-	await updateView()
+	await updateData()
 })
 
-async function updateView() {
+async function updateData() {
 	const { models: modelsRes } = await api.core.modelList.query({
 		uuid: props.uuid,
 	})
@@ -105,18 +99,11 @@ async function updateView() {
 	orbs.value = orbsRes
 }
 
-// popup: pod new
-const boolPodNew = ref(false)
-const dataPodNew = reactive({
-	model: {
-		uuid: '',
-	},
-})
-function showPodNewPopup() {
-	dataPodNew.model.uuid = props.uuid
-	boolPodNew.value = true
-}
-async function afterPodNew() {
-	boolPodNew.value = false
+function handlePopupPodNew() {
+	showPopup('pod-new-2', PodNewPopup, {
+		model: {
+			uuid: props.uuid,
+		},
+	})
 }
 </script>

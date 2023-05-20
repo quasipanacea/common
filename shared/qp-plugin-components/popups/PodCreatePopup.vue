@@ -1,5 +1,5 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
+	<div>
 		<h2 class="title as-2">Pod: Create</h2>
 		<div class="field">
 			<label class="label" for="name">Name</label>
@@ -51,11 +51,11 @@
 					class="button is-primary"
 					type="submit"
 					value="Create"
-					@click.prevent="doSubmit"
+					@click.prevent="submitData"
 				/>
 			</div>
 		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -63,27 +63,21 @@ import { onMounted, reactive, ref, watch } from 'vue'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 import type * as t from '@quasipanacea/common/types.js'
-
-import PopupComponent from '../PopupComponent.vue'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
 const props = defineProps<{
-	show: boolean
-	data: {
-		modelUuid: string
-	}
+	modelUuid: string
 }>()
-const emit = defineEmits(['cancel', 'submit'])
 
 const api = useApi3<BareAppRouter>()
 
 const pluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
-	pluginOptions.value = (await api.core.pluginList.query()).plugins
-		.filter((item) => item.kind === 'pod')
-		.map((item) => ({
-			label: item.id,
-			value: item.id,
-		}))
+	const { plugins } = await api.core.pluginList.query({ kind: 'pod' })
+	pluginOptions.value = plugins.map((item) => ({
+		label: item.id,
+		value: item.id,
+	}))
 })
 const form = reactive<{
 	name: string
@@ -97,15 +91,16 @@ const form = reactive<{
 	type: 'node',
 	plugin: '',
 	model: {
-		uuid: '',
+		uuid: props.modelUuid,
 	},
 })
+
 watch(props, (val) => {
-	form.model.uuid = val.data.modelUuid
+	form.model.uuid = val.modelUuid
 })
 
-async function doSubmit() {
+async function submitData() {
 	await api.core.podAdd.mutate(form)
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>

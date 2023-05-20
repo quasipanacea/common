@@ -1,39 +1,41 @@
 <template>
-	<h2 class="title as-2">Pod: Rename</h2>
+	<div>
+		<h2 class="title as-2">Pod: Rename</h2>
 
-	<div class="field">
-		<label class="label" for="old-name">Old Name</label>
-		<div class="control">
-			<input
-				class="input"
-				id="old-name"
-				type="text"
-				v-model="props.oldName"
-				disabled
-			/>
+		<div class="field">
+			<label class="label" for="old-name">Old Name</label>
+			<div class="control">
+				<input
+					class="input"
+					id="old-name"
+					type="text"
+					v-model="props.oldName"
+					disabled
+				/>
+			</div>
 		</div>
-	</div>
 
-	<div class="field">
-		<label class="label" for="new-name">New Name</label>
-		<div class="control">
-			<input
-				class="input"
-				id="new-name"
-				type="text"
-				v-model="form.newName"
-				required
-			/>
+		<div class="field">
+			<label class="label" for="new-name">New Name</label>
+			<div class="control">
+				<input
+					class="input"
+					id="new-name"
+					type="text"
+					v-model="form.newName"
+					required
+				/>
+			</div>
 		</div>
-	</div>
 
-	<div class="field">
-		<div class="control">
-			<input
-				type="submit"
-				class="button is-primary"
-				@click.disabled="doSubmit"
-			/>
+		<div class="field">
+			<div class="control">
+				<input
+					type="submit"
+					class="button is-primary"
+					@click.disabled="submitData"
+				/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -59,7 +61,7 @@ const form = reactive<{
 
 const api = useApi3<BareAppRouter>()
 
-async function doSubmit() {
+async function submitData() {
 	await api.core.podModify.mutate({
 		uuid: props.podUuid,
 		data: {

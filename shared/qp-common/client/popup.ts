@@ -6,10 +6,48 @@ const PopupEvents = z.object({
 		show: z.undefined(),
 		hide: z.undefined(),
 	}),
+	cancel: z.object({
+		show: z.undefined(),
+		hide: z.undefined(),
+	}),
+	'pod-new-2': z.object({
+		show: z.undefined(),
+		hide: z.undefined(),
+	}),
+	'pod-create-3': z.object({
+		show: z.object({
+			modelUuid: z.string(),
+		}),
+		hide: z.undefined(),
+	}),
 	'pod-rename-popup': z.object({
 		show: z.object({
 			podUuid: z.string(),
 			oldName: z.string(),
+		}),
+		hide: z.undefined(),
+	}),
+	'model-create': z.object({
+		show: z.undefined(),
+		hide: z.undefined(),
+	}),
+	'model-edit-properties': z.object({
+		show: z.object({
+			uuid: z.string(),
+			oldName: z.string(),
+		}),
+		hide: z.undefined(),
+	}),
+	'model-create-child': z.object({
+		show: z.object({
+			modelUuid: z.string(),
+			validationFn: z.any(),
+		}),
+		hide: z.undefined(),
+	}),
+	'view-create': z.object({
+		show: z.object({
+			modelUuid: z.string(),
 		}),
 		hide: z.undefined(),
 	}),

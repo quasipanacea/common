@@ -28,7 +28,9 @@
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
 				<div class="dropdown-content">
-					<a class="dropdown-item" @click="showPopup(GuidePopup)">Show Guide</a>
+					<a class="dropdown-item" @click="showPopupNoData('null', GuidePopup)"
+						>Show Guide</a
+					>
 				</div>
 				<div class="dropdown-content">
 					<div class="dropdown-item">
@@ -43,30 +45,6 @@
 			</div>
 		</div>
 	</div>
-	<ModelCreateChildPopup
-		:show="boolModelCreateChild"
-		:data="dataModelCreateChild"
-		@submit="afterModelCreateChild"
-		@cancel="() => (boolModelCreateChild = false)"
-	/>
-	<ModelCreatePopup
-		:show="boolModelCreate"
-		:data="dataModelCreate"
-		@submit="afterModelCreate"
-		@cancel="() => (boolModelCreate = false)"
-	/>
-	<ModelEditPropertiesPopup
-		:show="boolModelEditProperties"
-		:data="dataModelEditProperties"
-		@submit="afterModelEditProperties"
-		@cancel="() => (boolModelEditProperties = false)"
-	/>
-	<PodCreatePopup
-		:show="boolPodCreate"
-		:data="dataPodCreate"
-		@submit="afterPodCreate"
-		@cancel="() => (boolPodCreate = false)"
-	/>
 </template>
 
 <script setup lang="ts">
@@ -92,8 +70,9 @@ import {
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
 } from '@quasipanacea/plugin-components/popups/index.js'
-import { showPopup } from '@quasipanacea/common/client/popup.js'
+import { showPopupNoData } from '@quasipanacea/common/client/popup.js'
 import GuidePopup from './util/GuidePopup.vue'
+import { showPopup } from '@quasipanacea/common/client/popup.js'
 
 const router = useRouter()
 const api = useApi3<BareAppRouter>()
@@ -269,7 +248,7 @@ onMounted(async () => {
 
 			await api.core.linkAdd.mutate({})
 
-			await updateOverview()
+			await updateData()
 		})
 
 		// context menu
@@ -302,7 +281,7 @@ onMounted(async () => {
 									await api.core.orbRemove.mutate({
 										uuid: data.resourceData.uuid,
 									})
-									await updateOverview()
+									await updateData()
 								},
 							},
 						]
@@ -333,7 +312,7 @@ onMounted(async () => {
 							select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								showModelEditPropertiesPopup(data.resourceData)
+								handlePopupModelEditProperties(data.resourceData)
 							},
 						},
 						{
@@ -344,16 +323,10 @@ onMounted(async () => {
 								const modelPlugin = await import(
 									'@quasipanacea/model-group-simple/_client'
 								) // TODO
-								showModelCreateChildPopup(
+								handlePopupModelCreateChild(
 									data.resourceData,
 									modelPlugin.validateNewChild,
 								)
-							},
-						},
-						{
-							content: 'Create Child NEW',
-							async select(el) {
-								const data = el.data() as t.CytoscapeElementData
 							},
 						},
 					]
@@ -380,7 +353,7 @@ onMounted(async () => {
 									uuid: json?.data?.my?.podUuid,
 								})
 							}
-							await updateOverview()
+							await updateData()
 						},
 					},
 				]
@@ -393,17 +366,17 @@ onMounted(async () => {
 				{
 					content: 'Create Model',
 					select() {
-						showModelCreatePopup()
+						handlePopupModelCreate()
 					},
 				},
 			],
 		})
 	}
 
-	await updateOverview()
+	await updateData()
 })
 
-async function updateOverview() {
+async function updateData() {
 	if (!cy) throw new Error('cy is undefined')
 
 	let elements: cytoscape.ElementDefinition[] = []
@@ -450,43 +423,28 @@ async function updateOverview() {
 	cy.layout(cyLayout).run()
 }
 
-// popup: model create
-const boolModelCreate = ref(false)
-const dataModelCreate = reactive({})
-function showModelCreatePopup() {
-	boolModelCreate.value = true
-}
-async function afterModelCreate() {
-	boolModelCreate.value = false
-	await updateOverview()
+async function handlePopupModelCreate() {
+	await showPopupNoData('model-create', ModelCreatePopup)
+	await updateData()
 }
 
-// popup: model edit properties
-const boolModelEditProperties = ref(false)
-const dataModelEditProperties = reactive({ uuid: '', oldName: '' })
-function showModelEditPropertiesPopup(model: t.Model_t) {
-	dataModelEditProperties.uuid = model.uuid
-	dataModelEditProperties.oldName = model.name || ''
-	boolModelEditProperties.value = true
-}
-async function afterModelEditProperties() {
-	boolModelEditProperties.value = false
-	await updateOverview()
+async function handlePopupModelEditProperties(model: t.Model_t) {
+	await showPopup('model-edit-properties', ModelEditPropertiesPopup, {
+		uuid: model.uuid,
+		oldName: model.name || '',
+	})
+	await updateData()
 }
 
-// popup: model create child
-const boolModelCreateChild = ref(false)
-const dataModelCreateChild = reactive({ modelUuid: '' })
-function showModelCreateChildPopup(
+async function handlePopupModelCreateChild(
 	model: t.Model_t,
 	validationFn: t.PluginExportClient_t['validateNewChild'],
 ) {
-	dataModelCreateChild.modelUuid = model.uuid
-	boolModelCreateChild.value = true
-}
-async function afterModelCreateChild() {
-	boolModelCreateChild.value = false
-	await updateOverview()
+	await showPopup('model-create-child', ModelCreateChildPopup, {
+		modelUuid: model.uuid,
+		validationFn,
+	})
+	await updateData()
 }
 
 // popup: pod create
@@ -498,6 +456,6 @@ function showPodCreatePopup(uuid: string) {
 }
 async function afterPodCreate() {
 	boolPodCreate.value = false
-	await updateOverview()
+	await updateData()
 }
 </script>

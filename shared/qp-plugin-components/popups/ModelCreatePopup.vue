@@ -1,5 +1,5 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
+	<div>
 		<h2 class="title is-3 mb-0">Model: Create</h2>
 
 		<div class="field">
@@ -38,11 +38,11 @@
 					class="button is-primary"
 					type="submit"
 					value="Create"
-					@click.prevent="doSubmit"
+					@click.prevent="submitData"
 				/>
 			</div>
 		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -50,13 +50,7 @@ import { onMounted, reactive, ref } from 'vue'
 
 import type * as t from '@quasipanacea/common/types'
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
-
-import PopupComponent from '../PopupComponent.vue'
-
-const props = defineProps<{
-	show: boolean
-}>()
-const emit = defineEmits(['cancel', 'submit'])
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
 const api = useApi3<BareAppRouter>()
 
@@ -73,8 +67,8 @@ const form = reactive<{
 	plugin: '',
 })
 
-async function doSubmit() {
+async function submitData() {
 	await api.core.modelAdd.mutate(form)
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>

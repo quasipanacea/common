@@ -1,7 +1,7 @@
 <template>
 	<SemanticInputOutput>
 		<template #input>
-			<CodeMirror :content="inputCode" @contentUpdate="codeUpdate" />
+			<CodeMirror :content="inputCode" @contentUpdate="updateData" />
 		</template>
 		<template #output>
 			<iframe
@@ -43,7 +43,7 @@ onMounted(async () => {
 	})
 	inputCode.value = result.content
 })
-async function codeUpdate(text: string) {
+async function updateData(text: string) {
 	await api.plugins.pods.latex.write.mutate({
 		uuid,
 		content: text,

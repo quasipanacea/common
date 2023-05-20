@@ -8,7 +8,7 @@
 			<button class="button" @click="showViewCreatePopup">New</button>
 
 			<h2 class="title mb-1">Pods</h2>
-			<button class="button" @click="showPodCreatePopup">New</button>
+			<button class="button" @click="handlePopupPodCreate">New</button>
 			<div class="columns is-multiline">
 				<div v-for="pod of pods" :key="pod.uuid" class="column is-one-quarter">
 					<div class="card">
@@ -44,7 +44,7 @@
 							<a
 								class="card-footer-item"
 								@click="
-									launchPopupPodEditMetadata(
+									handlePopupPodEditMetadata(
 										pod.uuid,
 										pod.name,
 										pod.extra?.['model.flat']?.description || '',
@@ -61,18 +61,6 @@
 			</div>
 		</div>
 	</div>
-	<PodCreatePopup
-		:show="boolPodCreate"
-		:data="dataPodCreate"
-		@submit="afterPodCreate"
-		@cancel="() => (boolPodCreate = false)"
-	/>
-	<ViewCreatePopup
-		:show="boolViewCreate"
-		:data="dataViewCreate"
-		@submit="afterViewCreate"
-		@cancel="() => (boolViewCreate = false)"
-	/>
 </template>
 
 <script setup lang="ts">
@@ -101,10 +89,10 @@ const pods = ref<t.Pod_t[]>([])
 const orbs = ref<t.Orb_t[]>([])
 
 onMounted(async () => {
-	await updateView()
+	await updateData()
 })
 
-async function updateView() {
+async function updateData() {
 	const { models: modelsRes } = await api.core.modelList.query({
 		uuid: props.uuid,
 	})
@@ -124,19 +112,14 @@ async function updateView() {
 	orbs.value = orbsRes
 }
 
-// popup: pod create
-const boolPodCreate = ref(false)
-const dataPodCreate = reactive({ modelUuid: '' })
-function showPodCreatePopup() {
-	dataPodCreate.modelUuid = model.value?.uuid
-	boolPodCreate.value = true
-}
-async function afterPodCreate() {
-	await updateView()
-	boolPodCreate.value = false
+async function handlePopupPodCreate() {
+	await showPopup('pod-create-3', PodCreatePopup, {
+		modelUuid: model.value?.uuid || '',
+	})
+	await updateData()
 }
 
-async function launchPopupPodEditMetadata(
+async function handlePopupPodEditMetadata(
 	uuid: string,
 	name: string,
 	description: string,
@@ -149,18 +132,13 @@ async function launchPopupPodEditMetadata(
 		tags,
 	})
 
-	await updateView()
+	await updateData()
 }
 
-// popup: view create
-const boolViewCreate = ref(false)
-const dataViewCreate = reactive({ modelUuid: '' })
-function showViewCreatePopup() {
-	dataViewCreate.modelUuid = props.uuid
-	boolViewCreate.value = true
-}
-async function afterViewCreate() {
-	await updateView()
-	boolViewCreate.value = false
+async function showViewCreatePopup() {
+	await showPopup('view-create', ViewCreatePopup, {
+		modelUuid: props.uuid,
+	})
+	await updateData()
 }
 </script>

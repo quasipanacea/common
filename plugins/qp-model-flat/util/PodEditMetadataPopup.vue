@@ -76,7 +76,7 @@ const form = reactive<{
 })
 const currentPod = ref<t.Pod_t>()
 onMounted(async () => {
-	await updateView(props.uuid, props.description, props.tags)
+	await updateData(props.uuid, props.description, props.tags)
 })
 
 const tagName = ref('')
@@ -89,10 +89,10 @@ function removeTag(name: string) {
 }
 
 watch(props, async (val) => {
-	await updateView(props.uuid, val.description, val.tags)
+	await updateData(props.uuid, val.description, val.tags)
 })
 
-async function updateView(uuid: string, description: string, tags: string[]) {
+async function updateData(uuid: string, description: string, tags: string[]) {
 	const { pods: podsRes } = await api.core.podList.query({
 		uuid,
 	})

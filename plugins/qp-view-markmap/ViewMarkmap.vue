@@ -30,20 +30,20 @@ const markdown = ref(`# markmap
 `)
 let mm
 
-const update = () => {
+const updateData = () => {
 	const { root } = transformer.transform(markdown.value)
 	mm.setData(root)
 	mm.fit()
 }
-watch(markdown, update)
+watch(markdown, updateData)
 function onChange(text: string) {
 	markdown.value = text
-	update()
+	updateData()
 }
 onMounted(async () => {
 	await nextTick()
 	mm = Markmap.create(svgRef.value)
-	update()
+	updateData()
 })
-onUpdated(update)
+onUpdated(updateData)
 </script>

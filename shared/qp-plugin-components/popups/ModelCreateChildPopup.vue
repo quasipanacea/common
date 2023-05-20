@@ -1,5 +1,5 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
+	<div>
 		<h2 class="title is-4">Model: Create Child</h2>
 
 		<div class="field">
@@ -37,28 +37,23 @@
 
 		<div class="field">
 			<div class="control">
-				<button class="button is-primary" @click.prevent="doSubmit">
+				<button class="button is-primary" @click.prevent="submitData">
 					Submit
 				</button>
 			</div>
 		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, watch, ref } from 'vue'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
-import type * as t from '@quasipanacea/common/types.js'
-import PopupComponent from '../PopupComponent.vue'
-
-const emit = defineEmits(['cancel', 'submit'])
 const props = defineProps<{
-	show: boolean
-	data: {
-		modelUuid: string
-	}
+	modelUuid: string
+	validationFn: () => boolean
 }>()
 
 const api = useApi3<BareAppRouter>()
@@ -81,12 +76,12 @@ const form = reactive<{
 	podPlugin: '',
 })
 
-async function doSubmit() {
+async function submitData() {
 	if (form.childType === 'orb') {
 		await api.core.orbAdd.mutate({
 			name: form.name,
 			model: {
-				uuid: props.data.modelUuid,
+				uuid: props.modelUuid,
 			},
 		})
 	} else if (form.childType === 'pod') {
@@ -94,10 +89,10 @@ async function doSubmit() {
 			name: form.name,
 			plugin: form.podPlugin,
 			model: {
-				uuid: props.data.modelUuid,
+				uuid: props.modelUuid,
 			},
 		})
 	}
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>

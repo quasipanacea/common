@@ -1,72 +1,66 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
-		<h2 class="title is-4">Pod: New</h2>
+	<h2 class="title is-4">Pod: New</h2>
 
-		<div class="field">
-			<label class="label">Model Uuid</label>
-			<div class="control">
-				<input class="input" type="text" v-model="data.model.uuid" disabled />
+	<div class="field">
+		<label class="label">Model Uuid</label>
+		<div class="control">
+			<input class="input" type="text" v-model="model.uuid" disabled />
+		</div>
+	</div>
+
+	<div class="field">
+		<label class="label">Name</label>
+		<div class="control">
+			<input class="input" type="text" v-model="form.name" />
+		</div>
+	</div>
+
+	<div class="field">
+		<label for="plugin" class="label">Plugin</label>
+		<div class="control">
+			<div class="select">
+				<select id="plugin" v-model="form.plugin">
+					<option v-for="plugin of podPlugins" :key="plugin" :value="plugin">
+						{{ plugin }}
+					</option>
+				</select>
 			</div>
 		</div>
+	</div>
 
-		<div class="field">
-			<label class="label">Name</label>
-			<div class="control">
-				<input class="input" type="text" v-model="form.name" />
+	<div class="field">
+		<label for="color" class="label">Color</label>
+		<div class="control">
+			<div class="select">
+				<select id="color" v-model="form.color">
+					<option
+						v-for="color of ['red', 'blue', 'green', 'yellow']"
+						:key="color"
+						:value="color"
+					>
+						{{ color }}
+					</option>
+				</select>
 			</div>
 		</div>
+	</div>
 
-		<div class="field">
-			<label for="plugin" class="label">Plugin</label>
-			<div class="control">
-				<div class="select">
-					<select id="plugin" v-model="form.plugin">
-						<option v-for="plugin of podPlugins" :key="plugin" :value="plugin">
-							{{ plugin }}
-						</option>
-					</select>
-				</div>
-			</div>
+	<div class="field">
+		<div class="control">
+			<button class="button is-primary" @click="sendRequest">Submit</button>
 		</div>
-
-		<div class="field">
-			<label for="color" class="label">Color</label>
-			<div class="control">
-				<div class="select">
-					<select id="color" v-model="form.color">
-						<option
-							v-for="color of ['red', 'blue', 'green', 'yellow']"
-							:key="color"
-							:value="color"
-						>
-							{{ color }}
-						</option>
-					</select>
-				</div>
-			</div>
-		</div>
-
-		<div class="field">
-			<div class="control">
-				<button class="button is-primary" @click="sendRequest">Submit</button>
-			</div>
-		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.js'
-import PopupComponent from '@quasipanacea/plugin-components/PopupComponent.vue'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
-const emit = defineEmits(['cancel', 'submit'])
 const props = defineProps<{
-	show: boolean
-	data: {
-		model: {
-			uuid: string
-		}
+	model: {
+		uuid: string
 	}
 }>()
 
@@ -81,17 +75,18 @@ onMounted(async () => {
 const form = reactive({
 	name: '',
 	plugin: '',
+	color: '',
 })
 
 async function sendRequest() {
 	await api.core.podAdd.mutate({
 		model: {
-			uuid: props.data.model.uuid,
+			uuid: props.model.uuid,
 		},
 		plugin: form.plugin,
 		name: form.name,
 	})
 	await api.core.podModifyExtra.mutate({})
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>

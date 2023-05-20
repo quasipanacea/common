@@ -25,7 +25,5 @@ export async function markdownToHtml(input: string) {
 		.use(rehypeStringify)
 		.process(input)
 
-	console.log(String(output))
-
 	return String(output)
 }

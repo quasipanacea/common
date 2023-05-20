@@ -1,5 +1,5 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
+	<div>
 		<h2 class="title as-2">View: Create</h2>
 
 		<div class="field">
@@ -52,11 +52,11 @@
 					class="button is-primary"
 					type="submit"
 					value="Create"
-					@click.prevent="doSubmit"
+					@click.prevent="submitData"
 				/>
 			</div>
 		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -64,16 +64,11 @@ import { onMounted, reactive, ref, watch } from 'vue'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
 import type * as t from '@quasipanacea/common/types.js'
-
-import PopupComponent from '../PopupComponent.vue'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
 const props = defineProps<{
-	show: boolean
-	data: {
-		modelUuid: string
-	}
+	modelUuid: string
 }>()
-const emit = defineEmits(['cancel', 'submit'])
 
 const api = useApi3<BareAppRouter>()
 
@@ -94,15 +89,15 @@ const form = reactive<{
 	name: '',
 	plugin: '',
 	model: {
-		uuid: '',
+		uuid: props.modelUuid,
 	},
 })
 watch(props, (val) => {
-	form.model.uuid = val.data.modelUuid
+	form.model.uuid = val.modelUuid
 })
 
-async function doSubmit() {
+async function submitData() {
 	await api.core.viewAdd.mutate(form)
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>

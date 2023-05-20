@@ -1,15 +1,10 @@
 <template>
-	<PopupComponent :show="show" @cancel="$emit('cancel')">
+	<div>
 		<h2 class="title is-4">Model: Edit Properties</h2>
 		<div class="field">
 			<label class="label">Uuid</label>
 			<div class="control">
-				<input
-					class="input"
-					type="text"
-					:placeholder="props.data.uuid"
-					disabled
-				/>
+				<input class="input" type="text" :placeholder="props.uuid" disabled />
 			</div>
 		</div>
 
@@ -19,7 +14,7 @@
 				<input
 					class="input"
 					type="text"
-					:placeholder="props.data.oldName"
+					:placeholder="props.oldName"
 					disabled
 				/>
 			</div>
@@ -33,28 +28,22 @@
 		</div>
 
 		<div class="control">
-			<button class="button is-primary" @click.prevent="doSubmit">
+			<button class="button is-primary" @click.prevent="submitData">
 				Submit
 			</button>
 		</div>
-	</PopupComponent>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
+import { hidePopupNoData } from '@quasipanacea/common/client/popup'
 
-import type * as t from '@quasipanacea/common/types.js'
-import PopupComponent from '../PopupComponent.vue'
-
-const emit = defineEmits(['cancel', 'submit'])
 const props = defineProps<{
-	show: boolean
-	data: {
-		uuid: string
-		oldName: string
-	}
+	uuid: string
+	oldName: string
 }>()
 
 const api = useApi3<BareAppRouter>()
@@ -65,16 +54,16 @@ const form = reactive<{
 	newName: '',
 })
 watch(props, (val) => {
-	form.newName = val.data.oldName
+	form.newName = val.oldName
 })
 
-async function doSubmit() {
+async function submitData() {
 	await api.core.modelModify.mutate({
-		uuid: props.data.uuid,
+		uuid: props.uuid,
 		data: {
 			name: form.newName,
 		},
 	})
-	emit('submit')
+	hidePopupNoData('null')
 }
 </script>
