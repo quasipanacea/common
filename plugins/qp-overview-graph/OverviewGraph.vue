@@ -65,7 +65,7 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
 import { getPlugins } from "@quasipanacea/common/client/plugin.ts"
 
 import type * as t from '@quasipanacea/common/types'

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
 
 const api = useApi3<BareAppRouter>()
 

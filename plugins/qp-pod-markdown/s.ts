@@ -1,4 +1,4 @@
-import { trpc } from '@common/trpc.ts'
+import { trpc } from '@common/server/trpc.ts'
 import { coreRouter } from '@common/routes.ts'
 
 import { trpcRouter } from './podMarkdown.js'

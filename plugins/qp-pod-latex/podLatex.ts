@@ -1,7 +1,7 @@
 import { z, path, Router, send } from '@server/mod.ts'
 
 import * as t from '@quasipanacea/common/types.ts'
-import * as util from '@quasipanacea/common/util.ts'
+import * as util from '@quasipanacea/common/server/util.ts'
 import * as pluginUtility from '@quasipanacea/plugin-utility/util.ts'
 
 export type State = {

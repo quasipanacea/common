@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import { useApi3 } from '@quasipanacea/common/trpcClient.js'
+import { useApi3 } from '@quasipanacea/common/client/trpcClient.ts'
 
 import type { InferenceOnlyAppRouter } from './s'
 import { onMounted, ref } from 'vue'

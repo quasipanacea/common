@@ -1,7 +1,7 @@
-import { path } from './mod.ts'
+import { path } from '../mod.ts'
 
 import * as util from './util.ts'
-import * as t from './types.ts'
+import * as t from '../types.ts'
 
 export async function getHooks(
 	pluginId: string,

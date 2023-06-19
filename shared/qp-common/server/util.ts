@@ -1,7 +1,7 @@
-import { path, z, toml } from './mod.ts'
+import { path, z, toml } from '../mod.ts'
 
 import { config } from './config.ts'
-import type * as t from './types.ts'
+import type * as t from '../types.ts'
 import * as utilResource from './utilResource.ts'
 
 export function jsonStringify(obj: Record<string, unknown>) {

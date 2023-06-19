@@ -58,7 +58,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient.js'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
 import type * as t from '@quasipanacea/common/types.js'
 
 import PodNewPopup from './util/PodNewPopup.vue'

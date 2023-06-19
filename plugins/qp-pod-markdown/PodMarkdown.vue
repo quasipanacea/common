@@ -20,7 +20,7 @@ import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOu
 import 'github-markdown-css/github-markdown-light.css'
 
 import * as convert from '@quasipanacea/plugin-utility/convert'
-import { useApi3 } from '@quasipanacea/common/trpcClient.js'
+import { useApi3 } from '@quasipanacea/common/client/trpcClient.ts'
 
 import 'katex/dist/contrib/mhchem'
 import type { InferenceOnlyAppRouter } from './s'
