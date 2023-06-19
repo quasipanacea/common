@@ -48,8 +48,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, watch, ref } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
-import { hidePopupNoData } from '@quasipanacea/common/client/popup'
+import { hidePopupNoData, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	modelUuid: string

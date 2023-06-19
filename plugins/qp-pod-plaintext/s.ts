@@ -1,5 +1,5 @@
-import { trpc } from '@common/server/trpc.ts'
-import { coreRouter } from '@common/routes.ts'
+import { trpc } from '@common/server/index.ts'
+import { coreRouter } from '@common/index.ts'
 
 import { trpcRouter } from './podPlaintext.js'
 

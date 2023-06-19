@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	model: {

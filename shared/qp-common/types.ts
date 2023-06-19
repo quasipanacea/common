@@ -1,4 +1,5 @@
 import { z } from './mod.ts'
+import { type Router, type AnyProcedure, type AnyRouter } from '../../../src/mod.ts'
 
 export const Uuid = z.string().min(1)
 export const Id = z.string().min(1)
@@ -132,22 +133,61 @@ export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
 export type SchemaViewsJson_t = z.infer<typeof SchemaViewsJson>
 
-// Module
-export type MakeState<State extends Record<string, unknown>> = (
-	pod: PodDir_t,
-) => State
+// Client Plugins: Zod Schema
+const Metadata = z.object({
+	kind: z.string(),
+	id: z.string(),
+})
+export const AnyClientPlugin = z.object({
+	metadata: Metadata,
+	component: z.unknown()
+})
+export const OverviewClientPlugin = z.object({
+	metadata: Metadata,
+	component: z.unknown()
+})
+export const PodClientPlugin = z.object({
+	metadata: Metadata,
+	component: z.unknown()
+})
+export const ModelClientPlugin = z.object({
+	metadata: Metadata,
+	component: z.unknown(),
+	arrangeElements: z
+		.function()
+		.args(Model, z.array(Pod), z.array(Orb))
+		.returns(z.array(z.object({ elements: z.unknown() }))),
+	validateNewChild: z.function().args().returns(z.boolean()),
+})
+export const ViewClientPlugin = z.object({
+	metadata: Metadata,
+	component: z.unknown()
+})
 
+// Client Plugins: Type
+export type AnyClientPlugin_t = z.infer<typeof AnyClientPlugin>
+export type OverviewClientPlugin_t = z.infer<typeof OverviewClientPlugin>
+export type PodClientPlugin_t = z.infer<typeof PodClientPlugin>
+export type ModelClientPlugin_t = z.infer<typeof ModelClientPlugin>
+export type ViewClientPlugin_t = z.infer<typeof ViewClientPlugin>
+
+// Server Plugins: Type
 export type Hooks<State extends Record<string, unknown>> = {
 	makeState?: (pod: PodDir_t) => State | Promise<State>
 	onPodAdd?: (pod: PodDir_t, state: State) => void | Promise<void>
 	onPodRemove?: (pod: PodDir_t, state: State) => void | Promise<void>
 }
-
-export type PluginModule = {
-	hooks: Hooks<Record<string, unknown>>
-	router: unknown
+export type AnyServerPlugin_t = {
+	metadata: z.infer<typeof Metadata>
+}
+export type PodServerPlugin_t = {
+	metadata: z.infer<typeof Metadata>
+	hooks?: Hooks<Record<string, unknown>>
+	trpcRouter?: AnyProcedure | AnyRouter,
+	oakRouter?: Router
 }
 
+// TODO
 export const PluginExportIsomorphic = z.object({
 	metadata: z.object({
 		kind: z.string(),
@@ -162,11 +202,9 @@ export const PluginExportClient = z.object({
 		.returns(z.array(z.object({ elements: z.unknown() }))),
 	validateNewChild: z.function().args().returns(z.boolean()),
 })
-export const PluginExportServer = z.object({})
 
 export type PluginExportIsomorphic_t = z.infer<typeof PluginExportIsomorphic>
 export type PluginExportClient_t = z.infer<typeof PluginExportClient>
-export type PluginExportServer_t = z.infer<typeof PluginExportServer>
 
 // Client
 export const NodeLayout = z.object({

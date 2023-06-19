@@ -13,14 +13,16 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
-import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
 import 'katex/dist/katex.min.css'
 
-import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
-import * as convert from '@quasipanacea/plugin-utility/convert'
-import { useApi3 } from '@quasipanacea/common/client/trpcClient.ts'
+import { useApi3 } from '@quasipanacea/common/client/index.js'
+import {
+	SemanticInputOutput,
+	CodeMirror,
+} from '@quasipanacea/plugin-components/index.js'
+import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 
 import 'katex/dist/contrib/mhchem'
 import type { InferenceOnlyAppRouter } from './s'

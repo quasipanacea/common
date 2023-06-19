@@ -48,9 +48,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
-import type * as t from '@quasipanacea/common/types'
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
-import { hidePopupNoData } from '@quasipanacea/common/client/popup'
+import type * as t from '@quasipanacea/common/types.ts'
+import { hidePopupNoData, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
 const api = useApi3<BareAppRouter>()
 

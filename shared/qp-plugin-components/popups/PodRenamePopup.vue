@@ -43,10 +43,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
-
-import type * as t from '@quasipanacea/common/types.js'
-import { hidePopupNoData } from '@quasipanacea/common/client/popup.js'
+import type * as t from '@quasipanacea/common/types.ts'
+import { hidePopupNoData,  useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	oldName: string

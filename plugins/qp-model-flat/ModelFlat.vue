@@ -67,15 +67,14 @@
 import { onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
-import type * as t from '@quasipanacea/common/types.js'
+import type * as t from '@quasipanacea/common/types.ts'
+import { showPopup, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
 import {
 	PodCreatePopup,
 	ViewCreatePopup,
-} from '@quasipanacea/plugin-components/popups/index.js'
+} from '@quasipanacea/plugin-components/index.js'
 import PodEditMetadataPopup from './util/PodEditMetadataPopup.vue'
-import { showPopup } from '@quasipanacea/common/client/popup.js'
 
 const props = defineProps<{
 	uuid: string

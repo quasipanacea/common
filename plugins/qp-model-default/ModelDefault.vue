@@ -34,9 +34,9 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
+import type * as t from '@quasipanacea/common/types.ts'
+import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
 
-import type * as t from '@quasipanacea/common/types.js'
 
 const props = defineProps<{
 	uuid: string

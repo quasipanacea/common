@@ -1,7 +1,7 @@
 import { initTRPC } from '@trpc/server'
 
 import { trpc } from '@quasipanacea/common/server/trpc.ts'
-import * as util from '@quasipanacea/common/server/util.ts'
+import { util } from '@quasipanacea/common/server/index.ts'
 
 export async function assertFileExists(filepath: string) {
 	try {

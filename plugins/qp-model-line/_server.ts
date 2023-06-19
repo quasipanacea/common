@@ -3,7 +3,7 @@ import { z, path, Router, send } from '@server/mod.ts'
 import * as t from '@quasipanacea/common/types.ts'
 import { dotnev } from 'std/dotenv/mod.ts'
 
-import * as pluginUtility from '@quasipanacea/plugin-utility/util.ts'
+import { pluginUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {}
 
@@ -12,7 +12,7 @@ export function getRequests() {
 	console.log('api key', value)
 }
 
-const trpc = pluginUtility.useTrpc<State>()
+const trpc = pluginUtil.useTrpc<State>()
 
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
@@ -26,7 +26,7 @@ export const trpcRouter = trpc.router({
 				content: z.string(),
 			}),
 		)
-		.use(pluginUtility.executeAllMiddleware(trpc, hooks))
+		.use(pluginUtil.executeAllMiddleware(trpc, hooks))
 		.query(async ({ ctx, input }) => {
 			const content = await Deno.readTextFile(ctx.state.latexFile)
 

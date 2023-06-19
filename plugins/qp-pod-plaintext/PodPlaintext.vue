@@ -10,12 +10,12 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { useApi3 } from '@quasipanacea/common/client/trpcClient.ts'
+import { useApi3 } from '@quasipanacea/common/client/index.js'
 
 import type { InferenceOnlyAppRouter } from './s'
-import { onMounted, ref } from 'vue'
 
 const api = useApi3<InferenceOnlyAppRouter>()
 

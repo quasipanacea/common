@@ -1,15 +1,17 @@
-import * as PodChemical from '@quasipanacea/pod-chemical/_server.ts'
-import * as PodDebug from '@quasipanacea/pod-debug/_server.ts'
-import * as PodLatex from '@quasipanacea/pod-latex/_server.ts'
-import * as PodMarkdown from '@quasipanacea/pod-markdown/_server.ts'
-import * as PodPlaintext from '@quasipanacea/pod-plaintext/_server.ts'
+import { init as PodChemical } from '@quasipanacea/pod-chemical/_server.ts'
+import { init as PodDebug } from '@quasipanacea/pod-debug/_server.ts'
+import { init as PodLatex } from '@quasipanacea/pod-latex/_server.ts'
+import { init as PodMarkdown } from '@quasipanacea/pod-markdown/_server.ts'
+import { init as PodPlaintext } from '@quasipanacea/pod-plaintext/_server.ts'
 
-export * from './_isomorphic.ts'
+export { metadata } from './_isomorphic.ts'
 
-export const podPlugins = [
-	PodChemical,
-	PodDebug,
-	PodLatex,
-	PodMarkdown,
-	PodPlaintext,
-]
+export async function initAll() {
+	await Promise.all([
+		PodChemical(),
+		PodDebug(),
+		PodLatex(),
+		PodMarkdown(),
+		PodPlaintext()
+	])
+}

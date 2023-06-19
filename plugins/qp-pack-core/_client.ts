@@ -16,7 +16,7 @@ import { init as ModelLine } from '@quasipanacea/model-line/_client.js'
 import { init as ViewList } from '@quasipanacea/view-list/_client.js'
 import { init as ViewMarkmap } from '@quasipanacea/view-markmap/_client.js'
 
-export * from './_isomorphic.ts'
+export { metadata } from './_isomorphic.ts'
 
 export async function initAll() {
 	await Promise.all([

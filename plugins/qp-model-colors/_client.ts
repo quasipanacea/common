@@ -1,7 +1,7 @@
 import type cytoscape from 'cytoscape'
 
-import { registerPlugin } from "@quasipanacea/common/client/plugin.ts"
-import type * as t from '@quasipanacea/common/types.ts'
+import { t } from '@quasipanacea/common/index.ts'
+import { registerPlugin } from "@quasipanacea/common/client/index.js"
 
 import { metadata } from "./_isomorphic.ts"
 import { default as component } from "./ModelColors.vue"

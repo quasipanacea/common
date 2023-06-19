@@ -65,18 +65,22 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/trpcClient.ts'
-import { getPlugins } from "@quasipanacea/common/client/plugin.ts"
+import type * as t from '@quasipanacea/common/types.ts'
+import {
+	getPlugin,
+	showPopupNoData,
+	showPopup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
-import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
 import {
 	ModelCreateChildPopup,
 	ModelCreatePopup,
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
-} from '@quasipanacea/plugin-components/popups/index.js'
-import { showPopupNoData, showPopup } from '@quasipanacea/common/client/popup.js'
+} from '@quasipanacea/plugin-components/index.js'
 import GuidePopup from './util/GuidePopup.vue'
 
 const router = useRouter()
@@ -405,9 +409,7 @@ async function updateData() {
 			model: { uuid: model.uuid },
 		})
 
-		const { modelPlugins } = await getPlugins()
-		const modelPlugin = modelPlugins.get(model.plugin)
-
+		const modelPlugin = getPlugin('model', model.plugin)
 		const { elements: newElements } = modelPlugin.arrangeElements(
 			model,
 			pods,

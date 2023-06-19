@@ -1,8 +1,6 @@
 import { path, z } from './mod.ts'
 
-import * as util from './server/util.ts'
-import * as utilResource from './server/utilResource.ts'
-import * as utilPlugin from './server/utilPlugin.ts'
+import { util, utilResource, utilPlugin } from './server/index.ts'
 import * as t from './types.ts'
 import { trpc } from './server/trpc.ts'
 
