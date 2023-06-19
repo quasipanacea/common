@@ -1,4 +1,4 @@
 export const metadata = {
-	id: 'group-simple',
+	id: 'colors',
 	kind: 'model',
 }

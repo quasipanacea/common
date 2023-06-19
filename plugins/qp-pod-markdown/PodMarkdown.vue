@@ -17,9 +17,6 @@ import CodeMirror from '@quasipanacea/plugin-components/CodeMirror.vue'
 import 'katex/dist/katex.min.css'
 
 import SemanticInputOutput from '@quasipanacea/plugin-components/SemanticInputOutput.vue'
-import GoldenLayoutVue, {
-	type CustomLayoutConfig,
-} from '@quasipanacea/plugin-components/GoldenLayoutVue.vue'
 import 'github-markdown-css/github-markdown-light.css'
 
 import * as convert from '@quasipanacea/plugin-utility/convert'
@@ -41,32 +38,6 @@ const uuid = getUuid()
 
 const inputCode = ref('')
 const outputHtml = ref('')
-
-const goldenLayoutConfig: CustomLayoutConfig = {
-	root: {
-		type: 'row',
-		// @ts-expect-error
-		content: [
-			{
-				type: 'component',
-				componentType: 'ComponentA',
-				componentState: { text: 'Component 1' },
-				size: '50%',
-				factoryFn(container, state) {
-					container.setTitle('Left')
-				},
-			},
-			{
-				type: 'component',
-				componentType: 'ComponentB',
-				componentState: { text: 'Component 2' },
-				factoryFn(container, state) {
-					container.setTitle('Right')
-				},
-			},
-		],
-	},
-}
 
 const n = setInterval(async () => {
 	await markdownRead()

@@ -4,7 +4,7 @@
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/model-default": "workspace:*",
 		"@quasipanacea/model-flat": "workspace:^",
-		"@quasipanacea/model-group-simple": "workspace:*",
+		"@quasipanacea/model-colors": "workspace:*",
 		"@quasipanacea/model-line": "workspace:^",
 		"@quasipanacea/overview-debug": "workspace:*",
 		"@quasipanacea/overview-graph": "workspace:*",

@@ -33,6 +33,11 @@
 					>
 				</div>
 				<div class="dropdown-content">
+					<router-link to="/plugins">
+						<a class="dropdown-item">Plugins</a>
+					</router-link>
+				</div>
+				<div class="dropdown-content">
 					<div class="dropdown-item">
 						<div class="select">
 							<select v-model="currentLayout">
@@ -61,6 +66,7 @@ import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
 import { useApi3, type BareAppRouter } from '@quasipanacea/common/trpcClient'
+import { getPlugins } from "@quasipanacea/common/client/plugin.ts"
 
 import type * as t from '@quasipanacea/common/types'
 import { defaultTheme } from '@quasipanacea/theme-default/_theme'
@@ -70,9 +76,8 @@ import {
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
 } from '@quasipanacea/plugin-components/popups/index.js'
-import { showPopupNoData } from '@quasipanacea/common/client/popup.js'
+import { showPopupNoData, showPopup } from '@quasipanacea/common/client/popup.js'
 import GuidePopup from './util/GuidePopup.vue'
-import { showPopup } from '@quasipanacea/common/client/popup.js'
 
 const router = useRouter()
 const api = useApi3<BareAppRouter>()
@@ -262,30 +267,21 @@ onMounted(async () => {
 				const elData = el.data() as t.CytoscapeElementData
 
 				if (elData.resource === 'orb') {
-					if (elData.resourceData.pod) {
-						return [
-							{
-								content: 'Go to Pod',
-								select(el) {
-									const data = el.data() as t.CytoscapeElementData
-								},
-							},
-						]
-					} else {
-						return [
-							{
-								content: 'Delete Orb',
-								async select(el) {
-									const data = el.data() as t.CytoscapeElementData
+					return [
+						{
+							content: 'Delete Orb',
+							async select(el) {
+								const data = el.data() as t.CytoscapeElementData
 
+								if (globalThis.confirm('Are you sure?')) {
 									await api.core.orbRemove.mutate({
 										uuid: data.resourceData.uuid,
 									})
 									await updateData()
-								},
+								}
 							},
-						]
-					}
+						},
+					]
 				} else if (elData.resource === 'pod') {
 					return [
 						{
@@ -321,7 +317,7 @@ onMounted(async () => {
 								const data = el.data() as t.CytoscapeElementData
 
 								const modelPlugin = await import(
-									'@quasipanacea/model-group-simple/_client'
+									'@quasipanacea/model-colors/_client'
 								) // TODO
 								handlePopupModelCreateChild(
 									data.resourceData,
@@ -409,7 +405,9 @@ async function updateData() {
 			model: { uuid: model.uuid },
 		})
 
-		const modelPlugin = await import('@quasipanacea/model-group-simple/_client')
+		const { modelPlugins } = await getPlugins()
+		const modelPlugin = modelPlugins.get(model.plugin)
+
 		const { elements: newElements } = modelPlugin.arrangeElements(
 			model,
 			pods,

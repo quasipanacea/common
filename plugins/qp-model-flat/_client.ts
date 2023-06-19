@@ -1,8 +1,18 @@
-export * from './_isomorphic.js'
-export { default as component } from './ModelFlat.vue'
-
-import type * as t from '@quasipanacea/common/types.ts'
 import type cytoscape from 'cytoscape'
+
+import { registerPlugin } from "@quasipanacea/common/client/plugin.ts"
+import type * as t from '@quasipanacea/common/types.ts'
+
+import { metadata } from "./_isomorphic.ts"
+import { default as component } from "./ModelFlat.vue"
+
+export async function init() {
+	await registerPlugin({
+		metadata,
+		component,
+		arrangeElements
+	})
+}
 
 export function arrangeElements(
 	model: t.Model_t,
