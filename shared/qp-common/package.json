@@ -1,7 +1,6 @@
 {
 	"name": "@quasipanacea/common",
 	"dependencies": {
-		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
 		"@quasipanacea/types": "workspace:^",
 		"@trpc/client": "^10.18.0",

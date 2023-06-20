@@ -1,7 +1,6 @@
 {
 	"name": "@quasipanacea/overview-graph",
 	"dependencies": {
-		"@quasipanacea/model-colors": "workspace:^",
 		"@quasipanacea/common": "workspace:*",
 		"@quasipanacea/plugin-components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
