@@ -1,8 +1,8 @@
 {
-	"name": "@quasipanacea/model-colors",
+	"name": "@quasipanacea/plugin-model-colors",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*"
 	},
 	"devDependencies": {

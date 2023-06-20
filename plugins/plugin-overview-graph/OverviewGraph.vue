@@ -73,13 +73,13 @@ import {
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
 
-import { defaultTheme } from '@quasipanacea/theme-default/_theme'
+import { defaultTheme } from '@quasipanacea/plugin-theme-default/_theme'
 import {
 	ModelCreateChildPopup,
 	ModelCreatePopup,
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
-} from '@quasipanacea/plugin-components/index.js'
+} from '@quasipanacea/components/index.js'
 import GuidePopup from './util/GuidePopup.vue'
 
 const router = useRouter()

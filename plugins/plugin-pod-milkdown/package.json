@@ -1,5 +1,5 @@
 {
-	"name": "@quasipanacea/pod-milkdown",
+	"name": "@quasipanacea/plugin-pod-milkdown",
 	"dependencies": {
 		"@milkdown/core": "^7.2.3",
 		"@milkdown/plugin-block": "^7.2.3",
@@ -22,7 +22,7 @@
 		"@milkdown/vue": "^7.2.3",
 		"@prosemirror-adapter/vue": "^0.2.5",
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
 		"@tailwindcss/typography": "^0.5.9",
 		"tailwindcss": "^3.3.2"

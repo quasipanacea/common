@@ -1,10 +1,10 @@
 {
-	"name": "@quasipanacea/overview-graph",
+	"name": "@quasipanacea/plugin-overview-graph",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*",
-		"@quasipanacea/theme-default": "workspace:*",
+		"@quasipanacea/plugin-theme-default": "workspace:*",
 		"cytoscape": "^3.23.0",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-compound-drag-and-drop": "^1.1.0",

@@ -1,8 +1,8 @@
 {
-	"name": "@quasipanacea/model-default",
+	"name": "@quasipanacea/plugin-model-default",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*"
 	},
 	"devDependencies": {

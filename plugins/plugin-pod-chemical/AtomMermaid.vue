@@ -13,7 +13,7 @@
 import { onMounted, ref } from 'vue'
 import mermaid from 'mermaid'
 
-import { CodeMirror } from '@quasipanacea/plugin-components/index.js'
+import { CodeMirror } from '@quasipanacea/components/index.js'
 
 const inputCode = ref(`graph TD;
     A-->B;

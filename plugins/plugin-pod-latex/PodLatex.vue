@@ -21,7 +21,7 @@ import { trpc } from '@quasipanacea/common/client/index.js'
 import {
 	CodeMirror,
 	SemanticInputOutput,
-} from '@quasipanacea/plugin-components/index.js'
+} from '@quasipanacea/components/index.js'
 
 import type { InferenceOnlyAppRouter } from './s'
 

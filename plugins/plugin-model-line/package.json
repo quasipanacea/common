@@ -1,8 +1,8 @@
 {
-	"name": "@quasipanacea/model-line",
+	"name": "@quasipanacea/plugin-model-line",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*"
 	},
 	"devDependencies": {

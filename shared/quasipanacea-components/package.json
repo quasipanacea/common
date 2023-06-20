@@ -1,5 +1,5 @@
 {
-	"name": "@quasipanacea/plugin-components",
+	"name": "@quasipanacea/components",
 	"dependencies": {
 		"@codemirror/commands": "^6.2.2",
 		"@codemirror/lang-markdown": "^6.1.0",

@@ -1,8 +1,8 @@
 {
-	"name": "@quasipanacea/view-list",
+	"name": "@quasipanacea/plugin-view-list",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/plugin-components": "workspace:*",
+		"@quasipanacea/components": "workspace:*",
 		"@quasipanacea/plugin-utility": "workspace:*"
 	},
 	"devDependencies": {
