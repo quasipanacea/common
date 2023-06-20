@@ -7,7 +7,7 @@ import { onMounted, onUnmounted, ref, useSlots } from 'vue'
 import { GoldenLayout, LayoutConfig } from 'golden-layout'
 import 'golden-layout/dist/css/goldenlayout-base.css'
 import 'golden-layout/dist/css/themes/goldenlayout-light-theme.css'
-import { clientUtils } from '@quasipanacea/plugin-utility/client/index.ts'
+import { clientUtil } from '@quasipanacea/plugin-utility/client/index.ts'
 
 export type CustomLayoutConfig = LayoutConfig & {
 	root: {
@@ -38,7 +38,7 @@ onMounted(async () => {
 			if (item?.factoryFn) {
 				item.factoryFn(container, state)
 			}
-			const { vNode, destroy, el } = clientUtils.vueMount(component, {
+			const { vNode, destroy, el } = clientUtil.vueMount(component, {
 				element: container.element,
 			})
 			destroyArr.push(destroy)

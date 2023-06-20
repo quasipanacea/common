@@ -2,6 +2,7 @@ import { path, z, toml } from '../mod.ts'
 
 import { config } from './config.ts'
 import type * as t from '../types.ts'
+import * as util from './util.ts'
 import * as utilResource from './utilResource.ts'
 
 export function jsonStringify(obj: Record<string, unknown>) {
@@ -52,7 +53,7 @@ export function validateSchema<Schema extends z.AnyZodObject>(
 ): z.infer<Schema> {
 	const result = schema.strict().safeParse(obj)
 	if (!result.success) {
-		throw new JSONError(result.error.format())
+		throw new util.JSONError(result.error.format())
 	}
 	return result.data
 }

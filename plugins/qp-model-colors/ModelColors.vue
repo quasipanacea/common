@@ -58,10 +58,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import type * as t from '@quasipanacea/common/types.ts'
+import { t } from '@quasipanacea/common/index.ts'
 import {
 	popup,
-	useApi3,
+	trpcClient,
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
 
@@ -71,7 +71,7 @@ const props = defineProps<{
 	uuid: string
 }>()
 
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 const router = useRouter()
 
 const model = ref<t.Model_t>()

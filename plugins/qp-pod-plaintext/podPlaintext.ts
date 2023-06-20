@@ -1,7 +1,7 @@
 import { z, path } from '@server/mod.ts'
 
-import * as t from '@quasipanacea/common/types.ts'
-import { pluginUtil } from '@quasipanacea/plugin-utility/server/index.ts'
+import { t } from '@quasipanacea/common/index.ts'
+import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {
 	indexFile: string
@@ -16,11 +16,11 @@ export const hooks: t.Hooks<State> = {
 		}
 	},
 	async onPodAdd(pod, state) {
-		await pluginUtil.assertFileExists(state.indexFile)
+		await serverUtil.assertFileExists(state.indexFile)
 	},
 }
 
-const trpc = pluginUtil.useTrpc<State>()
+const trpc = serverUtil.useTrpc<State>()
 
 export const trpcRouter = trpc.router({
 	read: trpc.procedure
@@ -34,7 +34,7 @@ export const trpcRouter = trpc.router({
 				content: z.string(),
 			}),
 		)
-		.use(pluginUtil.executeAllMiddleware(trpc, hooks))
+		.use(serverUtil.executeAllMiddleware(trpc, hooks))
 		.query(async ({ ctx }) => {
 			const content = await Deno.readTextFile(ctx.state.indexFile)
 
@@ -50,7 +50,7 @@ export const trpcRouter = trpc.router({
 			}),
 		)
 		.output(z.void())
-		.use(pluginUtil.executeAllMiddleware(trpc, hooks))
+		.use(serverUtil.executeAllMiddleware(trpc, hooks))
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.indexFile, input.content)
 		}),

@@ -65,11 +65,11 @@ import cytoscapeUndoRedo from 'cytoscape-undo-redo'
 import cytoscapeEdgehandles from 'cytoscape-edgehandles'
 import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
-import type * as t from '@quasipanacea/common/types.ts'
+import { t } from '@quasipanacea/common/index.ts'
 import {
-	getPlugin,
+	plugin,
 	popup,
-	useApi3,
+	trpcClient,
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
 
@@ -83,7 +83,7 @@ import {
 import GuidePopup from './util/GuidePopup.vue'
 
 const router = useRouter()
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 
 let cy: cytoscape.Core | null = null
 let cytoscapeEl = ref<HTMLElement>()
@@ -319,9 +319,7 @@ onMounted(async () => {
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								const modelPlugin = await import(
-									'@quasipanacea/model-colors/_client'
-								) // TODO
+								const modelPlugin = plugin.get('model', 'color') // TODO
 								handlePopupModelCreateChild(
 									data.resourceData,
 									modelPlugin.validateNewChild,
@@ -408,7 +406,7 @@ async function updateData() {
 			model: { uuid: model.uuid },
 		})
 
-		const modelPlugin = getPlugin('model', model.plugin)
+		const modelPlugin = plugin.get('model', model.plugin)
 		const { elements: newElements } = modelPlugin.arrangeElements(
 			model,
 			pods,

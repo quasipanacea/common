@@ -1,8 +1,9 @@
 import { path, z } from './mod.ts'
 
-import { util, utilResource, utilPlugin } from './server/index.ts'
+import { util, utilResource, utilPlugin, trpcServer } from './server/index.ts'
 import * as t from './types.ts'
-import { trpc } from './server/trpc.ts'
+
+const trpc = trpcServer.instance
 
 export const coreRouter = trpc.router({
 	orbAdd: trpc.procedure

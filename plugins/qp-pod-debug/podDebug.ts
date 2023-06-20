@@ -1,7 +1,7 @@
 import { z, path, Router, send } from '@server/mod.ts'
 
-import * as t from '@quasipanacea/common/types.ts'
-import { pluginUtil } from '@quasipanacea/plugin-utility/server/index.ts'
+import { t } from '@quasipanacea/common/index.ts'
+import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {}
 
@@ -12,6 +12,6 @@ export const hooks: t.Hooks<State> = {
 	async onPodAdd(pod, state) {},
 }
 
-const trpc = pluginUtil.useTrpc<State>()
+const trpc = serverUtil.useTrpc<State>()
 
 export const trpcRouter = trpc.router({})

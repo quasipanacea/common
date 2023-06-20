@@ -1,10 +1,10 @@
-import { registerPlugin } from '@quasipanacea/common/server/plugin.ts'
+import { plugin } from '@quasipanacea/common/server/index.ts'
 
 import { metadata } from './_isomorphic.ts'
 import * as exports from './podMilkdown.ts'
 
 export async function init() {
-	registerPlugin({
+	await plugin.register({
 		metadata,
 		...exports,
 	})

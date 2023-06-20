@@ -1,11 +1,18 @@
 import * as t from '../types.js'
 
+type ClientPluginTypeMap = {
+	overview: t.OverviewClientPlugin_t
+	pod: t.PodClientPlugin_t
+	model: t.ModelClientPlugin_t
+	view: t.ViewClientPlugin_t
+}
+
 const overviewPlugins = new Map<string, t.OverviewClientPlugin_t>()
 const podPlugins = new Map<string, t.PodClientPlugin_t>()
 const modelPlugins = new Map<string, t.ModelClientPlugin_t>()
 const viewPlugins = new Map<string, t.ViewClientPlugin_t>()
 
-export async function registerPlugin(plugin: t.AnyClientPlugin_t) {
+export async function register(plugin: t.AnyClientPlugin_t) {
 	switch (plugin.metadata.kind) {
 		case 'overview':
 			overviewPlugins.set(
@@ -29,17 +36,11 @@ export async function registerPlugin(plugin: t.AnyClientPlugin_t) {
 	}
 }
 
-type ClientPluginTypeMap = {
-	overview: t.OverviewClientPlugin_t
-	pod: t.PodClientPlugin_t
-	model: t.ModelClientPlugin_t
-	view: t.ViewClientPlugin_t
-}
-export function getPlugin<T extends keyof ClientPluginTypeMap>(
+export function get<T extends keyof ClientPluginTypeMap>(
 	pluginType: T,
 	pluginId: string,
 ): ClientPluginTypeMap[T] {
-	const pluginsMap = getPlugins(pluginType)
+	const pluginsMap = list(pluginType)
 
 	const plugin = pluginsMap.get(pluginId)
 	if (!plugin) {
@@ -48,7 +49,7 @@ export function getPlugin<T extends keyof ClientPluginTypeMap>(
 	return plugin as any
 }
 
-export function getPlugins<T extends keyof ClientPluginTypeMap>(
+export function list<T extends keyof ClientPluginTypeMap>(
 	pluginType: T,
 ): Map<string, ClientPluginTypeMap[T]> {
 	let pluginsMap = null

@@ -21,7 +21,7 @@ import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { MilkdownProvider, useEditor } from '@milkdown/vue'
 import '@milkdown/theme-nord/style.css'
 
-import { useApi3 } from '@quasipanacea/common/client/index.js'
+import { trpc } from '@quasipanacea/common/client/index.js'
 import { SemanticInputOutput } from '@quasipanacea/plugin-components/index.js'
 import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 
@@ -29,7 +29,7 @@ import type { InferenceOnlyAppRouter } from './s'
 import './util/style.css'
 import MilkdownEditor from './util/MilkdownEditor.vue'
 
-const api = useApi3<InferenceOnlyAppRouter>()
+const api = trpcClient.yieldClient<InferenceOnlyAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

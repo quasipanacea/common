@@ -7,7 +7,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	trpcClient,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	model: {
@@ -15,7 +18,7 @@ const props = defineProps<{
 	}
 }>()
 
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 
 const podPlugins = ref<string[]>([])
 onMounted(async () => {

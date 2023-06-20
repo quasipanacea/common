@@ -5,9 +5,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	trpcClient,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 
 const str = ref('')
 

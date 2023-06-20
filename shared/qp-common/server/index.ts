@@ -1,6 +1,6 @@
 export * as config from './config.ts'
 export * as plugin from './plugin.ts'
-export * from './trpc.ts'
+export * as trpcServer from './trpcServer.ts'
 export * as util from './util.ts'
 export * as utilPlugin from './utilPlugin.ts'
 export * as utilResource from './utilResource.ts'

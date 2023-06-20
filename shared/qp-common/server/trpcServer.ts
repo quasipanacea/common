@@ -13,4 +13,4 @@ export async function createContext(
 	}
 }
 
-export const trpc = initTRPC.context<typeof createContext>().create()
+export const instance = initTRPC.context<typeof createContext>().create()

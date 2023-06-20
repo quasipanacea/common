@@ -17,12 +17,15 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { useApi3 } from '@quasipanacea/common/client/index.js'
-import { CodeMirror, SemanticInputOutput } from '@quasipanacea/plugin-components/index.js'
+import { trpc } from '@quasipanacea/common/client/index.js'
+import {
+	CodeMirror,
+	SemanticInputOutput,
+} from '@quasipanacea/plugin-components/index.js'
 
 import type { InferenceOnlyAppRouter } from './s'
 
-const api = useApi3<InferenceOnlyAppRouter>()
+const api = trpcClient.yieldClient<InferenceOnlyAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

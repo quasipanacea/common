@@ -1,7 +1,6 @@
 import { initTRPC } from '@trpc/server'
 
-import { trpc } from '@quasipanacea/common/server/trpc.ts'
-import { util } from '@quasipanacea/common/server/index.ts'
+import { util, trpcServer } from '@quasipanacea/common/server/index.ts'
 
 export async function assertFileExists(filepath: string) {
 	try {
@@ -42,7 +41,6 @@ export async function run_bg(args: string[]) {
 }
 
 export function useTrpc<State extends Record<string, unknown>>() {
-	// const trpc = getCommonTrpc(makeStateFn);
 	const inferenceOnlyTrpc = initTRPC
 		.context<{
 			state: State
@@ -50,14 +48,14 @@ export function useTrpc<State extends Record<string, unknown>>() {
 		.create()
 
 	// TODO
-	return trpc as unknown as typeof inferenceOnlyTrpc
+	return trpcServer.instance as unknown as typeof inferenceOnlyTrpc
 }
 
 /**
  * Note: 'trpc' must be passed since it contains custom State
  */
 export const executeAllMiddleware = (trpc: any, hooks: any) => {
-	return trpc.middleware(async ({ ctx, input, next }: any) => {
+	return trpcServer.instance.middleware(async ({ ctx, input, next }: any) => {
 		const uuid = input.uuid
 
 		ctx.pod = await util.getPod(uuid)

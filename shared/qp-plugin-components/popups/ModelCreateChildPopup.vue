@@ -50,7 +50,7 @@ import { onMounted, reactive, watch, ref } from 'vue'
 
 import {
 	popup,
-	useApi3,
+	trpcClient,
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
 
@@ -59,7 +59,7 @@ const props = defineProps<{
 	validationFn: () => boolean
 }>()
 
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 
 const childTypes = ref(['orb', 'pod'])
 const podPlugins = ref<string[]>([])

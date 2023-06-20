@@ -40,7 +40,7 @@ import { reactive, watch } from 'vue'
 
 import {
 	popup,
-	useApi3,
+	trpcClient,
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
 
@@ -49,7 +49,7 @@ const props = defineProps<{
 	oldName: string
 }>()
 
-const api = useApi3<BareAppRouter>()
+const api = trpcClient.yieldClient<BareAppRouter>()
 
 const form = reactive<{
 	newName: string
