@@ -1,9 +1,9 @@
 {
 	"name": "@quasipanacea/plugin-model-flat",
 	"dependencies": {
-		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/components": "workspace:*",
-		"@quasipanacea/plugin-utility": "workspace:*"
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/components": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^"
 	},
 	"devDependencies": {
 		"vue": "^3.2.47",

@@ -1,9 +1,9 @@
 {
 	"name": "@quasipanacea/plugin-pod-latex",
 	"dependencies": {
-		"@quasipanacea/common": "workspace:*",
-		"@quasipanacea/components": "workspace:*",
-		"@quasipanacea/plugin-utility": "workspace:*"
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/components": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^"
 	},
 	"devDependencies": {
 		"@trpc/client": "^10.18.0",
