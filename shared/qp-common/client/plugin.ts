@@ -8,7 +8,10 @@ const viewPlugins = new Map<string, t.ViewClientPlugin_t>()
 export async function registerPlugin(plugin: t.AnyClientPlugin_t) {
 	switch (plugin.metadata.kind) {
 		case 'overview':
-			overviewPlugins.set(plugin.metadata.id, plugin as t.OverviewClientPlugin_t)
+			overviewPlugins.set(
+				plugin.metadata.id,
+				plugin as t.OverviewClientPlugin_t,
+			)
 			break
 		case 'pod':
 			podPlugins.set(plugin.metadata.id, plugin as t.PodClientPlugin_t)
@@ -20,17 +23,22 @@ export async function registerPlugin(plugin: t.AnyClientPlugin_t) {
 			viewPlugins.set(plugin.metadata.id, plugin as t.ViewClientPlugin_t)
 			break
 		default:
-			throw new Error(`Failed to recognize plugin kind: ${plugin.metadata.kind} (id: ${plugin.metadata.id})`)
+			throw new Error(
+				`Failed to recognize plugin kind: ${plugin.metadata.kind} (id: ${plugin.metadata.id})`,
+			)
 	}
 }
 
 type ClientPluginTypeMap = {
-	'overview': t.OverviewClientPlugin_t
-	'pod': t.PodClientPlugin_t
-	'model': t.ModelClientPlugin_t,
-	'view': t.ViewClientPlugin_t
+	overview: t.OverviewClientPlugin_t
+	pod: t.PodClientPlugin_t
+	model: t.ModelClientPlugin_t
+	view: t.ViewClientPlugin_t
 }
-export function getPlugin<T extends keyof ClientPluginTypeMap>(pluginType: T, pluginId: string): ClientPluginTypeMap[T] {
+export function getPlugin<T extends keyof ClientPluginTypeMap>(
+	pluginType: T,
+	pluginId: string,
+): ClientPluginTypeMap[T] {
 	const pluginsMap = getPlugins(pluginType)
 
 	const plugin = pluginsMap.get(pluginId)
@@ -40,7 +48,9 @@ export function getPlugin<T extends keyof ClientPluginTypeMap>(pluginType: T, pl
 	return plugin as any
 }
 
-export function getPlugins<T extends keyof ClientPluginTypeMap>(pluginType: T): Map<string, ClientPluginTypeMap[T]> {
+export function getPlugins<T extends keyof ClientPluginTypeMap>(
+	pluginType: T,
+): Map<string, ClientPluginTypeMap[T]> {
 	let pluginsMap = null
 	if (pluginType === 'overview') {
 		pluginsMap = overviewPlugins

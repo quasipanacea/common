@@ -68,7 +68,11 @@ import { onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 import type * as t from '@quasipanacea/common/types.ts'
-import { showPopup, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	popup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 import {
 	PodCreatePopup,
@@ -112,7 +116,7 @@ async function updateData() {
 }
 
 async function handlePopupPodCreate() {
-	await showPopup('pod-create-3', PodCreatePopup, {
+	await popup.show('pod-create-3', PodCreatePopup, {
 		modelUuid: model.value?.uuid || '',
 	})
 	await updateData()
@@ -124,18 +128,22 @@ async function handlePopupPodEditMetadata(
 	description: string,
 	tags: string[],
 ) {
-	await showPopup('plugin-model-flat-pod-edit-metadata', PodEditMetadataPopup, {
-		uuid,
-		name,
-		description,
-		tags,
-	})
+	await popup.show(
+		'plugin-model-flat-pod-edit-metadata',
+		PodEditMetadataPopup,
+		{
+			uuid,
+			name,
+			description,
+			tags,
+		},
+	)
 
 	await updateData()
 }
 
 async function showViewCreatePopup() {
-	await showPopup('view-create', ViewCreatePopup, {
+	await popup.show('view-create', ViewCreatePopup, {
 		modelUuid: props.uuid,
 	})
 	await updateData()

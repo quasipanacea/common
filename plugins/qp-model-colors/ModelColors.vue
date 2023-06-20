@@ -59,7 +59,11 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import type * as t from '@quasipanacea/common/types.ts'
-import { showPopup, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	popup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 import PodNewPopup from './util/PodNewPopup.vue'
 
@@ -99,7 +103,7 @@ async function updateData() {
 }
 
 function handlePopupPodNew() {
-	showPopup('pod-new-2', PodNewPopup, {
+	popup.show('pod-new-2', PodNewPopup, {
 		model: {
 			uuid: props.uuid,
 		},

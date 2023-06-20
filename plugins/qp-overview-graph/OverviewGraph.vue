@@ -28,7 +28,7 @@
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
 				<div class="dropdown-content">
-					<a class="dropdown-item" @click="showPopupNoData('null', GuidePopup)"
+					<a class="dropdown-item" @click="popup.showNoData('null', GuidePopup)"
 						>Show Guide</a
 					>
 				</div>
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import cytoscape from 'cytoscape'
@@ -68,8 +68,7 @@ import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 import type * as t from '@quasipanacea/common/types.ts'
 import {
 	getPlugin,
-	showPopupNoData,
-	showPopup,
+	popup,
 	useApi3,
 	type BareAppRouter,
 } from '@quasipanacea/common/client/index.js'
@@ -424,12 +423,12 @@ async function updateData() {
 }
 
 async function handlePopupModelCreate() {
-	await showPopupNoData('model-create', ModelCreatePopup)
+	await popup.showNoData('model-create', ModelCreatePopup)
 	await updateData()
 }
 
 async function handlePopupModelEditProperties(model: t.Model_t) {
-	await showPopup('model-edit-properties', ModelEditPropertiesPopup, {
+	await popup.show('model-edit-properties', ModelEditPropertiesPopup, {
 		uuid: model.uuid,
 		oldName: model.name || '',
 	})
@@ -440,22 +439,10 @@ async function handlePopupModelCreateChild(
 	model: t.Model_t,
 	validationFn: t.PluginExportClient_t['validateNewChild'],
 ) {
-	await showPopup('model-create-child', ModelCreateChildPopup, {
+	await popup.show('model-create-child', ModelCreateChildPopup, {
 		modelUuid: model.uuid,
 		validationFn,
 	})
-	await updateData()
-}
-
-// popup: pod create
-const boolPodCreate = ref(false)
-const dataPodCreate = reactive({ modelUuid: '' })
-function showPodCreatePopup(uuid: string) {
-	dataPodCreate.modelUuid = uuid
-	boolPodCreate.value = true
-}
-async function afterPodCreate() {
-	boolPodCreate.value = false
 	await updateData()
 }
 </script>

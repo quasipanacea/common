@@ -49,7 +49,11 @@
 import { onMounted, reactive, ref } from 'vue'
 
 import type * as t from '@quasipanacea/common/types.ts'
-import { hidePopupNoData, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	popup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 const api = useApi3<BareAppRouter>()
 
@@ -68,6 +72,6 @@ const form = reactive<{
 
 async function submitData() {
 	await api.core.modelAdd.mutate(form)
-	hidePopupNoData('null')
+	popup.hideNoData('null')
 }
 </script>

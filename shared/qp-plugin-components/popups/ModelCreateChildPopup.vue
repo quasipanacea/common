@@ -48,7 +48,11 @@
 <script setup lang="ts">
 import { onMounted, reactive, watch, ref } from 'vue'
 
-import { hidePopupNoData, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	popup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	modelUuid: string
@@ -92,6 +96,6 @@ async function submitData() {
 			},
 		})
 	}
-	hidePopupNoData('null')
+	popup.hideNoData('null')
 }
 </script>

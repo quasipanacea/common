@@ -6,6 +6,7 @@ import { init as PodChemical } from '@quasipanacea/pod-chemical/_client.js'
 import { init as PodDebug } from '@quasipanacea/pod-debug/_client.js'
 import { init as PodLatex } from '@quasipanacea/pod-latex/_client.js'
 import { init as PodMarkdown } from '@quasipanacea/pod-markdown/_client.js'
+import { init as PodMilkdown } from '@quasipanacea/pod-milkdown/_client.js'
 import { init as PodPlaintext } from '@quasipanacea/pod-plaintext/_client.js'
 
 import { init as ModelDefault } from '@quasipanacea/model-default/_client.ts'
@@ -27,12 +28,13 @@ export async function initAll() {
 		PodDebug(),
 		PodLatex(),
 		PodMarkdown(),
+		PodMilkdown(),
 		PodPlaintext(),
 		ModelDefault(),
 		ModelFlat(),
 		ModelColors(),
 		ModelLine(),
 		ViewList(),
-		ViewMarkmap()
+		ViewMarkmap(),
 	])
 }

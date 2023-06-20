@@ -54,7 +54,11 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 
 import type * as t from '@quasipanacea/common/types.ts'
-import { hidePopupNoData, useApi3, type BareAppRouter } from '@quasipanacea/common/client/index.js'
+import {
+	popup,
+	useApi3,
+	type BareAppRouter,
+} from '@quasipanacea/common/client/index.js'
 
 const props = defineProps<{
 	uuid: string
@@ -109,6 +113,6 @@ async function sendRequest() {
 			tags: form.tags,
 		},
 	})
-	hidePopupNoData('null')
+	popup.hideNoData('null')
 }
 </script>

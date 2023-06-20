@@ -5,7 +5,7 @@ import {
 } from '@trpc/client'
 import type { AnyRouter } from '@trpc/server'
 
-import type { BareAppRouter } from '../routes'
+import type { BareAppRouter } from '../routes.ts'
 
 export type { BareAppRouter }
 

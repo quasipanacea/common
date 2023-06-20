@@ -101,16 +101,14 @@ export const popupEmitter = Evt.create<
 	  }
 >()
 
-let isPopupVisible = false
-
-export async function showPopupNoData<T extends UndefinedInputKeys>(
+export async function showNoData<T extends UndefinedInputKeys>(
 	eventString: T,
 	component: unknown,
 ) {
 	return await _showPopup(eventString, component, undefined)
 }
 
-export async function showPopup<T extends NotUndefinedInputKeys>(
+export async function show<T extends NotUndefinedInputKeys>(
 	eventString: T,
 	component: unknown,
 	props: PopupEvents_t[T]['show'],
@@ -127,28 +125,18 @@ async function _showPopup<T extends keyof PopupEvents_t>(
 	id: keyof PopupEvents_t
 	response: PopupEvents_t[T]['hide']
 }> {
-	if (isPopupVisible) {
-		throw new Error('A popup is already visible')
-	}
-	isPopupVisible = true
-
 	popupEmitter.post({
 		type: 'show',
 		id: eventString,
 		component,
 		props,
 	})
-	const result = await popupEmitter.waitFor()
-	isPopupVisible = false
 
-	if (result.type === 'hide') {
-		return result
-	} else {
-		throw new Error('Unexpected response type')
-	}
+	const result = await popupEmitter.waitFor()
+	return result
 }
 
-export async function hidePopupNoData<T extends UndefinedOutputKeys>(
+export async function hideNoData<T extends UndefinedOutputKeys>(
 	eventString: T,
 ) {
 	return await _hidePopup(eventString, undefined)
