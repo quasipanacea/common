@@ -1,5 +1,5 @@
-import { trpc } from '@common/server/index.ts'
-import { coreRouter } from '@common/index.ts'
+import { trpc } from '@quasipanacea/common/server/index.js'
+import { coreRouter } from '@quasipanacea/common/index.js'
 
 import { trpcRouter } from './podPlaintext.js'
 
