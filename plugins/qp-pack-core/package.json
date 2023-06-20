@@ -2,9 +2,9 @@
 	"name": "@quasipanacea/pack-core",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:*",
+		"@quasipanacea/model-colors": "workspace:*",
 		"@quasipanacea/model-default": "workspace:*",
 		"@quasipanacea/model-flat": "workspace:^",
-		"@quasipanacea/model-colors": "workspace:*",
 		"@quasipanacea/model-line": "workspace:^",
 		"@quasipanacea/overview-debug": "workspace:*",
 		"@quasipanacea/overview-graph": "workspace:*",
@@ -13,6 +13,7 @@
 		"@quasipanacea/pod-debug": "workspace:*",
 		"@quasipanacea/pod-latex": "workspace:*",
 		"@quasipanacea/pod-markdown": "workspace:*",
+		"@quasipanacea/pod-milkdown": "workspace:^",
 		"@quasipanacea/pod-plaintext": "workspace:*",
 		"@quasipanacea/view-list": "workspace:*",
 		"@quasipanacea/view-markmap": "workspace:*"
