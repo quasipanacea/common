@@ -17,7 +17,7 @@ import 'katex/dist/katex.min.css'
 
 import 'github-markdown-css/github-markdown-light.css'
 
-import { trpc } from '@quasipanacea/common/client/index.js'
+import { trpcClient } from '@quasipanacea/common/client/index.js'
 import {
 	SemanticInputOutput,
 	CodeMirror,

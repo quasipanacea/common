@@ -1,12 +1,12 @@
-import { trpc } from '@quasipanacea/common/server/index.js'
+import { trpcServer } from '@quasipanacea/common/server/index.js'
 import { coreRouter } from '@quasipanacea/common/index.js'
 
 import { trpcRouter } from './podMilkdown.js'
 
-const inferenceOnlyAppRouter = trpc.router({
+const inferenceOnlyAppRouter = trpcServer.instance.router({
 	core: coreRouter,
-	plugins: trpc.router({
-		pods: trpc.router({
+	plugins: trpcServer.instance.router({
+		pods: trpcServer.instance.router({
 			markdown: trpcRouter,
 		}),
 	}),

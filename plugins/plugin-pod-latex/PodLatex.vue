@@ -17,7 +17,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { trpc } from '@quasipanacea/common/client/index.js'
+import { trpcClient } from '@quasipanacea/common/client/index.js'
 import {
 	CodeMirror,
 	SemanticInputOutput,
