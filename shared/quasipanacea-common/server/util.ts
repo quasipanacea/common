@@ -1,7 +1,7 @@
 import { path, z, toml } from '../mod.ts'
 
+import * as t from '../types.ts'
 import { config } from './config.ts'
-import type * as t from '../types.ts'
 import * as util from './util.ts'
 import * as utilResource from './utilResource.ts'
 

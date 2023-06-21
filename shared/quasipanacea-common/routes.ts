@@ -1,7 +1,7 @@
 import { path, z } from './mod.ts'
 
-import { util, utilResource, utilPlugin, trpcServer } from './server/index.ts'
-import * as t from './types.ts'
+import { trpcServer, util, utilResource, utilPlugin } from './server/index.ts'
+import { t } from './index.ts'
 
 const trpc = trpcServer.instance
 

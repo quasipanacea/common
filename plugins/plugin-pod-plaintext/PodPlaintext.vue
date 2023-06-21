@@ -15,9 +15,9 @@ import { useRoute } from 'vue-router'
 
 import { trpcClient } from '@quasipanacea/common/client/index.js'
 
-import type { InferenceOnlyAppRouter } from './s'
+import type { PluginAppRouter } from './s.ts'
 
-const api = trpcClient.yieldClient<InferenceOnlyAppRouter>()
+const api = trpcClient.yieldClient<PluginAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

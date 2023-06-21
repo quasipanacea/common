@@ -1,5 +1,9 @@
 import { z } from './mod.ts'
-import { type Router, type AnyProcedure, type AnyRouter } from '../../../src/mod.ts'
+import {
+	type Router,
+	type AnyProcedure,
+	type AnyRouter,
+} from '../../../src/mod.ts'
 
 export const Uuid = z.string().min(1)
 export const Id = z.string().min(1)
@@ -140,15 +144,15 @@ const Metadata = z.object({
 })
 export const AnyClientPlugin = z.object({
 	metadata: Metadata,
-	component: z.unknown()
+	component: z.unknown(),
 })
 export const OverviewClientPlugin = z.object({
 	metadata: Metadata,
-	component: z.unknown()
+	component: z.unknown(),
 })
 export const PodClientPlugin = z.object({
 	metadata: Metadata,
-	component: z.unknown()
+	component: z.unknown(),
 })
 export const ModelClientPlugin = z.object({
 	metadata: Metadata,
@@ -161,7 +165,7 @@ export const ModelClientPlugin = z.object({
 })
 export const ViewClientPlugin = z.object({
 	metadata: Metadata,
-	component: z.unknown()
+	component: z.unknown(),
 })
 
 // Client Plugins: Type
@@ -183,7 +187,7 @@ export type AnyServerPlugin_t = {
 export type PodServerPlugin_t = {
 	metadata: z.infer<typeof Metadata>
 	hooks?: Hooks<Record<string, unknown>>
-	trpcRouter?: AnyProcedure | AnyRouter,
+	trpcRouter?: AnyProcedure | AnyRouter
 	oakRouter?: Router
 }
 

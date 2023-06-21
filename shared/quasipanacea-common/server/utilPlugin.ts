@@ -1,7 +1,25 @@
 import { path } from '../mod.ts'
 
-import * as util from './util.ts'
+import { type AnyRouter } from '@trpc/server'
+
+import { coreRouter } from '../routes.ts'
 import * as t from '../types.ts'
+import * as util from './util.ts'
+import { instance } from './trpcServer.ts'
+
+export function yieldPluginAppRouter<T extends string, U extends AnyRouter>(
+	slug: T,
+	router: U,
+) {
+	return instance.router({
+		core: coreRouter,
+		plugins: instance.router({
+			pods: instance.router({
+				[slug]: router,
+			}),
+		}),
+	})
+}
 
 export async function getHooks(
 	pluginId: string,

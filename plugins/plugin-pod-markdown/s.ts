@@ -1,14 +1,6 @@
-import { trpcServer } from '@quasipanacea/common/server/index.js'
-import { coreRouter } from '@quasipanacea/common/index.js'
+import { utilPlugin } from '@quasipanacea/common/server/index.js'
 
 import { trpcRouter } from './podMarkdown.js'
 
-const inferenceOnlyAppRouter = trpcServer.instance.router({
-	core: coreRouter,
-	plugins: trpcServer.instance.router({
-		pods: trpcServer.instance.router({
-			markdown: trpcRouter,
-		}),
-	}),
-})
-export type InferenceOnlyAppRouter = typeof inferenceOnlyAppRouter
+const pluginAppRouter = utilPlugin.yieldPluginAppRouter('markdown', trpcRouter)
+export type PluginAppRouter = typeof pluginAppRouter

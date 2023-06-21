@@ -25,11 +25,11 @@ import { trpcClient } from '@quasipanacea/common/client/index.js'
 import { SemanticInputOutput } from '@quasipanacea/components/index.js'
 import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 
-import type { InferenceOnlyAppRouter } from './s'
+import type { PluginAppRouter } from './s.ts'
 import './util/style.css'
 import MilkdownEditor from './util/MilkdownEditor.vue'
 
-const api = trpcClient.yieldClient<InferenceOnlyAppRouter>()
+const api = trpcClient.yieldClient<PluginAppRouter>()
 
 const route = useRoute()
 function getUuid(): string {

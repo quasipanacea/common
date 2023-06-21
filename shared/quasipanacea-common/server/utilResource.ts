@@ -1,7 +1,7 @@
 import { z, path } from '../mod.ts'
 
-import * as util from './util.ts'
 import * as t from '../types.ts'
+import * as util from './util.ts'
 
 // generic
 export async function resourceAdd(
