@@ -425,6 +425,14 @@ export const coreRouter = trpc.router({
 			return { views }
 		}),
 
+	indexGet: trpc.procedure
+		.input(z.void())
+		.output(t.SchemaIndexJson)
+		.query(async () => {
+			const indexJson = await utilResource.getIndexJson()
+			return indexJson
+		}),
+
 	pluginList: trpc.procedure
 		.input(
 			z

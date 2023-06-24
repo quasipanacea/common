@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { debounce } from 'lodash'
 // import { slashFactory } from '@milkdown/plugin-slash'
 // import { Milkdown, useEditor } from '@milkdown/vue'
 // import { usePluginViewFactory } from '@prosemirror-adapter/vue'
@@ -29,17 +30,35 @@ import { commonmark } from '@milkdown/preset-commonmark'
 import { nord } from '@milkdown/theme-nord'
 import { Milkdown, useEditor } from '@milkdown/vue'
 import { usePluginViewFactory } from '@prosemirror-adapter/vue'
+import { Plugin, PluginKey } from '@milkdown/prose/state'
+import { Decoration, DecorationSet } from '@milkdown/prose/view'
+import { $prose } from '@milkdown/utils'
+
 import Slash from './Slash.vue'
+
+const props = defineProps<{
+	text: string
+	saveFn: (text: string) => Promise<void>
+}>()
+
+const copilotPluginKey = new PluginKey('milkdown-keytest')
+const copilotPlugin = $prose(
+	(ctx) =>
+		new Plugin({
+			key: copilotPluginKey,
+			props: {
+				handleKeyDown(view, event) {
+					debounce(async () => {
+						await props.saveFn(props.text)
+					}, 500)()
+				},
+			},
+		}),
+)
 
 const tooltip = slashFactory('Commands')
 
-const markdown = `# Milkdown Vue Slash
-
-> You're scared of a world where you're needed.
-
-This is a demo for using Milkdown with **Vue**.
-
-Type \`/\` to see the slash command.`
+const markdown = props.text
 
 const pluginViewFactory = usePluginViewFactory()
 
@@ -90,6 +109,7 @@ useEditor((root) => {
 				}),
 			})
 		})
+		.use(copilotPlugin)
 		.use(commonmark)
 		.use(tooltip)
 })

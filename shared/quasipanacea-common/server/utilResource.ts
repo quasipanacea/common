@@ -134,37 +134,8 @@ export function getPodsDir(): string {
 	return path.join(util.getDataDir(), 'pods')
 }
 
-export function getGroupsDir(): string {
-	return path.join(util.getDataDir(), 'groups')
-}
-
 export function getViewsDir(): string {
 	return path.join(util.getDataDir(), 'views')
-}
-
-// file
-export function getOrbsJsonFile(): string {
-	return path.join(util.getDataDir(), 'orbs.json')
-}
-
-export function getLinksJsonFile(): string {
-	return path.join(util.getDataDir(), 'links.json')
-}
-
-export function getModelsJsonFile(): string {
-	return path.join(util.getDataDir(), 'models.json')
-}
-
-export function getPodsJsonFile(): string {
-	return path.join(util.getDataDir(), 'pods.json')
-}
-
-export function getGroupsJsonFile(): string {
-	return path.join(util.getDataDir(), 'groups.json')
-}
-
-export function getViewsJsonFile(): string {
-	return path.join(util.getDataDir(), 'views.json')
 }
 
 // dir (instance)
@@ -184,12 +155,33 @@ export function getPodDir(uuid: string): string {
 	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
-export function getGroupDir(uuid: string): string {
-	return path.join(getGroupsDir(), uuid.slice(0, 2), uuid.slice(2))
-}
-
 export function getViewDir(uuid: string): string {
 	return path.join(getViewsDir(), uuid.slice(0, 2), uuid.slice(2))
+}
+
+// file
+export function getOrbsJsonFile(): string {
+	return path.join(util.getDataDir(), 'orbs.json')
+}
+
+export function getLinksJsonFile(): string {
+	return path.join(util.getDataDir(), 'links.json')
+}
+
+export function getModelsJsonFile(): string {
+	return path.join(util.getDataDir(), 'models.json')
+}
+
+export function getPodsJsonFile(): string {
+	return path.join(util.getDataDir(), 'pods.json')
+}
+
+export function getViewsJsonFile(): string {
+	return path.join(util.getDataDir(), 'views.json')
+}
+
+export function getIndexJsonFile(): string {
+	return path.join(util.getDataDir(), 'index.json')
 }
 
 // json
@@ -273,26 +265,6 @@ export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	)
 }
 
-export async function getGroupsJson(): Promise<t.SchemaGroupsJson_t> {
-	const jsonFile = getGroupsJsonFile()
-	let content
-	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "groups": {} }'
-			await Deno.writeTextFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaGroupsJson>(
-		JSON.parse(content),
-		t.SchemaGroupsJson,
-	)
-}
-
 export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
 	const jsonFile = getViewsJsonFile()
 	let content
@@ -310,5 +282,25 @@ export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
 	return util.validateSchema<typeof t.SchemaViewsJson>(
 		JSON.parse(content),
 		t.SchemaViewsJson,
+	)
+}
+
+export async function getIndexJson(): Promise<t.SchemaIndexJson_t> {
+	const jsonFile = getIndexJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "formats": [] }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaIndexJson>(
+		JSON.parse(content),
+		t.SchemaIndexJson,
 	)
 }

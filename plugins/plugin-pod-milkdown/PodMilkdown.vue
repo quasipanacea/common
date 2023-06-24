@@ -3,7 +3,12 @@
 		<template #input>
 			<MilkdownProvider>
 				<ProsemirrorAdapterProvider>
-					<MilkdownEditor />
+					<template v-if="inputCode !== null">
+						<MilkdownEditor :text="inputCode" :saveFn="markdownWrite" />
+					</template>
+					<template v-else>
+						<p>Loading</p>
+					</template>
 				</ProsemirrorAdapterProvider>
 			</MilkdownProvider>
 		</template>
@@ -14,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
@@ -40,8 +45,18 @@ function getUuid(): string {
 }
 const uuid = getUuid()
 
-const inputCode = ref('')
+const inputCode = ref(null)
 const outputHtml = ref('')
+
+const n = setInterval(async () => {
+	await markdownRead()
+}, 5000)
+onMounted(async () => {
+	await markdownRead()
+})
+onUnmounted(() => {
+	clearTimeout(n)
+})
 
 async function markdownRead(): Promise<void> {
 	const result = await api.plugins.pods.markdown.read.query({

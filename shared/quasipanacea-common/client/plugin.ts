@@ -1,6 +1,6 @@
 import * as t from '../types.js'
 
-type ClientPluginTypeMap = {
+export type ClientPluginTypeMap = {
 	overview: t.OverviewClientPlugin_t
 	pod: t.PodClientPlugin_t
 	model: t.ModelClientPlugin_t
