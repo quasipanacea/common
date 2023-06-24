@@ -21,17 +21,12 @@
 					aria-controls="dropdown-menu"
 				>
 					<span>Options</span>
-					<span class="icon is-small">
-						<i class="fas fa-angle-down" aria-hidden="true"></i>
+					<span class="icon">
+						<ion-icon name="chevron-down-outline"></ion-icon>
 					</span>
 				</button>
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
-				<div class="dropdown-content">
-					<a class="dropdown-item" @click="popup.showNoData('null', GuidePopup)"
-						>Show Guide</a
-					>
-				</div>
 				<div class="dropdown-content">
 					<router-link to="/plugins">
 						<a class="dropdown-item">Plugins</a>

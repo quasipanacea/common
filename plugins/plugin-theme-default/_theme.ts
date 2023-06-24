@@ -4,6 +4,12 @@ export const defaultTheme = {
 		 * Core
 		 */
 		{
+			selector: '*',
+			style: {
+				'font-family': 'Work Sans',
+			},
+		},
+		{
 			selector: 'node[label]',
 			style: {
 				label: 'data(label)',
@@ -13,13 +19,13 @@ export const defaultTheme = {
 			selector: 'node.qp-model',
 			style: {
 				shape: 'rectangle',
-			}
+			},
 		},
 		{
 			selector: 'node.qp-orb-without-pod',
 			style: {
 				'background-color': '#ccc',
-			}
+			},
 		},
 		{
 			selector: 'edge[label]',
@@ -32,7 +38,7 @@ export const defaultTheme = {
 			style: {
 				'line-color': '#333',
 				'target-arrow-color': '#333',
-			}
+			},
 		},
 		{
 			selector: 'edge',

@@ -39,14 +39,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Orb)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.Orb_t>(
+			const orb = await utilResource.resourceModify<t.Orb_t>(
 				input,
 				utilResource.getOrbsJsonFile(),
 				utilResource.getOrbsJson,
 				'orbs',
 			)
 
-			return r
+			return orb
 		}),
 	orbList: trpc.procedure
 		.input(
@@ -109,14 +109,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Link)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.Link_t>(
+			const link = await utilResource.resourceModify<t.Link_t>(
 				input,
 				utilResource.getLinksJsonFile(),
 				utilResource.getLinksJson,
 				'links',
 			)
 
-			return r
+			return link
 		}),
 	linkList: trpc.procedure
 		.input(z.void())
@@ -167,14 +167,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Model)
 		.mutation(async ({ input }) => {
-			const resource = await utilResource.resourceModify<t.Model_t>(
+			const model = await utilResource.resourceModify<t.Model_t>(
 				input,
 				utilResource.getModelsJsonFile(),
 				utilResource.getModelsJson,
 				'models',
 			)
 
-			return resource
+			return model
 		}),
 	modelList: trpc.procedure
 		.input(
@@ -210,30 +210,12 @@ export const coreRouter = trpc.router({
 			}),
 		)
 		.mutation(async ({ input }) => {
-			const uuid = crypto.randomUUID()
-			const pod: t.PodDir_t = {
-				...input,
-				uuid,
-				dir: utilResource.getPodDir(uuid),
-			}
-			const podsJson = await utilResource.getPodsJson()
-
-			// work
-			podsJson.pods[uuid] = {
-				...input,
-			}
-			await Deno.writeTextFile(
+			const uuid = await utilResource.resourceAdd(
+				input,
 				utilResource.getPodsJsonFile(),
-				util.jsonStringify(podsJson),
+				utilResource.getPodsJson,
+				'pods',
 			)
-			await Deno.mkdir(pod.dir, { recursive: true })
-
-			// hook
-			const hooks = await utilPlugin.getHooks(pod.plugin)
-			const state = (await hooks.makeState?.(pod)) || {}
-			if (hooks.onPodAdd) {
-				await hooks.onPodAdd(pod, state)
-			}
 
 			return { uuid }
 		}),
@@ -245,27 +227,12 @@ export const coreRouter = trpc.router({
 		)
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const pod = await util.getPod(input.uuid)
-			const rJson = await utilResource.getPodsJson()
-
-			// hook
-			const hooks = await utilPlugin.getHooks(pod.plugin)
-			const state = (await hooks.makeState?.(pod)) || {}
-			if (hooks.onPodAdd) {
-				await hooks.onPodAdd(pod, state)
-			}
-
-			// work
-			await Deno.remove(path.dirname(pod.dir), { recursive: true })
-			if (rJson.pods[input.uuid]) {
-				delete rJson.pods[input.uuid]
-			}
-			await Deno.writeTextFile(
+			await utilResource.resourceRemove(
+				input,
 				utilResource.getPodsJsonFile(),
-				util.jsonStringify(rJson),
+				utilResource.getPodsJson,
+				'pods',
 			)
-
-			return
 		}),
 	podModify: trpc.procedure
 		.input(
@@ -276,14 +243,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Pod)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.Pod_t>(
+			const pod = await utilResource.resourceModify<t.Pod_t>(
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
 				'pods',
 			)
 
-			return r
+			return pod
 		}),
 	podModifyExtra: trpc.procedure
 		.input(
@@ -295,14 +262,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Pod)
 		.mutation(async ({ ctx, input }) => {
-			const r = await utilResource.resourceModifyExtra<t.Pod_t>(
+			const pod = await utilResource.resourceModifyExtra<t.Pod_t>(
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
 				'pods',
 			)
 
-			return r
+			return pod
 		}),
 	podList: trpc.procedure
 		.input(
@@ -347,44 +314,25 @@ export const coreRouter = trpc.router({
 		.input(t.View.omit({ uuid: true }))
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
-			const uuid = crypto.randomUUID()
-			const rDir = utilResource.getViewDir(uuid)
-			const rJsonFile = utilResource.getViewsJsonFile()
-			const rJson = await utilResource.getViewsJson()
+			const uuid = await utilResource.resourceAdd(
+				input,
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
+			)
 
-			// work
-			rJson.views[uuid] = {
-				name: input.name,
-				plugin: input.plugin,
-				model: {
-					uuid: input.model.uuid,
-				},
-			}
-			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
-			await Deno.mkdir(rDir, { recursive: true })
-
-			// hook
-
-			return {
-				uuid,
-			}
+			return { uuid }
 		}),
 	viewRemove: trpc.procedure
 		.input(z.object({ uuid: t.Uuid }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			const rDir = utilResource.getViewDir(input.uuid)
-			const rJsonFile = utilResource.getViewsJsonFile()
-			const rJson = await utilResource.getViewsJson()
-
-			// hook
-
-			// work
-			await Deno.remove(rDir, { recursive: true })
-			if (rJson.views[input.uuid]) {
-				delete rJson.views[input.uuid]
-			}
-			await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+			await utilResource.resourceRemove(
+				input,
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
+			)
 		}),
 	viewModify: trpc.procedure
 		.input(
@@ -395,14 +343,14 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.View)
 		.mutation(async ({ input }) => {
-			const r = await utilResource.resourceModify<t.View_t>(
+			const view = await utilResource.resourceModify<t.View_t>(
 				input,
 				utilResource.getViewsJsonFile(),
 				utilResource.getViewsJson,
 				'views',
 			)
 
-			return r
+			return view
 		}),
 	viewList: trpc.procedure
 		.input(z.void())

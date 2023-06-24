@@ -21,8 +21,8 @@
 					aria-controls="dropdown-menu"
 				>
 					<span>Options</span>
-					<span class="icon is-small">
-						<i class="fas fa-angle-down" aria-hidden="true"></i>
+					<span class="icon">
+						<ion-icon name="chevron-down-outline"></ion-icon>
 					</span>
 				</button>
 			</div>
