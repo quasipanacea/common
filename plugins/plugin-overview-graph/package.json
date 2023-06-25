@@ -16,11 +16,11 @@
 	},
 	"devDependencies": {
 		"@quasipanacea/types": "workspace:^",
-		"vue": "^3.2.47",
-		"vue-router": "^4.1.6"
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
 	},
 	"peerDependencies": {
-		"vue": "^3.2.47",
-		"vue-router": "^4.1.6"
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
 	}
 }
