@@ -6,12 +6,12 @@
 		"@quasipanacea/plugin-utility": "workspace:^"
 	},
 	"devDependencies": {
-		"@trpc/client": "^10.18.0",
+		"@trpc/client": "^10.32.0",
 		"vue": "^3.2.47",
 		"vue-router": "^4.1.6"
 	},
 	"peerDependencies": {
-		"@trpc/client": "^10.18.0",
+		"@trpc/client": "^10.32.0",
 		"vue": "^3.2.47",
 		"vue-router": "^4.1.6"
 	}

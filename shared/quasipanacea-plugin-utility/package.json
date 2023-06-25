@@ -15,12 +15,12 @@
 		"unified": "^10.1.2"
 	},
 	"devDependencies": {
-		"@trpc/client": "^10.18.0",
-		"@trpc/server": "^10.18.0",
+		"@trpc/client": "^10.32.0",
+		"@trpc/server": "^10.32.0",
 		"@types/katex": "^0.16.0"
 	},
 	"peerDependencies": {
-		"@trpc/client": "^10.18.0",
-		"@trpc/server": "^10.18.0"
+		"@trpc/client": "^10.32.0",
+		"@trpc/server": "^10.32.0"
 	}
 }
