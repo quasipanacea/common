@@ -143,7 +143,7 @@ export type SchemaIndexJson_t = z.infer<typeof SchemaIndexJson>
 
 // Isomorphic Plugins: Zod Schema
 export const AnyIsomorphicPlugin = z.object({
-	kind: z.string(),
+	kind: z.enum(['overview', 'pod', 'model', 'view']),
 	id: z.string(),
 })
 export const OverviewIsomorphicPlugin = AnyIsomorphicPlugin
@@ -214,36 +214,22 @@ export type Hooks<State extends Record<string, unknown>> = {
 }
 export type AnyServerPlugin_t = {
 	metadata: z.infer<typeof AnyIsomorphicPlugin>
+	trpcRouter?: AnyProcedure | AnyRouter
+	oakRouter?: Router
 }
+export type OverviewServerPlugin_t = AnyServerPlugin_t
 export type PodServerPlugin_t = {
 	metadata: z.infer<typeof PodIsomorphicPlugin>
 	hooks?: Hooks<Record<string, unknown>>
 	trpcRouter?: AnyProcedure | AnyRouter
 	oakRouter?: Router
 }
+export type ModelServerPlugin_t = AnyServerPlugin_t
+export type ViewServerPlugin_t = AnyServerPlugin_t
 export type PackServerPlugin_t = {
 	metadata: z.infer<typeof PackIsomorphicPlugin>
 	initAll: () => Promise<unknown[]>
 }
-
-// TODO
-export const PluginExportIsomorphic = z.object({
-	metadata: z.object({
-		kind: z.string(),
-		id: z.string(),
-	}),
-})
-export const PluginExportClient = z.object({
-	component: z.any(),
-	arrangeElements: z
-		.function()
-		.args(Model, z.array(Pod), z.array(Orb))
-		.returns(z.array(z.object({ elements: z.unknown() }))),
-	validateNewChild: z.function().args().returns(z.boolean()),
-})
-
-export type PluginExportIsomorphic_t = z.infer<typeof PluginExportIsomorphic>
-export type PluginExportClient_t = z.infer<typeof PluginExportClient>
 
 // Client
 export const NodeLayout = z.object({

@@ -41,13 +41,13 @@ const iframeSrc = ref(`/api/plugins/pod/latex/get-pdf/${uuid}`)
 
 const inputCode = ref('')
 onMounted(async () => {
-	const result = await api.plugins.pods.latex.read.query({
+	const result = await api.plugins.pod.latex.read.query({
 		uuid,
 	})
 	inputCode.value = result.content
 })
 async function updateData(text: string) {
-	await api.plugins.pods.latex.write.mutate({
+	await api.plugins.pod.latex.write.mutate({
 		uuid,
 		content: text,
 	})

@@ -1,69 +1,63 @@
 import * as t from '../types.js'
 
-export type ClientPluginTypeMap = {
+export type ClientPluginsMap = {
 	overview: t.OverviewClientPlugin_t
 	pod: t.PodClientPlugin_t
 	model: t.ModelClientPlugin_t
 	view: t.ViewClientPlugin_t
 }
 
-const overviewPlugins = new Map<string, t.OverviewClientPlugin_t>()
-const podPlugins = new Map<string, t.PodClientPlugin_t>()
-const modelPlugins = new Map<string, t.ModelClientPlugin_t>()
-const viewPlugins = new Map<string, t.ViewClientPlugin_t>()
+const plugins = new Map<
+	keyof ClientPluginsMap,
+	Map<string, ClientPluginsMap[keyof ClientPluginsMap]>
+>()
+const pluginFamilies = Object.keys(
+	t.AnyIsomorphicPlugin.shape.kind.Enum,
+) as unknown as t.AnyIsomorphicPlugin_t['kind']
 
-export async function register(plugin: t.AnyClientPlugin_t) {
-	switch (plugin.metadata.kind) {
-		case 'overview':
-			overviewPlugins.set(
-				plugin.metadata.id,
-				plugin as t.OverviewClientPlugin_t,
-			)
-			break
-		case 'pod':
-			podPlugins.set(plugin.metadata.id, plugin as t.PodClientPlugin_t)
-			break
-		case 'model':
-			modelPlugins.set(plugin.metadata.id, plugin as t.ModelClientPlugin_t)
-			break
-		case 'view':
-			viewPlugins.set(plugin.metadata.id, plugin as t.ViewClientPlugin_t)
-			break
-		default:
-			throw new Error(
-				`Failed to recognize plugin kind: ${plugin.metadata.kind} (id: ${plugin.metadata.id})`,
-			)
+export function getFamilies() {
+	return pluginFamilies
+}
+
+export function register(pluginModule: t.AnyClientPlugin_t) {
+	const familyMap = plugins.get(pluginModule.metadata.kind)
+	if (familyMap) {
+		familyMap.set(
+			pluginModule.metadata.id,
+			pluginModule as t.OverviewServerPlugin_t,
+		)
+	} else {
+		plugins.set(
+			pluginModule.metadata.kind,
+			new Map([
+				[pluginModule.metadata.id, pluginModule as t.OverviewServerPlugin_t],
+			]),
+		)
 	}
 }
 
-export function get<T extends keyof ClientPluginTypeMap>(
-	pluginType: T,
+export function get<T extends keyof ClientPluginsMap>(
+	pluginFamily: T,
 	pluginId: string,
-): ClientPluginTypeMap[T] {
-	const pluginsMap = list(pluginType)
+): ClientPluginsMap[T] {
+	const familyMap = list(pluginFamily)
 
-	const plugin = pluginsMap.get(pluginId)
-	if (!plugin) {
+	const pluginModule = familyMap.get(pluginId)
+	if (!pluginModule) {
 		throw new Error(`Failed to find client plugin with id: ${pluginId}`)
 	}
-	return plugin as any
+
+	return pluginModule
 }
 
-export function list<T extends keyof ClientPluginTypeMap>(
-	pluginType: T,
-): Map<string, ClientPluginTypeMap[T]> {
-	let pluginsMap = null
-	if (pluginType === 'overview') {
-		pluginsMap = overviewPlugins
-	} else if (pluginType === 'pod') {
-		pluginsMap = podPlugins
-	} else if (pluginType === 'model') {
-		pluginsMap = modelPlugins
-	} else if (pluginType === 'view') {
-		pluginsMap = viewPlugins
-	} else {
-		throw new Error(`Failed to recognize pluginType: ${pluginType}`)
-	}
+export function list<T extends keyof ClientPluginsMap>(
+	pluginFamily: T,
+): Map<string, ClientPluginsMap[T]> {
+	const familyMap = plugins.get(pluginFamily)
 
-	return pluginsMap as any
+	if (familyMap) {
+		return familyMap as any
+	} else {
+		return new Map()
+	}
 }

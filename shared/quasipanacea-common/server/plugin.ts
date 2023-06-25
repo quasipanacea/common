@@ -1,45 +1,63 @@
 import * as t from '../types.ts'
 
-type ServerPluginTypeMap = {
+type ServerPluginsMap = {
+	overview: t.OverviewServerPlugin_t
 	pod: t.PodServerPlugin_t
+	model: t.ModelServerPlugin_t
+	view: t.ViewServerPlugin_t
 }
 
-const podPlugins = new Map<string, t.PodServerPlugin_t>()
+const plugins = new Map<
+	keyof ServerPluginsMap,
+	Map<string, ServerPluginsMap[keyof ServerPluginsMap]>
+>()
+const pluginFamilies = Object.keys(
+	t.AnyIsomorphicPlugin.shape.kind.Enum,
+) as unknown as t.AnyIsomorphicPlugin_t['kind']
 
-export async function register(plugin: t.AnyServerPlugin_t) {
-	switch (plugin.metadata.kind) {
-		case 'pod':
-			podPlugins.set(plugin.metadata.id, plugin as t.PodServerPlugin_t)
-			break
-		default:
-			throw new Error(
-				`Failed to recognize plugin kind: ${plugin.metadata.kind} (id: ${plugin.metadata.id})`,
-			)
+export function getFamilies() {
+	return pluginFamilies
+}
+
+export function register(pluginModule: t.AnyServerPlugin_t) {
+	const familyMap = plugins.get(pluginModule.metadata.kind)
+	if (familyMap) {
+		familyMap.set(
+			pluginModule.metadata.id,
+			pluginModule as t.OverviewServerPlugin_t,
+		)
+	} else {
+		plugins.set(
+			pluginModule.metadata.kind,
+			new Map([
+				[pluginModule.metadata.id, pluginModule as t.OverviewServerPlugin_t],
+			]),
+		)
 	}
 }
 
-export function get<T extends keyof ServerPluginTypeMap>(
-	pluginType: T,
+export function get<T extends keyof ServerPluginsMap>(
+	pluginFamily: T,
 	pluginId: string,
-): ServerPluginTypeMap[T] {
-	const pluginsMap = list(pluginType)
+): ServerPluginsMap[T] {
+	const familyMap = list(pluginFamily)
 
-	const plugin = pluginsMap.get(pluginId)
-	if (!plugin) {
+	const pluginModule = familyMap.get(pluginId)
+	if (!pluginModule) {
 		throw new Error(`Failed to find server plugin with id: ${pluginId}`)
 	}
-	return plugin
+
+	return pluginModule
 }
 
-export function list<T extends keyof ServerPluginTypeMap>(
-	pluginType: T,
-): Map<string, ServerPluginTypeMap[T]> {
-	let pluginsMap = null
-	if (pluginType === 'pod') {
-		pluginsMap = podPlugins
-	} else {
-		throw new Error(`Failed to recognize pluginType: ${pluginType}`)
-	}
+export function list<T extends keyof ServerPluginsMap>(
+	pluginFamily: T,
+): Map<string, ServerPluginsMap[T]> {
+	const familyMap = plugins.get(pluginFamily)
 
-	return pluginsMap as any
+	if (familyMap) {
+		return familyMap as any
+	} else {
+		return new Map()
+	}
 }

@@ -28,16 +28,15 @@
 			</div>
 			<div class="dropdown-menu" id="dropdown-menu" role="menu">
 				<div class="dropdown-content">
-					<a class="dropdown-item" @click="popup.showNoData('null', GuidePopup)"
-						>Show Guide</a
+					<a
+						class="dropdown-item"
+						@click="popup.showNoData('null', GuidePopup)"
 					>
-				</div>
-				<div class="dropdown-content">
+						Show Guide
+					</a>
 					<router-link to="/plugins">
 						<a class="dropdown-item">Plugins</a>
 					</router-link>
-				</div>
-				<div class="dropdown-content">
 					<div class="dropdown-item">
 						<div class="select">
 							<select v-model="currentLayout">
@@ -435,7 +434,7 @@ async function handlePopupModelEditProperties(model: t.Model_t) {
 
 async function handlePopupModelCreateChild(
 	model: t.Model_t,
-	validationFn: t.PluginExportClient_t['validateNewChild'],
+	validationFn: t.ModelClientPlugin_t['validateNewChild'],
 ) {
 	await popup.show('model-create-child', ModelCreateChildPopup, {
 		modelUuid: model.uuid,

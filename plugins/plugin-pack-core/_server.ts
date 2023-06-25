@@ -1,3 +1,5 @@
+import { init as OverviewGraph } from '@quasipanacea/plugin-overview-graph/_server.ts'
+
 import { init as PodChemical } from '@quasipanacea/plugin-pod-chemical/_server.ts'
 import { init as PodDebug } from '@quasipanacea/plugin-pod-debug/_server.ts'
 import { init as PodLatex } from '@quasipanacea/plugin-pod-latex/_server.ts'
@@ -9,6 +11,7 @@ export { metadata } from './_isomorphic.ts'
 
 export async function initAll() {
 	await Promise.all([
+		OverviewGraph(),
 		PodChemical(),
 		PodDebug(),
 		PodLatex(),

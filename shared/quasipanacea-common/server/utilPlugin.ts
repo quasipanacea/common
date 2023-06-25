@@ -14,7 +14,8 @@ export function yieldPluginAppRouter<T extends string, U extends AnyRouter>(
 	return instance.router({
 		core: coreRouter,
 		plugins: instance.router({
-			pods: instance.router({
+			// TODO
+			pod: instance.router({
 				[slug]: router,
 			}),
 		}),
@@ -54,14 +55,9 @@ export async function getPluginList(): Promise<t.Plugin_t[]> {
 		}
 		const isomorphicFile = path.join(pluginDir, '_isomorphic.ts')
 
-		let pModule: t.PluginExportIsomorphic_t
+		let pModule: t.AnyServerPlugin_t
 		try {
 			pModule = await import(isomorphicFile)
-
-			util.validateSchema<typeof t.PluginExportIsomorphic>(
-				pModule,
-				t.PluginExportIsomorphic,
-			)
 		} catch (err) {
 			if (err instanceof Deno.errors.NotFound) {
 				throw new Error(`Expected file: ${isomorphicFile}`)

@@ -1,10 +1,10 @@
 import * as plugin from './plugin.ts'
-import type { ClientPluginTypeMap } from './plugin.ts'
+import type { ClientPluginsMap } from './plugin.ts'
 
-export function getPluginByFormat<T extends keyof ClientPluginTypeMap>(
+export function getPluginByFormat<T extends keyof ClientPluginsMap>(
 	pluginType: T,
 	format: string,
-): plugin.ClientPluginTypeMap[T] {
+): plugin.ClientPluginsMap[T] {
 	if (pluginType === 'pod') {
 		const storedValue = localStorage.getItem('saved-format-mappings')
 		if (!storedValue) {

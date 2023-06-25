@@ -52,7 +52,7 @@ onUnmounted(() => {
 })
 
 async function markdownRead(): Promise<void> {
-	const result = await api.plugins.pods.markdown.read.query({
+	const result = await api.plugins.pod.markdown.read.query({
 		uuid: uuid,
 	})
 	inputCode.value = result.content
@@ -61,7 +61,7 @@ async function markdownRead(): Promise<void> {
 
 async function markdownWrite(text: string): Promise<void> {
 	if (text) {
-		await api.plugins.pods.markdown.write.mutate({
+		await api.plugins.pod.markdown.write.mutate({
 			uuid: uuid,
 			content: text,
 		})

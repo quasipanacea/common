@@ -7,7 +7,7 @@ import { metadata } from './_isomorphic.ts'
 import { default as component } from './ModelLine.vue'
 
 export async function init() {
-	await plugin.register({
+	plugin.register({
 		metadata,
 		component,
 		arrangeElements,

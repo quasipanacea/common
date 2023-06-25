@@ -31,12 +31,12 @@ const uuid = getUuid()
 const placeholder = ref('Loading...')
 const content = ref('')
 onMounted(async () => {
-	const result = await api.plugins.pods.plaintext.read.query({ uuid })
+	const result = await api.plugins.pod.plaintext.read.query({ uuid })
 	content.value = result.content
 	placeholder.value = ''
 })
 async function handleKeyup(): Promise<void> {
-	await api.plugins.pods.plaintext.write.mutate({
+	await api.plugins.pod.plaintext.write.mutate({
 		uuid,
 		content: content.value,
 	})

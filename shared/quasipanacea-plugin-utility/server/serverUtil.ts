@@ -17,27 +17,23 @@ export async function assertFileExists(filepath: string) {
 }
 
 export async function run_bg(args: string[]) {
-	console.log(args)
 	// TODO: security
-	const p = Deno.run({
-		// cmd: ["systemd-run", "--user", ...args],
-		cmd: ['bash', '-c', `setsid ${args.join(' ')}`],
-		stderr: 'piped',
+	const command = new Deno.Command('bash', {
+		args: ['-c', `setsid ${args.join(' ')}`],
 		stdout: 'piped',
+		stderr: 'piped',
 	})
-	const [status, stdout, stderr] = await Promise.all([
-		p.status(),
-		p.output(),
-		p.stderrOutput(),
-	])
+	const { success, code, stdout, stderr } = await command.output()
+
 	console.log(
 		new TextDecoder().decode(stdout),
 		new TextDecoder().decode(stderr),
 	)
-	if (!status.success) {
-		throw new Error('Failed to spawn background process:' + stdout + stderr)
+	if (!success) {
+		throw new Error(
+			`Failed to spawn background process (code: ${code}):` + stdout + stderr,
+		)
 	}
-	p.close()
 }
 
 export function useTrpc<State extends Record<string, unknown>>() {
@@ -69,5 +65,3 @@ export const executeAllMiddleware = (trpc: any, hooks: any) => {
 		})
 	})
 }
-
-export function setupCurrentAltMenu(boundaryEl: any, action: () => void) {}
