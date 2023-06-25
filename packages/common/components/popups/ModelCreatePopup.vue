@@ -48,12 +48,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 
-import { t } from '@quasipanacea/common/index.ts'
-import {
-	popup,
-	trpcClient,
-	type BareAppRouter,
-} from '@quasipanacea/common/client/index.js'
+import { popup, trpcClient, type BareAppRouter } from '../../client/index.ts'
+import { t } from '../../index.ts'
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 

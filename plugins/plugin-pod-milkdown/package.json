@@ -22,7 +22,6 @@
 		"@milkdown/vue": "^7.2.3",
 		"@prosemirror-adapter/vue": "^0.2.5",
 		"@quasipanacea/common": "workspace:^",
-		"@quasipanacea/components": "workspace:^",
 		"@quasipanacea/plugin-utility": "workspace:^",
 		"@tailwindcss/typography": "^0.5.9",
 		"lodash": "^4.17.21",

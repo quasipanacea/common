@@ -48,11 +48,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, watch, ref } from 'vue'
 
-import {
-	popup,
-	trpcClient,
-	type BareAppRouter,
-} from '@quasipanacea/common/client/index.js'
+import { popup, trpcClient, type BareAppRouter } from '../../client/index.ts'
+import { t } from '../../index.ts'
 
 const props = defineProps<{
 	modelUuid: string

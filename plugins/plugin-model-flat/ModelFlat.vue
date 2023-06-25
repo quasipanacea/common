@@ -77,7 +77,7 @@ import {
 import {
 	PodCreatePopup,
 	ViewCreatePopup,
-} from '@quasipanacea/components/index.js'
+} from '@quasipanacea/common/components/index.js'
 import PodEditMetadataPopup from './util/PodEditMetadataPopup.vue'
 
 const props = defineProps<{

@@ -15,7 +15,7 @@ import katex from 'katex'
 import 'katex/dist/contrib/mhchem'
 import 'katex/dist/katex.min.css'
 
-import { CodeMirror } from '@quasipanacea/components/index.js'
+import { CodeMirror } from '@quasipanacea/common/components/index.js'
 
 const inputCode = ref('c = \\pm\\sqrt{a^2 + b^2}')
 const outputEl = ref<HTMLElement>()

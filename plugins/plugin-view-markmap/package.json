@@ -2,7 +2,6 @@
 	"name": "@quasipanacea/plugin-view-markmap",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:^",
-		"@quasipanacea/components": "workspace:^",
 		"@quasipanacea/plugin-utility": "workspace:^",
 		"markmap-common": "^0.14.2",
 		"markmap-lib": "^0.14.4",

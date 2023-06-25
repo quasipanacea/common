@@ -27,7 +27,7 @@ import { MilkdownProvider, useEditor } from '@milkdown/vue'
 import '@milkdown/theme-nord/style.css'
 
 import { trpcClient } from '@quasipanacea/common/client/index.js'
-import { SemanticInputOutput } from '@quasipanacea/components/index.js'
+import { SemanticInputOutput } from '@quasipanacea/common/components/index.js'
 import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 
 import type { PluginAppRouter } from './s.ts'

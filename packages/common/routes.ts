@@ -1,5 +1,4 @@
-import { path, z } from './mod.ts'
-
+import { z } from './mod.ts'
 import { trpcServer, util, utilResource, utilPlugin } from './server/index.ts'
 import { t } from './index.ts'
 
@@ -396,6 +395,7 @@ export const coreRouter = trpc.router({
 		)
 		.query(async ({ input }) => {
 			let plugins = await utilPlugin.getPluginList()
+			console.log(plugins)
 
 			if (input?.kind) {
 				plugins = plugins.filter((p) => p.kind === input.kind)

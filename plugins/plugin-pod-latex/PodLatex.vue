@@ -21,7 +21,7 @@ import { trpcClient } from '@quasipanacea/common/client/index.js'
 import {
 	CodeMirror,
 	SemanticInputOutput,
-} from '@quasipanacea/components/index.js'
+} from '@quasipanacea/common/components/index.js'
 
 import type { PluginAppRouter } from './s.ts'
 

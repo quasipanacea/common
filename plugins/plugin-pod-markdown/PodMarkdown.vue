@@ -21,7 +21,7 @@ import { trpcClient } from '@quasipanacea/common/client/index.js'
 import {
 	SemanticInputOutput,
 	CodeMirror,
-} from '@quasipanacea/components/index.js'
+} from '@quasipanacea/common/components/index.js'
 import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 
 import 'katex/dist/contrib/mhchem'

@@ -78,7 +78,7 @@ import {
 	ModelCreatePopup,
 	ModelEditPropertiesPopup,
 	PodCreatePopup,
-} from '@quasipanacea/components/index.js'
+} from '@quasipanacea/common/components/index.js'
 import GuidePopup from './util/GuidePopup.vue'
 
 const router = useRouter()

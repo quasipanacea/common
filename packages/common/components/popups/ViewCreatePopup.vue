@@ -1,15 +1,16 @@
 <template>
 	<div>
-		<h2 class="title as-2">Pod: Create</h2>
+		<h2 class="title as-2">View: Create</h2>
+
 		<div class="field">
 			<label class="label" for="name">Name</label>
 			<div class="control">
 				<input
 					class="input"
-					id="name"
 					type="text"
-					v-model="form.name"
+					id="name"
 					required
+					v-model="form.name"
 				/>
 			</div>
 		</div>
@@ -20,11 +21,11 @@
 				<div class="select">
 					<select name="plugin" id="plugin" v-model="form.plugin" required>
 						<option
-							v-for="item in pluginOptions"
-							:key="item.value"
-							:value="item.value"
+							v-for="plugin in viewPluginOptions"
+							:value="plugin"
+							:key="plugin"
 						>
-							{{ item.label }}
+							{{ plugin }}
 						</option>
 					</select>
 				</div>
@@ -32,7 +33,7 @@
 		</div>
 
 		<div class="field">
-			<label clas="label" for="group-uuid">Model UUID</label>
+			<label class="label" for="group-uuid">Model UUID</label>
 			<div class="control">
 				<input
 					class="input"
@@ -61,12 +62,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import { t } from '@quasipanacea/common/index.ts'
-import {
-	popup,
-	trpcClient,
-	type BareAppRouter,
-} from '@quasipanacea/common/client/index.js'
+import { popup, trpcClient, type BareAppRouter } from '../../client/index.ts'
+import { t } from '../../index.ts'
 
 const props = defineProps<{
 	modelUuid: string
@@ -74,36 +71,32 @@ const props = defineProps<{
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 
-const pluginOptions = ref<{ label: string; value: string }[]>([])
+const viewPluginOptions = ref<string[]>([])
 onMounted(async () => {
-	const { plugins } = await api.core.pluginList.query({ kind: 'pod' })
-	pluginOptions.value = plugins.map((item) => ({
-		label: item.id,
-		value: item.id,
-	}))
+	viewPluginOptions.value = (
+		await api.core.pluginList.query({ kind: 'view' })
+	).plugins.map((item) => item.id)
 })
+
 const form = reactive<{
 	name: string
-	type: string
 	plugin: string
 	model: {
 		uuid: string
 	}
 }>({
 	name: '',
-	type: 'node',
 	plugin: '',
 	model: {
 		uuid: props.modelUuid,
 	},
 })
-
 watch(props, (val) => {
 	form.model.uuid = val.modelUuid
 })
 
 async function submitData() {
-	await api.core.podAdd.mutate(form)
+	await api.core.viewAdd.mutate(form)
 	popup.hideNoData('null')
 }
 </script>

@@ -10,7 +10,7 @@ import { onMounted, ref } from 'vue'
 import 'github-markdown-css/github-markdown-light.css'
 
 import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
-import { CodeMirror } from '@quasipanacea/components/index.js'
+import { CodeMirror } from '@quasipanacea/common/components/index.js'
 
 const inputCode = ref('# Heading')
 const outputEl = ref<HTMLElement>()

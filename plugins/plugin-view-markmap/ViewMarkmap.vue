@@ -18,7 +18,7 @@ import { Markmap } from 'markmap-view/dist/index.esm'
 import {
 	SemanticInputOutput,
 	CodeMirror,
-} from '@quasipanacea/components/index.js'
+} from '@quasipanacea/common/components/index.js'
 
 const transformer = new Transformer()
 
