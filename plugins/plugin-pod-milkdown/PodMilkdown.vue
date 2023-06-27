@@ -45,7 +45,7 @@ function getUuid(): string {
 }
 const uuid = getUuid()
 
-const inputCode = ref(null)
+const inputCode = ref<null | string>(null)
 const outputHtml = ref('')
 
 const n = setInterval(async () => {
@@ -63,7 +63,7 @@ async function markdownRead(): Promise<void> {
 		uuid: uuid,
 	})
 	inputCode.value = result.content
-	outputHtml.value = await convert.markdownToHtml(inputCode.value)
+	outputHtml.value = await convert.markdownToHtml(inputCode.value || '')
 }
 
 async function markdownWrite(text: string): Promise<void> {

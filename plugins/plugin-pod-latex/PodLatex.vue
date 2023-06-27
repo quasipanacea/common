@@ -36,7 +36,7 @@ function getUuid(): string {
 }
 const uuid = getUuid()
 
-const iframeEl = ref(null)
+const iframeEl = ref<null | HTMLIFrameElement>(null)
 const iframeSrc = ref(`/api/plugins/pod/latex/get-pdf/${uuid}`)
 
 const inputCode = ref('')
@@ -52,10 +52,6 @@ async function updateData(text: string) {
 		content: text,
 	})
 
-	if (iframeEl.value?.contentWindow) {
-		iframeEl.value.contentWindow.location.reload()
-	} else {
-		iframeEl.value.location.reload()
-	}
+	iframeEl.value!.src += ''
 }
 </script>

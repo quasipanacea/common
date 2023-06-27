@@ -1,3 +1,3 @@
-import { z, path, Router, send } from '@server/mod.ts'
+import { Router } from '@server/mod.ts'
 
 export const oakRouter = new Router()

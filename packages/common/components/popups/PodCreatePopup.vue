@@ -72,7 +72,7 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 
 const pluginOptions = ref<{ label: string; value: string }[]>([])
 onMounted(async () => {
-	const { plugins } = await api.core.pluginList.query({ kind: 'pod' })
+	const { plugins } = await api.core.pluginList.query({ family: 'pod' })
 	pluginOptions.value = plugins.map((item) => ({
 		label: item.id,
 		value: item.id,

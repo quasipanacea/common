@@ -74,7 +74,7 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 const viewPluginOptions = ref<string[]>([])
 onMounted(async () => {
 	viewPluginOptions.value = (
-		await api.core.pluginList.query({ kind: 'view' })
+		await api.core.pluginList.query({ family: 'view' })
 	).plugins.map((item) => item.id)
 })
 

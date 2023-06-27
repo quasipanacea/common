@@ -1,3 +1,13 @@
 {
-	"extends": "../../../../tsconfig.json"
+	"extends": "@vue/tsconfig/tsconfig.json",
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"esModuleInterop": true,
+		"lib": ["ES2020", "DOM"],
+		"noEmit": true,
+		"typeRoots": ["./node_modules/@quasipanacea/types"],
+		"paths": {
+			"@server/*": ["../../../server-deno/src/*"]
+		}
+	}
 }

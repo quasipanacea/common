@@ -2,7 +2,7 @@
 	<div class="grid">
 		<slot name="input"></slot>
 
-		<div ref="gutter" class="gutter-col gutter-col-1"></div>
+		<div ref="gutterEl" class="gutter-col gutter-col-1"></div>
 
 		<slot name="output"></slot>
 	</div>
@@ -12,13 +12,13 @@
 import { onMounted, ref } from 'vue'
 import Split from 'split-grid'
 
-const gutter = ref<HTMLElement>()
+const gutterEl = ref<HTMLElement>()
 onMounted(() => {
 	Split({
 		columnGutters: [
 			{
 				track: 1,
-				element: gutter.value,
+				element: gutterEl.value!,
 			},
 		],
 	})

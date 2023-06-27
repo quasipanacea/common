@@ -1,4 +1,4 @@
-import { trpcServer } from '@quasipanacea/common/server/index.js'
+import { trpcServer, utilPlugin } from '@quasipanacea/common/server/index.js'
 
 import { trpcRouter } from './podLatex.js'
 

@@ -1,4 +1,4 @@
-import { z, path, Router, send } from '@server/mod.ts'
+import { z, path, Router, send, Context } from '@server/mod.ts'
 
 import { t } from '@quasipanacea/common/index.ts'
 import { util } from '@quasipanacea/common/server/index.ts'
@@ -9,30 +9,33 @@ export type State = {
 	pdfFile: string
 }
 
-export const hooks: t.Hooks<State> = {
-	makeState(pod) {
-		const latexFile = path.join(pod.dir, 'main.tex')
-		const pdfFile = path.join(pod.dir, 'main.pdf')
+export const hooks: t.Hooks<'pod', State> = {
+	makeState({ dir }) {
+		const latexFile = path.join(dir, 'main.tex')
+		const pdfFile = path.join(dir, 'main.pdf')
 
 		return {
 			latexFile,
 			pdfFile,
 		}
 	},
-	async onPodAdd(pod, state) {
+	async onAdd({ state }) {
 		await serverUtil.assertFileExists(state.latexFile)
 	},
 }
 
-export const oakRouter = new Router().get('/get-pdf/:podId', async (ctx) => {
-	const podId = ctx.params.podId
-	const pod = await util.getPod(podId)
+export const oakRouter = new Router().get(
+	'/get-pdf/:podUuid',
+	async (ctx: Context) => {
+		const podUuid = ctx.params.podUuid
+		const { resource: pod } = await utilPlugin.getResource('pods', podUuid)
 
-	const pdfFile = path.join(pod.dir, 'main.pdf')
-	await send(ctx, pdfFile.slice('/home/edwin'.length), {
-		root: '/home/edwin', // TODO
-	})
-})
+		const pdfFile = path.join(pod.dir, 'main.pdf')
+		await send(ctx, pdfFile.slice('/home/edwin'.length), {
+			root: '/home/edwin', // TODO
+		})
+	},
+)
 
 const trpc = serverUtil.useTrpc<State>()
 

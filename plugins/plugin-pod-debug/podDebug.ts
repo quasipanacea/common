@@ -5,11 +5,11 @@ import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {}
 
-export const hooks: t.Hooks<State> = {
-	makeState(pod) {
+export const hooks: t.Hooks<'pod', State> = {
+	makeState({ pod }) {
 		return {}
 	},
-	async onPodAdd(pod, state) {},
+	async onAdd() {},
 }
 
 const trpc = serverUtil.useTrpc<State>()

@@ -1,6 +1,10 @@
 import { initTRPC } from '@trpc/server'
 
-import { util, trpcServer } from '@quasipanacea/common/server/index.ts'
+import {
+	utilPlugin,
+	utilResource,
+	trpcServer,
+} from '@quasipanacea/common/server/index.ts'
 
 export async function assertFileExists(filepath: string) {
 	try {
@@ -50,15 +54,23 @@ export function useTrpc<State extends Record<string, unknown>>() {
 /**
  * Note: 'trpc' must be passed since it contains custom State
  */
-export const executeAllMiddleware = (trpc: any, hooks: any) => {
-	return trpcServer.instance.middleware(async ({ ctx, input, next }: any) => {
+export const executeAllMiddleware = (trpc, hooks) => {
+	return trpcServer.instance.middleware(async ({ ctx, input, next }) => {
 		const uuid = input.uuid
 
-		ctx.pod = await util.getPod(uuid)
-		ctx.state = await hooks.makeState(ctx.pod)
+		ctx.dir = await utilResource.getResourceDir('pods', uuid)
+		const json = await utilResource.getResourcesJson('pods')
+		for (const [rUuid, resource] of Object.entries(json['pods'])) {
+			if (uuid === rUuid) {
+				ctx.pod = resource
+				continue
+			}
+		}
+		ctx.state = await hooks.makeState({ dir: ctx.dir, pod: ctx.pod })
 
 		return next({
 			ctx: {
+				dir: ctx.dir,
 				pod: ctx.pod,
 				state: ctx.state,
 			},

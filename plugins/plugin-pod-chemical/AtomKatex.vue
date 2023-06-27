@@ -20,7 +20,7 @@ import { CodeMirror } from '@quasipanacea/common/components/index.js'
 const inputCode = ref('c = \\pm\\sqrt{a^2 + b^2}')
 const outputEl = ref<HTMLElement>()
 function codeUpdate(text: string) {
-	katex.render(text, outputEl.value, {
+	katex.render(text, outputEl.value!, {
 		throwOnError: false,
 	})
 }

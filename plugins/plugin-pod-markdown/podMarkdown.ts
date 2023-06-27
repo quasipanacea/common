@@ -7,15 +7,15 @@ export type State = {
 	indexFile: string
 }
 
-export const hooks: t.Hooks<State> = {
-	makeState(pod) {
-		const indexFile = path.join(pod.dir, 'index.md')
+export const hooks: t.Hooks<'pod', State> = {
+	makeState({ dir }) {
+		const indexFile = path.join(dir, 'index.md')
 
 		return {
 			indexFile,
 		}
 	},
-	async onPodAdd(pod, state) {
+	async onAdd({ state }) {
 		await serverUtil.assertFileExists(state.indexFile)
 	},
 }

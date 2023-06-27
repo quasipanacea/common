@@ -1,0 +1,23 @@
+{
+	"files": [],
+	"references": [
+		{ "path": "./plugin-model-colors" },
+		{ "path": "./plugin-model-default" },
+		{ "path": "./plugin-model-flat" },
+		{ "path": "./plugin-model-line" },
+		{ "path": "./plugin-overview-bullets" },
+		{ "path": "./plugin-overview-debug" },
+		{ "path": "./plugin-overview-graph" },
+		{ "path": "./plugin-overview-mindelixir" },
+		{ "path": "./plugin-pack-core" },
+		{ "path": "./plugin-pod-chemical" },
+		{ "path": "./plugin-pod-debug" },
+		{ "path": "./plugin-pod-latex" },
+		{ "path": "./plugin-pod-markdown" },
+		{ "path": "./plugin-pod-milkdown" },
+		{ "path": "./plugin-pod-plaintext" },
+		{ "path": "./plugin-theme-default" },
+		{ "path": "./plugin-view-list" },
+		{ "path": "./plugin-view-markmap" }
+	]
+}

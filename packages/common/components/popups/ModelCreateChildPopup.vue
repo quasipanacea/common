@@ -26,9 +26,9 @@
 			<label class="label">Plugin</label>
 			<div class="control">
 				<div class="select">
-					<select v-model="form.podPlugin">
-						<option v-for="value of podPlugins" :value="value">
-							{{ value }}
+					<select v-model="form.format">
+						<option v-for="format of podFormats" :value="format">
+							{{ format }}
 						</option>
 					</select>
 				</div>
@@ -46,34 +46,34 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, watch, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 import { popup, trpcClient, type BareAppRouter } from '../../client/index.ts'
 import { t } from '../../index.ts'
 
 const props = defineProps<{
 	modelUuid: string
-	validationFn: () => boolean
 }>()
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 
 const childTypes = ref(['orb', 'pod'])
-const podPlugins = ref<string[]>([])
+const podFormats = ref<string[]>([])
 onMounted(async () => {
-	const { plugins } = await api.core.pluginList.query({ kind: 'pod' })
-	podPlugins.value = plugins.map((p) => p.id)
-	form.podPlugin = podPlugins.value[0]
+	const { formats } = await api.core.indexGet.query()
+	podFormats.value = Object.keys(formats)
+
+	form.format = podFormats.value[0]
 })
 
 const form = reactive<{
 	name: string
 	childType: string
-	podPlugin: string
+	format: string
 }>({
 	name: '',
 	childType: childTypes.value[0],
-	podPlugin: '',
+	format: '',
 })
 
 async function submitData() {
@@ -87,7 +87,7 @@ async function submitData() {
 	} else if (form.childType === 'pod') {
 		await api.core.podAdd.mutate({
 			name: form.name,
-			plugin: form.podPlugin,
+			format: form.format,
 			model: {
 				uuid: props.modelUuid,
 			},

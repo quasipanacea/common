@@ -39,7 +39,7 @@ onMounted(async () => {
 
 async function drawDiagram(text: string) {
 	const { svg } = await mermaid.render('graphDiv', text)
-	mermaidEl.value.innerHTML = svg
+	mermaidEl.value!.innerHTML = svg
 }
 </script>
 

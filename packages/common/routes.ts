@@ -1,5 +1,12 @@
 import { z } from './mod.ts'
-import { trpcServer, util, utilResource, utilPlugin } from './server/index.ts'
+import { default as _ } from 'lodash' // TODO
+import {
+	trpcServer,
+	util,
+	utilResource,
+	utilPlugin,
+	plugin,
+} from './server/index.ts'
 import { t } from './index.ts'
 
 const trpc = trpcServer.instance
@@ -201,6 +208,69 @@ export const coreRouter = trpc.router({
 			return { models }
 		}),
 
+	viewAdd: trpc.procedure
+		.input(t.View.omit({ uuid: true }))
+		.output(z.object({ uuid: t.Uuid }))
+		.mutation(async ({ input }) => {
+			const uuid = await utilResource.resourceAdd(
+				input,
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
+			)
+
+			return { uuid }
+		}),
+	viewRemove: trpc.procedure
+		.input(z.object({ uuid: t.Uuid }))
+		.output(z.void())
+		.mutation(async ({ input }) => {
+			await utilResource.resourceRemove(
+				input,
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
+			)
+		}),
+	viewModify: trpc.procedure
+		.input(
+			z.object({
+				uuid: t.Uuid,
+				data: t.View.omit({ uuid: true }).partial(),
+			}),
+		)
+		.output(t.View)
+		.mutation(async ({ input }) => {
+			const view = await utilResource.resourceModify<t.View_t>(
+				input,
+				utilResource.getViewsJsonFile(),
+				utilResource.getViewsJson,
+				'views',
+			)
+
+			return view
+		}),
+	viewList: trpc.procedure
+		.input(z.void())
+		.output(
+			z.object({
+				views: z.array(t.View),
+			}),
+		)
+		.query(async () => {
+			const rJson = await utilResource.getViewsJson()
+
+			// work
+			const views: t.View_t[] = []
+			for (const [uuid, obj] of Object.entries(rJson.views)) {
+				views.push({
+					uuid,
+					...obj,
+				})
+			}
+			return { views }
+		}),
+
 	podAdd: trpc.procedure
 		.input(t.Pod.omit({ uuid: true }))
 		.output(
@@ -309,67 +379,25 @@ export const coreRouter = trpc.router({
 			return { pods }
 		}),
 
-	viewAdd: trpc.procedure
-		.input(t.View.omit({ uuid: true }))
-		.output(z.object({ uuid: t.Uuid }))
-		.mutation(async ({ input }) => {
-			const uuid = await utilResource.resourceAdd(
-				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
-			)
-
-			return { uuid }
+	settingsGet: trpc.procedure
+		.input(z.void())
+		.output(t.SchemaSettingsJson)
+		.query(async () => {
+			const settingsJson = await utilResource.getSettingsJson()
+			return settingsJson
 		}),
-	viewRemove: trpc.procedure
-		.input(z.object({ uuid: t.Uuid }))
+	settingsModify: trpc.procedure
+		.input(t.SchemaSettingsJson.partial())
 		.output(z.void())
 		.mutation(async ({ input }) => {
-			await utilResource.resourceRemove(
-				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
-			)
-		}),
-	viewModify: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-				data: t.View.omit({ uuid: true }).partial(),
-			}),
-		)
-		.output(t.View)
-		.mutation(async ({ input }) => {
-			const view = await utilResource.resourceModify<t.View_t>(
-				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
-			)
+			let settingsJson = await utilResource.getSettingsJson()
+			settingsJson = _.merge(settingsJson, input)
 
-			return view
-		}),
-	viewList: trpc.procedure
-		.input(z.void())
-		.output(
-			z.object({
-				views: z.array(t.View),
-			}),
-		)
-		.query(async () => {
-			const rJson = await utilResource.getViewsJson()
-
-			// work
-			const views: t.View_t[] = []
-			for (const [uuid, obj] of Object.entries(rJson.views)) {
-				views.push({
-					uuid,
-					...obj,
-				})
-			}
-			return { views }
+			const settingsJsonFile = await utilResource.getSettingsJsonFile()
+			await Deno.writeTextFile(
+				settingsJsonFile,
+				util.jsonStringify(settingsJson),
+			)
 		}),
 
 	indexGet: trpc.procedure
@@ -384,7 +412,7 @@ export const coreRouter = trpc.router({
 		.input(
 			z
 				.object({
-					kind: z.string().optional(),
+					family: z.string().optional(),
 				})
 				.optional(),
 		)
@@ -394,12 +422,20 @@ export const coreRouter = trpc.router({
 			}),
 		)
 		.query(async ({ input }) => {
-			let plugins = await utilPlugin.getPluginList()
-			console.log(plugins)
-
-			if (input?.kind) {
-				plugins = plugins.filter((p) => p.kind === input.kind)
+			let rawPlugins: t.AnyServerPlugin_t[] = []
+			if (input?.family) {
+				rawPlugins = Array.from(plugin.list(input.family).values())
+			} else {
+				for (const family of plugin.getFamilies()) {
+					const arr = Array.from(plugin.list(family).values())
+					rawPlugins = rawPlugins.concat(arr)
+				}
 			}
+
+			const plugins = rawPlugins.map((item) => ({
+				id: item.metadata.id,
+				family: item.metadata.family,
+			}))
 
 			return { plugins }
 		}),

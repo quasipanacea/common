@@ -30,7 +30,7 @@ const markdown = ref(`# markmap
 - easy
 - interactive
 `)
-let mm
+let mm: any
 
 const updateData = () => {
 	const { root } = transformer.transform(markdown.value)

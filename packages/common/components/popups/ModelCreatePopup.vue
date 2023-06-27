@@ -55,7 +55,7 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 
 const plugins = ref<t.Plugin_t[]>([])
 onMounted(async () => {
-	plugins.value = (await api.core.pluginList.query({ kind: 'model' })).plugins
+	plugins.value = (await api.core.pluginList.query({ family: 'model' })).plugins
 })
 
 const form = reactive<{

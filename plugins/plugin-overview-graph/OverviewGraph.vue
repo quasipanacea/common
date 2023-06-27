@@ -148,10 +148,8 @@ onUnmounted(() => {
 })
 
 onMounted(async () => {
-	if (!cytoscapeEl.value) throw new Error('cytoscape container not defined')
-
 	cy = cytoscape({
-		container: cytoscapeEl.value,
+		container: cytoscapeEl.value!,
 		style: defaultTheme.cytoscape,
 		minZoom: 0.5,
 		maxZoom: 3,
@@ -318,7 +316,7 @@ onMounted(async () => {
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								const modelPlugin = plugin.get('model', 'color') // TODO
+								const modelPlugin = plugin.get('model', 'colors') // TODO
 								handlePopupModelCreateChild(
 									data.resourceData,
 									modelPlugin.validateNewChild,

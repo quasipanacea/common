@@ -91,6 +91,7 @@ const model = ref<t.Model_t>()
 const pods = ref<t.Pod_t[]>([])
 const orbs = ref<t.Orb_t[]>([])
 
+type myType = t.Foo.PodExtras['a']
 onMounted(async () => {
 	await updateData()
 })

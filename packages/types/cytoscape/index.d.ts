@@ -119,7 +119,7 @@ declare module 'cytoscape' {
 			/**
 			 * a space separated list of class names that the element has
 			 */
-			classes?: string | undefined
+			classes?: ClassNames
 			/**
 			 *  CssStyleDeclaration;
 			 */

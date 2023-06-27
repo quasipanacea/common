@@ -1,5 +1,5 @@
 <template>
-	<div ref="divRef">
+	<div ref="slashEl">
 		<button
 			className="text-gray-600 bg-slate-200 px-2 py-1 rounded-lg hover:bg-slate-300 border hover:text-gray-900"
 			@mousedown="addCodeBlock"
@@ -16,18 +16,18 @@ import { createCodeBlockCommand } from '@milkdown/preset-commonmark'
 import { callCommand } from '@milkdown/utils'
 import { useInstance } from '@milkdown/vue'
 import { usePluginViewContext } from '@prosemirror-adapter/vue'
-import { onMounted, onUnmounted, ref, VNodeRef, watch } from 'vue'
+import { onMounted, onUnmounted, ref, type VNodeRef, watch } from 'vue'
 
 const { view, prevState } = usePluginViewContext()
 const [loading, get] = useInstance()
 
-const divRef = ref<VNodeRef>()
+const slashEl = ref<VNodeRef | null>()
 
 let tooltipProvider: SlashProvider
 
 onMounted(() => {
 	tooltipProvider = new SlashProvider({
-		content: divRef.value as any,
+		content: slashEl.value! as unknown as HTMLElement,
 	})
 
 	tooltipProvider.update(view.value, prevState.value)

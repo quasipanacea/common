@@ -13,9 +13,9 @@ import { convert } from '@quasipanacea/plugin-utility/client/index.ts'
 import { CodeMirror } from '@quasipanacea/common/components/index.js'
 
 const inputCode = ref('# Heading')
-const outputEl = ref<HTMLElement>()
+const outputEl = ref<HTMLElement | null>(null)
 async function codeUpdate(text: string) {
-	outputEl.value.innerHTML = await convert.markdownToHtml(text)
+	outputEl.value!.innerHTML = await convert.markdownToHtml(text)
 }
 onMounted(() => {
 	codeUpdate(inputCode.value)

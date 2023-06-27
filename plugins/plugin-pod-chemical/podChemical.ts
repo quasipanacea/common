@@ -7,30 +7,33 @@ export type State = {
 	dataFile: string
 }
 
-export const hooks: t.Hooks<State> = {
-	makeState(pod) {
-		const dataFile = path.join(pod.dir, 'data.json')
+export const hooks: t.Hooks<'pod', State> = {
+	makeState({ dir }) {
+		const dataFile = path.join(dir, 'data.json')
 
 		return {
 			dataFile,
 		}
 	},
-	async onPodAdd(pod, state) {
+	async onAdd({ state }) {
 		await serverUtil.assertFileExists(state.dataFile)
 	},
 }
 
-export const oakRouter = new Router().get('/get-pdf/:podId', async (ctx) => {
-	const podId = ctx.params.podId
-	const pod = await serverUtil.getPod(podId)
+export const oakRouter = new Router().get(
+	'/get-pdf/:podUuid',
+	async (ctx: Router) => {
+		const podUuid = ctx.params.podUuid
+		const { resource: pod } = await utilPlugin.getResource('pods', podUuid)
 
-	const pdfFile = path.join(pod.dir, 'main.pdf')
-	console.log(pdfFile)
+		const pdfFile = path.join(pod.dir, 'main.pdf')
+		console.log(pdfFile)
 
-	await send(ctx, pdfFile.slice('/home/edwin'.length), {
-		root: '/home/edwin',
-	})
-})
+		await send(ctx, pdfFile.slice('/home/edwin'.length), {
+			root: '/home/edwin',
+		})
+	},
+)
 
 const trpc = serverUtil.useTrpc<State>()
 

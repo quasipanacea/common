@@ -6,9 +6,12 @@
 import { onMounted } from 'vue'
 
 import MindElixir, { E } from 'mind-elixir'
+import type { MindElixirOptions } from 'mind-elixir'
+
+MindElixir._new = MindElixir.new
 
 onMounted(() => {
-	let options = {
+	let options: MindElixirOptions = {
 		el: '#map', // or HTMLDivElement
 		direction: MindElixir.LEFT,
 		draggable: true, // default true
@@ -35,10 +38,10 @@ onMounted(() => {
 		},
 		allowUndo: false,
 		before: {
-			insertSibling(el, obj) {
+			insertSibling(el: any, obj: any) {
 				return true
 			},
-			async addChild(el, obj) {
+			async addChild(el: any, obj: any) {
 				return true
 			},
 		},
@@ -48,7 +51,7 @@ onMounted(() => {
 	// mind.install(plugin) // install your plugin
 
 	// create new map data
-	const data = MindElixir.new('new topic')
+	const data = MindElixir._new('new topic')
 	// or `example`
 	// or the data return from `.getAllData()`
 	mind.init(data)

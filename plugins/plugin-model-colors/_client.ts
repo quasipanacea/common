@@ -14,7 +14,7 @@ export async function init() {
 	})
 }
 
-export function arrangeElements(
+function arrangeElements(
 	model: t.Model_t,
 	pods: t.Pod_t[],
 	orbs: t.Orb_t[],
@@ -90,4 +90,4 @@ export function arrangeElements(
 	return { elements }
 }
 
-export function validateNewChild() {}
+function validateNewChild() {}

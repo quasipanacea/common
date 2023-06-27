@@ -1,6 +1,7 @@
-import { z, path } from '../mod.ts'
+import { z, path, DeepPartial } from '../mod.ts'
 
 import * as t from '../types.ts'
+import { utilPlugin, utilResource } from './index.ts'
 import * as util from './util.ts'
 
 // generic
@@ -13,10 +14,13 @@ export async function resourceAdd(
 	const uuid = crypto.randomUUID()
 
 	const rJson = await rJsonFn()
-	rJson[key][uuid] = {
-		...input,
-	}
+	rJson[key][uuid] = input
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+
+	const dir = getPodDir(uuid)
+	await Deno.mkdir(dir, { recursive: true })
+
+	utilPlugin.runHook('pods', 'pod', uuid, 'add')
 
 	return uuid
 }
@@ -27,8 +31,12 @@ export async function resourceRemove(
 	rJsonFn: () => Promise<Record<string, any>>,
 	key: string,
 ): Promise<void> {
-	const rJson = await rJsonFn()
+	utilPlugin.runHook('pods', 'pod', input.uuid, 'remove')
 
+	const dir = getPodDir(input.uuid)
+	await Deno.mkdir(dir, { recursive: true })
+
+	const rJson = await rJsonFn()
 	if (rJson[key][input.uuid]) {
 		delete rJson[key][input.uuid]
 	}
@@ -118,6 +126,12 @@ export async function resourceList<Resource_t>(
 }
 
 // dir
+export function getResourcesDir(
+	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
+): string {
+	return path.join(util.getDataDir(), resourceName)
+}
+
 export function getOrbsDir(): string {
 	return path.join(util.getDataDir(), 'orbs')
 }
@@ -130,15 +144,26 @@ export function getModelsDir(): string {
 	return path.join(util.getDataDir(), 'models')
 }
 
-export function getPodsDir(): string {
-	return path.join(util.getDataDir(), 'pods')
-}
-
 export function getViewsDir(): string {
 	return path.join(util.getDataDir(), 'views')
 }
 
+export function getPodsDir(): string {
+	return path.join(util.getDataDir(), 'pods')
+}
+
 // dir (instance)
+export function getResourceDir(
+	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
+	uuid: string,
+) {
+	return path.join(
+		getResourcesDir(resourceName),
+		uuid.slice(0, 2),
+		uuid.slice(2),
+	)
+}
+
 export function getOrbDir(uuid: string): string {
 	return path.join(getOrbsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
@@ -151,15 +176,21 @@ export function getModelDir(uuid: string): string {
 	return path.join(getModelsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
-export function getPodDir(uuid: string): string {
-	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
-}
-
 export function getViewDir(uuid: string): string {
 	return path.join(getViewsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
+export function getPodDir(uuid: string): string {
+	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
+}
+
 // file
+export function getResourcesJsonFile(
+	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
+) {
+	return path.join(util.getDataDir(), resourceName + '.json')
+}
+
 export function getOrbsJsonFile(): string {
 	return path.join(util.getDataDir(), 'orbs.json')
 }
@@ -172,12 +203,16 @@ export function getModelsJsonFile(): string {
 	return path.join(util.getDataDir(), 'models.json')
 }
 
+export function getViewsJsonFile(): string {
+	return path.join(util.getDataDir(), 'views.json')
+}
+
 export function getPodsJsonFile(): string {
 	return path.join(util.getDataDir(), 'pods.json')
 }
 
-export function getViewsJsonFile(): string {
-	return path.join(util.getDataDir(), 'views.json')
+export function getSettingsJsonFile(): string {
+	return path.join(util.getDataDir(), 'settings.json')
 }
 
 export function getIndexJsonFile(): string {
@@ -185,6 +220,42 @@ export function getIndexJsonFile(): string {
 }
 
 // json
+const table = {
+	// TODO
+	orbs: t.SchemaOrbsJson,
+	links: t.SchemaLinksJson,
+	models: t.SchemaModelsJson,
+	pods: t.SchemaPodsJson,
+	views: t.SchemaViewsJson,
+}
+export async function getResourcesJson<
+	ResourceName extends 'orbs' | 'links' | 'models' | 'pods' | 'views',
+>(resourceName: ResourceName) {
+	const jsonFile = getResourcesJsonFile(resourceName)
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = `{ "${resourceName}": {} }`
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<(typeof table)[ResourceName]>(
+		JSON.parse(content),
+		{
+			orbs: t.SchemaOrbsJson,
+			links: t.SchemaLinksJson,
+			models: t.SchemaModelsJson,
+			pods: t.SchemaPodsJson,
+			views: t.SchemaViewsJson,
+		}[resourceName],
+	)
+}
+
 export async function getOrbsJson(): Promise<t.SchemaOrbsJson_t> {
 	const jsonFile = getOrbsJsonFile()
 	let content
@@ -245,6 +316,26 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	)
 }
 
+export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
+	const jsonFile = getViewsJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "views": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaViewsJson>(
+		JSON.parse(content),
+		t.SchemaViewsJson,
+	)
+}
+
 export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	const jsonFile = getPodsJsonFile()
 	let content
@@ -265,23 +356,23 @@ export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	)
 }
 
-export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
-	const jsonFile = getViewsJsonFile()
+export async function getSettingsJson(): Promise<t.SchemaSettingsJson_t> {
+	const jsonFile = getSettingsJsonFile()
 	let content
 	try {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "views": {} }'
+			content = '{}'
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err
 		}
 	}
 
-	return util.validateSchema<typeof t.SchemaViewsJson>(
+	return util.validateSchema<typeof t.SchemaSettingsJson>(
 		JSON.parse(content),
-		t.SchemaViewsJson,
+		t.SchemaSettingsJson,
 	)
 }
 

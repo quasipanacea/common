@@ -5,6 +5,7 @@
 		"@quasipanacea/plugin-utility": "workspace:^"
 	},
 	"devDependencies": {
+		"@quasipanacea/types": "workspace:^",
 		"@trpc/client": "^10.32.0",
 		"vue": "^3.0.0",
 		"vue-router": "^4.0.0"

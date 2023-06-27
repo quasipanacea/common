@@ -1,25 +1,31 @@
 import * as plugin from './plugin.ts'
 import type { ClientPluginsMap } from './plugin.ts'
+import { yieldClient } from './trpcClient.ts'
+import { type BareAppRouter } from '../routes.ts'
 
-export function getPluginByFormat<T extends keyof ClientPluginsMap>(
-	pluginType: T,
+export async function getPluginByFormat<T extends keyof ClientPluginsMap>(
+	pluginFamily: T,
 	format: string,
-): plugin.ClientPluginsMap[T] {
-	if (pluginType === 'pod') {
-		const storedValue = localStorage.getItem('saved-format-mappings')
-		if (!storedValue) {
-			throw new Error('Must set format mappings')
-		}
-		const storedValueObj = JSON.parse(storedValue)
+): Promise<plugin.ClientPluginsMap[T]> {
+	const api = yieldClient<BareAppRouter>()
 
-		const pluginId = storedValueObj[format]
+	if (pluginFamily === 'pod') {
+		const storedValueObj =
+			(await api.core.settingsGet.query()).mimesToPlugin || {}
+
+		let pluginId = storedValueObj[format]
 		if (!pluginId) {
-			throw new Error(`Failed to find plugin to use for format ${format}`)
+			const indexJson = await api.core.indexGet.query()
+			if (indexJson.formats[format]) {
+				pluginId = indexJson.formats[format][0]
+			} else {
+				throw new Error(`Failed to find plugin to use for format ${format}`)
+			}
 		}
 
-		const p = plugin.get(pluginType, pluginId)
-		return p
+		const pluginModule = plugin.get(pluginFamily, pluginId)
+		return pluginModule
 	} else {
-		throw new Error(`Not implemented for pluginType: ${pluginType}`)
+		throw new Error(`Not implemented for pluginType: ${pluginFamily}`)
 	}
 }
