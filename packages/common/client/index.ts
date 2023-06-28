@@ -1,5 +1,4 @@
-export * as format from './format.ts'
-export * as plugin from './plugin.ts'
+export * as pluginClient from './pluginClient.ts'
 export * as popup from './popup.ts'
 export * as trpcClient from './trpcClient.ts'
 export type { BareAppRouter } from '../index.ts'

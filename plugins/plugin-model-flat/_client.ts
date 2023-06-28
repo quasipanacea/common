@@ -1,13 +1,13 @@
 import type cytoscape from 'cytoscape'
 
 import { t } from '@quasipanacea/common/index.ts'
-import { plugin } from '@quasipanacea/common/client/index.js'
+import { pluginClient } from '@quasipanacea/common/client/index.js'
 
 import { metadata } from './_isomorphic.ts'
 import { default as component } from './ModelFlat.vue'
 
 export async function init() {
-	plugin.register({
+	pluginClient.register({
 		metadata,
 		component,
 		arrangeElements,

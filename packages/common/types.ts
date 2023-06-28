@@ -10,14 +10,15 @@ import {
 export const Uuid = z.string().min(1)
 export const Id = z.string().min(1)
 export const String = z.string().min(1)
-export const FamilyPlugins = z.enum([
+export const familyPlugins = [
 	'overview',
 	'model',
 	'view',
 	'pod',
 	'theme',
 	'pack',
-])
+] as const
+export const FamilyPlugins = z.enum(familyPlugins)
 export type FamilyPlugins_t = z.infer<typeof FamilyPlugins>
 
 // Shared: Type
@@ -193,6 +194,14 @@ export type AnyClientPlugin_t =
 	| PodClientPlugin_t
 	| ThemeClientPlugin_t
 	| PackClientPlugin_t
+export type ClientPluginMap_t = {
+	overview: OverviewClientPlugin_t
+	model: ModelClientPlugin_t
+	view: ViewClientPlugin_t
+	pod: PodClientPlugin_t
+	theme: ThemeClientPlugin_t
+	pack: PackClientPlugin_t
+}
 export type OverviewClientPlugin_t = {
 	metadata: Metadata_t
 	component: unknown
@@ -219,6 +228,7 @@ export type ThemeClientPlugin_t = {
 	metadata: Metadata_t
 }
 export type PackClientPlugin_t = {
+	metadata: Metadata_t
 	initAll: () => {}
 }
 
@@ -255,6 +265,14 @@ export type AnyServerPlugin_t =
 	| PodServerPlugin_t
 	| ThemeServerPlugin_t
 	| PackServerPlugin_t
+export type ServerPluginMap_t = {
+	overview: OverviewServerPlugin_t
+	model: ModelServerPlugin_t
+	view: ViewServerPlugin_t
+	pod: PodServerPlugin_t
+	theme: ThemeServerPlugin_t
+	pack: PackServerPlugin_t
+}
 export type OverviewServerPlugin_t = BareServerPlugin_t
 export type ModelServerPlugin_t = BareServerPlugin_t
 export type ViewServerPlugin_t = BareServerPlugin_t

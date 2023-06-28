@@ -5,7 +5,7 @@ import {
 	util,
 	utilResource,
 	utilPlugin,
-	plugin,
+	pluginServer,
 } from './server/index.ts'
 import { t } from './index.ts'
 
@@ -424,10 +424,10 @@ export const coreRouter = trpc.router({
 		.query(async ({ input }) => {
 			let rawPlugins: t.AnyServerPlugin_t[] = []
 			if (input?.family) {
-				rawPlugins = Array.from(plugin.list(input.family).values())
+				rawPlugins = Array.from(pluginServer.list(input.family).values())
 			} else {
-				for (const family of plugin.getFamilies()) {
-					const arr = Array.from(plugin.list(family).values())
+				for (const family of pluginServer.getFamilies()) {
+					const arr = Array.from(pluginServer.list(family).values())
 					rawPlugins = rawPlugins.concat(arr)
 				}
 			}

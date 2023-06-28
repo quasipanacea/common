@@ -66,7 +66,7 @@ import cytoscapeCompoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 
 import { t } from '@quasipanacea/common/index.ts'
 import {
-	plugin,
+	pluginClient,
 	popup,
 	trpcClient,
 	type BareAppRouter,
@@ -316,7 +316,7 @@ onMounted(async () => {
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								const modelPlugin = plugin.get('model', 'colors') // TODO
+								const modelPlugin = pluginClient.get('model', 'colors') // TODO
 								handlePopupModelCreateChild(
 									data.resourceData,
 									modelPlugin.validateNewChild,
@@ -403,7 +403,7 @@ async function updateData() {
 			model: { uuid: model.uuid },
 		})
 
-		const modelPlugin = plugin.get('model', model.plugin)
+		const modelPlugin = pluginClient.get('model', model.plugin)
 		const { elements: newElements } = modelPlugin.arrangeElements(
 			model,
 			pods,

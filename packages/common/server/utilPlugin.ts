@@ -4,7 +4,7 @@ import { type AnyRouter } from '@trpc/server'
 
 import { coreRouter } from '../routes.ts'
 import * as utilResource from './utilResource.ts'
-import * as plugin from './plugin.ts'
+import * as plugin from './pluginServer.ts'
 import * as t from '../types.ts'
 import { instance } from './trpcServer.ts'
 

@@ -83,6 +83,9 @@ onMounted(async () => {
 						emit('contentUpdate', docString)
 					}
 				}),
+
+				// Wrapping
+				EditorView.lineWrapping,
 			],
 		}),
 	})
