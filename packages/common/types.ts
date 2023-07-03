@@ -280,10 +280,10 @@ export type PodServerPlugin_t = {
 	metadata: PodIsomorphicPlugin_t['metadata']
 	trpcRouter?: AnyProcedure | AnyRouter
 	oakRouter?: Router
-	hooks?: Hooks<Record<string, unknown>>
+	hooks?: Hooks<keyof HooksTable, Record<string, unknown>>
 }
 export type ThemeServerPlugin_t = BareServerPlugin_t
-export type PackServerPlugin_t = BareIsomorphicPlugin_t & {
+export type PackServerPlugin_t = BareServerPlugin_t & {
 	initAll: () => Promise<unknown[]>
 }
 

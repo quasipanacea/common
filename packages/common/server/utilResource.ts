@@ -383,7 +383,7 @@ export async function getIndexJson(): Promise<t.SchemaIndexJson_t> {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "formats": [] }'
+			content = '{ "formats": {} }'
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err
