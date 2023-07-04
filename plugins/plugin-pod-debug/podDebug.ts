@@ -1,4 +1,6 @@
-import { z, path, Router, send } from '@server/mod.ts'
+import * as path from 'std/path/mod.ts'
+import { Router, send } from 'oak/mod.ts'
+import { z } from 'zod'
 
 import { t } from '@quasipanacea/common/index.ts'
 import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'

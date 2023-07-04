@@ -1,10 +1,6 @@
-import { z } from './mod.ts'
+import { z } from 'zod'
 import type cytoscape from 'cytoscape'
-import {
-	type Router,
-	type AnyProcedure,
-	type AnyRouter,
-} from '../../../src/mod.ts'
+import type { Router, AnyProcedure, AnyRouter } from '@trpc/server'
 
 // Shared: Zod Schema
 export const Uuid = z.string().min(1)
@@ -18,6 +14,7 @@ export const familyPlugins = [
 	'theme',
 	'pack',
 ] as const
+export type FamilyPlugins2_t = 'orbs' | 'links' | 'models' | 'pods' | 'views'
 export const FamilyPlugins = z.enum(familyPlugins)
 export type FamilyPlugins_t = z.infer<typeof FamilyPlugins>
 
@@ -153,6 +150,7 @@ export const SchemaPodsJson = z.object({
 })
 export const SchemaSettingsJson = z
 	.object({
+		defaultOverview: z.string().optional(),
 		mimesToPlugin: z.record(z.string(), z.string()),
 	})
 	.deepPartial()

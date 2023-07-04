@@ -1,6 +1,7 @@
 {
 	"name": "@quasipanacea/plugin-utility",
 	"dependencies": {
+		"@quasipanacea/common": "workspace:^",
 		"katex": "^0.16.4",
 		"mind-elixir": "^1.2.0",
 		"rehype-external-links": "^2.0.1",
@@ -15,12 +16,12 @@
 		"unified": "^10.1.2"
 	},
 	"devDependencies": {
-		"@trpc/client": "^10.32.0",
-		"@trpc/server": "^10.32.0",
+		"@trpc/client": "^10.33.0",
+		"@trpc/server": "^10.33.0",
 		"@types/katex": "^0.16.0"
 	},
 	"peerDependencies": {
-		"@trpc/client": "^10.32.0",
-		"@trpc/server": "^10.32.0"
+		"@trpc/client": "^10.33.0",
+		"@trpc/server": "^10.33.0"
 	}
 }

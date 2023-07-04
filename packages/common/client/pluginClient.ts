@@ -27,7 +27,7 @@ export function get<T extends keyof t.ClientPluginMap_t>(
 	family: T,
 	id: string,
 ): t.ClientPluginMap_t[T] {
-	let plugin = plugins.find(
+	const plugin = plugins.find(
 		(item) => item.metadata.family === family && item.metadata.id === id,
 	)
 	if (!plugin) {
@@ -42,7 +42,7 @@ export function get<T extends keyof t.ClientPluginMap_t>(
 export function list<T extends keyof t.ClientPluginMap_t>(
 	family?: T,
 ): t.ClientPluginMap_t[T][] {
-	let values = plugins.filter((item) => item.metadata.family === family)
+	const values = plugins.filter((item) => item.metadata.family === family)
 
 	return values as t.ClientPluginMap_t[T][]
 }

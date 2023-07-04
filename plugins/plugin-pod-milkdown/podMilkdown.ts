@@ -1,4 +1,5 @@
-import { z, path } from '@server/mod.ts'
+import * as path from 'std/path/mod.ts'
+import { z } from 'zod'
 
 import { t } from '@quasipanacea/common/index.ts'
 import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'

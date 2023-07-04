@@ -1,11 +1,19 @@
 {
 	"name": "@quasipanacea/common",
 	"dependencies": {
+		"@codemirror/commands": "^6.2.4",
+		"@codemirror/lang-markdown": "^6.2.0",
+		"@codemirror/language": "^6.8.0",
+		"@codemirror/state": "^6.2.1",
+		"@codemirror/view": "^6.14.0",
 		"@quasipanacea/plugin-utility": "workspace:^",
 		"@quasipanacea/types": "workspace:^",
-		"@trpc/client": "^10.32.0",
-		"@trpc/server": "^10.32.0",
+		"@trpc/client": "^10.33.0",
+		"@trpc/server": "^10.33.0",
+		"cm6-theme-basic-light": "^0.2.0",
+		"codemirror": "^6.0.1",
 		"evt": "^2.4.18",
+		"golden-layout": "^2.6.0",
 		"mind-elixir": "^1.2.0"
 	},
 	"devDependencies": {

@@ -1,7 +1,9 @@
-import { z, path, Router, send, Context } from '@server/mod.ts'
+import * as path from 'std/path/mod.ts'
+import { Router, Context, send } from 'oak/mod.ts'
+import { z } from 'zod'
 
 import { t } from '@quasipanacea/common/index.ts'
-import { util } from '@quasipanacea/common/server/index.ts'
+import { util, utilPlugin } from '@quasipanacea/common/server/index.ts'
 import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {
@@ -28,7 +30,7 @@ export const oakRouter = new Router().get(
 	'/get-pdf/:podUuid',
 	async (ctx: Context) => {
 		const podUuid = ctx.params.podUuid
-		const { resource: pod } = await utilPlugin.getResource('pods', podUuid)
+		const pod = await utilPlugin.getResource('pods', podUuid)
 
 		const pdfFile = path.join(pod.dir, 'main.pdf')
 		await send(ctx, pdfFile.slice('/home/edwin'.length), {
@@ -71,11 +73,7 @@ export const trpcRouter = trpc.router({
 		.mutation(async ({ ctx, input }) => {
 			await Deno.writeTextFile(ctx.state.latexFile, input.content)
 
-			await convertLatexToPdf(
-				ctx.pod.dir,
-				ctx.state.latexFile,
-				ctx.state.pdfFile,
-			)
+			await convertLatexToPdf(ctx.dir, ctx.state.latexFile, ctx.state.pdfFile)
 		}),
 })
 

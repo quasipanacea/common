@@ -1,4 +1,4 @@
-import { z, _ } from '../mod.ts'
+import { default as _ } from 'lodash'
 
 import * as t from '../types.ts'
 const plugins: t.AnyServerPlugin_t[] = []
@@ -25,7 +25,7 @@ export function get<T extends keyof t.ServerPluginMap_t>(
 	family: T,
 	id: string,
 ): t.ServerPluginMap_t[T] {
-	let plugin = plugins.find(
+	const plugin = plugins.find(
 		(item) => item.metadata.family === family && item.metadata.id === id,
 	)
 	if (!plugin) {
@@ -40,7 +40,7 @@ export function get<T extends keyof t.ServerPluginMap_t>(
 export function list<T extends keyof t.ServerPluginMap_t>(
 	family?: T,
 ): t.ServerPluginMap_t[T][] {
-	let values = plugins.filter((item) => item.metadata.family === family)
+	const values = plugins.filter((item) => item.metadata.family === family)
 
 	return values as t.ServerPluginMap_t[T][]
 }

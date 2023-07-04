@@ -1,4 +1,6 @@
-import { path, z, toml } from '../mod.ts'
+import * as path from 'std/path/mod.ts'
+import * as toml from 'std/toml/mod.ts'
+import { z } from 'zod'
 
 import { config } from './config.ts'
 import * as util from './util.ts'

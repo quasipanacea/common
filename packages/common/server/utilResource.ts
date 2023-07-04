@@ -1,4 +1,5 @@
-import { z, path, DeepPartial } from '../mod.ts'
+import * as path from 'std/path/mod.ts'
+import { z } from 'zod'
 
 import * as t from '../types.ts'
 import { utilPlugin, utilResource } from './index.ts'
@@ -126,9 +127,7 @@ export async function resourceList<Resource_t>(
 }
 
 // dir
-export function getResourcesDir(
-	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
-): string {
+export function getResourcesDir(resourceName: t.FamilyPlugins2_t): string {
 	return path.join(util.getDataDir(), resourceName)
 }
 
@@ -153,10 +152,7 @@ export function getPodsDir(): string {
 }
 
 // dir (instance)
-export function getResourceDir(
-	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
-	uuid: string,
-) {
+export function getResourceDir(resourceName: t.FamilyPlugins2_t, uuid: string) {
 	return path.join(
 		getResourcesDir(resourceName),
 		uuid.slice(0, 2),
@@ -185,9 +181,7 @@ export function getPodDir(uuid: string): string {
 }
 
 // file
-export function getResourcesJsonFile(
-	resourceName: 'orbs' | 'links' | 'models' | 'pods' | 'views',
-) {
+export function getResourcesJsonFile(resourceName: t.FamilyPlugins2_t) {
 	return path.join(util.getDataDir(), resourceName + '.json')
 }
 
@@ -228,9 +222,9 @@ const table = {
 	pods: t.SchemaPodsJson,
 	views: t.SchemaViewsJson,
 }
-export async function getResourcesJson<
-	ResourceName extends 'orbs' | 'links' | 'models' | 'pods' | 'views',
->(resourceName: ResourceName) {
+export async function getResourcesJson<ResourceName extends t.FamilyPlugins2_t>(
+	resourceName: ResourceName,
+) {
 	const jsonFile = getResourcesJsonFile(resourceName)
 	let content
 	try {

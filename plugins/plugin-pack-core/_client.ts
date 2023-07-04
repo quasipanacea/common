@@ -12,6 +12,8 @@ import { init as ViewMarkmap } from '@quasipanacea/plugin-view-markmap/_client.j
 
 import { init as PodChemical } from '@quasipanacea/plugin-pod-chemical/_client.js'
 import { init as PodDebug } from '@quasipanacea/plugin-pod-debug/_client.js'
+import { init as PodExcalidraw } from '@quasipanacea/plugin-pod-excalidraw/_client.js'
+import { init as PodFlashcard } from '@quasipanacea/plugin-pod-flashcard/_client.js'
 import { init as PodLatex } from '@quasipanacea/plugin-pod-latex/_client.js'
 import { init as PodMarkdown } from '@quasipanacea/plugin-pod-markdown/_client.js'
 import { init as PodMilkdown } from '@quasipanacea/plugin-pod-milkdown/_client.js'
@@ -32,6 +34,8 @@ export async function initAll() {
 		ViewMarkmap(),
 		PodChemical(),
 		PodDebug(),
+		PodExcalidraw(),
+		PodFlashcard(),
 		PodLatex(),
 		PodMarkdown(),
 		PodMilkdown(),

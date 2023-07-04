@@ -2,6 +2,8 @@ import { init as OverviewGraph } from '@quasipanacea/plugin-overview-graph/_serv
 
 import { init as PodChemical } from '@quasipanacea/plugin-pod-chemical/_server.ts'
 import { init as PodDebug } from '@quasipanacea/plugin-pod-debug/_server.ts'
+import { init as PodExcalidraw } from '@quasipanacea/plugin-pod-excalidraw/_server.ts'
+import { init as PodFlashcard } from '@quasipanacea/plugin-pod-flashcard/_server.ts'
 import { init as PodLatex } from '@quasipanacea/plugin-pod-latex/_server.ts'
 import { init as PodMarkdown } from '@quasipanacea/plugin-pod-markdown/_server.ts'
 import { init as PodMilkdown } from '@quasipanacea/plugin-pod-milkdown/_server.ts'
@@ -14,6 +16,8 @@ export async function initAll() {
 		OverviewGraph(),
 		PodChemical(),
 		PodDebug(),
+		PodExcalidraw(),
+		PodFlashcard(),
 		PodLatex(),
 		PodMarkdown(),
 		PodMilkdown(),

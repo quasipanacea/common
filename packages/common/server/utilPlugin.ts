@@ -1,5 +1,4 @@
-import { path } from '../mod.ts'
-
+import { path } from 'std/path/mod.ts'
 import { type AnyRouter } from '@trpc/server'
 
 import { coreRouter } from '../routes.ts'
@@ -24,7 +23,7 @@ export function yieldPluginAppRouter<T extends string, U extends AnyRouter>(
 }
 
 export async function getResource(
-	pluginFamily: 'orbs' | 'links' | 'models' | 'pods' | 'views',
+	pluginFamily: t.FamilyPlugins2_t,
 	uuid: string,
 ) {
 	const caps = pluginFamily[0].toUpperCase() + pluginFamily.slice(1)
@@ -45,9 +44,7 @@ export async function getResource(
 	}
 }
 
-export async function runHook<
-	PluginFamily extends 'orbs' | 'links' | 'models' | 'pods' | 'views',
->(
+export async function runHook<PluginFamily extends t.FamilyPlugins2_t>(
 	pluginFamily: PluginFamily,
 	singular: string,
 	uuid: string,

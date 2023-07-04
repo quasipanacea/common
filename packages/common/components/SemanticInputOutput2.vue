@@ -10,18 +10,18 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import Split from 'split-grid'
+// import Split from 'split-grid'
 
 const gutterEl = ref<HTMLElement>()
 onMounted(() => {
-	Split({
-		columnGutters: [
-			{
-				track: 1,
-				element: gutterEl.value!,
-			},
-		],
-	})
+	// Split({
+	// 	columnGutters: [
+	// 		{
+	// 			track: 1,
+	// 			element: gutterEl.value!,
+	// 		},
+	// 	],
+	// })
 })
 </script>
 

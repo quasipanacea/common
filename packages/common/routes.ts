@@ -1,5 +1,6 @@
-import { z } from './mod.ts'
-import { default as _ } from 'lodash' // TODO
+import { z } from 'zod'
+import { default as _ } from 'lodash'
+
 import {
 	trpcServer,
 	util,

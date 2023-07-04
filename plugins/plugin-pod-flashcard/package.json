@@ -1,11 +1,8 @@
 {
-	"name": "@quasipanacea/plugin-pod-chemical",
+	"name": "@quasipanacea/plugin-pod-flashcard",
 	"dependencies": {
 		"@quasipanacea/common": "workspace:^",
-		"@quasipanacea/plugin-utility": "workspace:^",
-		"github-markdown-css": "^5.2.0",
-		"katex": "^0.16.4",
-		"mermaid": "^10.0.2"
+		"@quasipanacea/plugin-utility": "workspace:^"
 	},
 	"devDependencies": {
 		"@trpc/client": "^10.33.0",
