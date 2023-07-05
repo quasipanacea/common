@@ -6,7 +6,7 @@ import { yieldClient } from './trpcClient.ts'
 const plugins: t.AnyClientPlugin_t[] = []
 
 export function getFamilies() {
-	return t.familyPlugins
+	return t.pluginFamilySingular
 }
 
 export function register<T extends keyof t.ClientPluginMap_t>(
@@ -32,7 +32,7 @@ export function get<T extends keyof t.ClientPluginMap_t>(
 	)
 	if (!plugin) {
 		throw new Error(
-			`Failed to find client plugin with family '${family} and id '${id}'`,
+			`Failed to find client plugin with family '${family}' and id '${id}'`,
 		)
 	}
 
@@ -45,27 +45,4 @@ export function list<T extends keyof t.ClientPluginMap_t>(
 	const values = plugins.filter((item) => item.metadata.family === family)
 
 	return values as t.ClientPluginMap_t[T][]
-}
-
-export async function getPluginByFormat<T extends keyof t.ClientPluginMap_t>(
-	family: T,
-	format: string,
-): Promise<t.ClientPluginMap_t[T]> {
-	const api = yieldClient<BareAppRouter>()
-
-	const storedValueObj =
-		(await api.core.settingsGet.query()).mimesToPlugin || {}
-
-	let pluginId = storedValueObj[format]
-	if (!pluginId) {
-		const indexJson = await api.core.indexGet.query()
-		if (indexJson.formats[format]) {
-			pluginId = indexJson.formats[format][0]
-		} else {
-			throw new Error(`Failed to find plugin to use for format ${format}`)
-		}
-	}
-
-	const plugin = get(family, pluginId)
-	return plugin
 }

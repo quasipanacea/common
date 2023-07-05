@@ -1,38 +1,11 @@
-import * as path from 'std/path/mod.ts'
-import { dotnev } from 'std/dotenv/mod.ts'
-import { Router, send } from 'oak/mod.ts'
-import { z } from 'zod'
+import { pluginServer } from '@quasipanacea/common/server/index.ts'
 
-import { t } from '@quasipanacea/common/index.ts'
-import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
+import { metadata } from './_isomorphic.ts'
+import * as exports from './modelLine.ts'
 
-export type State = {}
-
-export function getRequests() {
-	const value = Deno.env.get('GOOGLE_API_KEY')
-	console.log('api key', value)
+export async function init() {
+	pluginServer.register({
+		metadata,
+		...exports,
+	})
 }
-
-const trpc = serverUtil.useTrpc<State>()
-
-export const trpcRouter = trpc.router({
-	read: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-			}),
-		)
-		.output(
-			z.object({
-				content: z.string(),
-			}),
-		)
-		.use(serverUtil.executeAllMiddleware(trpc, hooks))
-		.query(async ({ ctx, input }) => {
-			const content = await Deno.readTextFile(ctx.state.latexFile)
-
-			return {
-				content,
-			}
-		}),
-})

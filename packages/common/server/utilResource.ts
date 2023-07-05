@@ -1,9 +1,86 @@
 import * as path from 'std/path/mod.ts'
 import { z } from 'zod'
+import * as pluginServer from './pluginServer.ts'
 
 import * as t from '../types.ts'
 import { utilPlugin, utilResource } from './index.ts'
 import * as util from './util.ts'
+
+// utility
+async function runHook<
+	PluginFamilySingular extends t.PluginFamilySingular_t,
+	PluginFamilyPlural extends t.PluginFamilyPlural_t,
+>(
+	pluginFamilySingular: PluginFamilySingular,
+	pluginFamilyPlural: PluginFamilyPlural,
+	hook: 'add' | 'remove',
+	uuid: string,
+): Promise<void> {
+	if (
+		pluginFamilyPlural === 'overviews' ||
+		pluginFamilyPlural === 'themes' ||
+		pluginFamilyPlural === 'packs'
+	) {
+		// TODO
+		throw new TypeError(`'${pluginFamilyPlural}' value not supported`)
+	}
+
+	let resource
+	const resourcesJson = await getResourcesJson(pluginFamilyPlural)
+	for (const [uuidEntry, resourceEntry] of Object.entries(
+		resourcesJson[pluginFamilyPlural],
+	)) {
+		if (uuid === uuidEntry) {
+			resource = resourceEntry
+			continue
+		}
+	}
+
+	if (!resource) {
+		throw new Error(
+			`Resource not found with uuid '${uuid}' and familyPlural '${pluginFamilyPlural}'`,
+		)
+	}
+
+	const settingsJson = await getSettingsJson()
+	const pluginId = settingsJson?.podMimes?.[resource.format]
+	if (!pluginId) {
+		throw new Error(
+			`pluginId could not be found for format '${resource.format}', uuid '${uuid}'`,
+		)
+	}
+
+	const plugin = pluginServer.get<PluginFamilyPlural>(
+		pluginFamilySingular,
+		pluginId,
+	)
+
+	console.log('ad', pluginFamilyPlural, uuid)
+	const dir = utilResource.getResourceDir(pluginFamilyPlural, uuid)
+	if (!dir) {
+		throw new Error(
+			`dir is not defined for family ${pluginFamilyPlural}, ${uuid}`,
+		)
+	}
+
+	if (hook === 'add') {
+		if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onAdd) {
+			const state = await plugin.hooks.makeState({
+				dir,
+				singular: resource,
+			})
+			await plugin.hooks.onAdd({ dir, state, singular: resource })
+		}
+	} else {
+		if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onRemove) {
+			const state = await plugin.hooks.makeState({
+				dir,
+				singular: resource,
+			})
+			await plugin.hooks.onRemove({ dir, state, singular: resource })
+		}
+	}
+}
 
 // generic
 export async function resourceAdd(
@@ -21,7 +98,7 @@ export async function resourceAdd(
 	const dir = getPodDir(uuid)
 	await Deno.mkdir(dir, { recursive: true })
 
-	utilPlugin.runHook('pods', 'pod', uuid, 'add')
+	runHook('pod', 'pods', 'add', uuid)
 
 	return uuid
 }
@@ -32,7 +109,7 @@ export async function resourceRemove(
 	rJsonFn: () => Promise<Record<string, any>>,
 	key: string,
 ): Promise<void> {
-	utilPlugin.runHook('pods', 'pod', input.uuid, 'remove')
+	runHook('pod', 'pods', 'remove', input.uuid)
 
 	const dir = getPodDir(input.uuid)
 	await Deno.mkdir(dir, { recursive: true })
@@ -127,7 +204,9 @@ export async function resourceList<Resource_t>(
 }
 
 // dir
-export function getResourcesDir(resourceName: t.FamilyPlugins2_t): string {
+export function getResourcesDir(
+	resourceName: t.PluginFamilyPluralHasFile_t,
+): string {
 	return path.join(util.getDataDir(), resourceName)
 }
 
@@ -143,16 +222,15 @@ export function getModelsDir(): string {
 	return path.join(util.getDataDir(), 'models')
 }
 
-export function getViewsDir(): string {
-	return path.join(util.getDataDir(), 'views')
-}
-
 export function getPodsDir(): string {
 	return path.join(util.getDataDir(), 'pods')
 }
 
 // dir (instance)
-export function getResourceDir(resourceName: t.FamilyPlugins2_t, uuid: string) {
+export function getResourceDir(
+	resourceName: t.PluginFamilyPluralHasFile_t,
+	uuid: string,
+) {
 	return path.join(
 		getResourcesDir(resourceName),
 		uuid.slice(0, 2),
@@ -172,16 +250,14 @@ export function getModelDir(uuid: string): string {
 	return path.join(getModelsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
-export function getViewDir(uuid: string): string {
-	return path.join(getViewsDir(), uuid.slice(0, 2), uuid.slice(2))
-}
-
 export function getPodDir(uuid: string): string {
 	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
 }
 
 // file
-export function getResourcesJsonFile(resourceName: t.FamilyPlugins2_t) {
+export function getResourcesJsonFile(
+	resourceName: t.PluginFamilyPluralHasFile_t,
+) {
 	return path.join(util.getDataDir(), resourceName + '.json')
 }
 
@@ -195,10 +271,6 @@ export function getLinksJsonFile(): string {
 
 export function getModelsJsonFile(): string {
 	return path.join(util.getDataDir(), 'models.json')
-}
-
-export function getViewsJsonFile(): string {
-	return path.join(util.getDataDir(), 'views.json')
 }
 
 export function getPodsJsonFile(): string {
@@ -220,11 +292,10 @@ const table = {
 	links: t.SchemaLinksJson,
 	models: t.SchemaModelsJson,
 	pods: t.SchemaPodsJson,
-	views: t.SchemaViewsJson,
 }
-export async function getResourcesJson<ResourceName extends t.FamilyPlugins2_t>(
-	resourceName: ResourceName,
-) {
+export async function getResourcesJson<
+	ResourceName extends t.PluginFamilyPluralHasFile_t,
+>(resourceName: ResourceName) {
 	const jsonFile = getResourcesJsonFile(resourceName)
 	let content
 	try {
@@ -245,7 +316,6 @@ export async function getResourcesJson<ResourceName extends t.FamilyPlugins2_t>(
 			links: t.SchemaLinksJson,
 			models: t.SchemaModelsJson,
 			pods: t.SchemaPodsJson,
-			views: t.SchemaViewsJson,
 		}[resourceName],
 	)
 }
@@ -307,26 +377,6 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	return util.validateSchema<typeof t.SchemaModelsJson>(
 		JSON.parse(content),
 		t.SchemaModelsJson,
-	)
-}
-
-export async function getViewsJson(): Promise<t.SchemaViewsJson_t> {
-	const jsonFile = getViewsJsonFile()
-	let content
-	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "views": {} }'
-			await Deno.writeTextFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaViewsJson>(
-		JSON.parse(content),
-		t.SchemaViewsJson,
 	)
 }
 

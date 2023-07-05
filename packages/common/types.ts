@@ -1,31 +1,55 @@
 import { z } from 'zod'
 import type cytoscape from 'cytoscape'
-import type { Router, AnyProcedure, AnyRouter } from '@trpc/server'
+import type { Router } from 'oak/mod.ts'
+import type { AnyProcedure, AnyRouter } from '@trpc/server'
 
 // Shared: Zod Schema
 export const Uuid = z.string().min(1)
 export const Id = z.string().min(1)
 export const String = z.string().min(1)
-export const familyPlugins = [
+
+// Shared: Family
+export const pluginFamilySingular = [
 	'overview',
 	'model',
-	'view',
+	'modelview',
 	'pod',
+	'podview',
 	'theme',
 	'pack',
 ] as const
-export type FamilyPlugins2_t = 'orbs' | 'links' | 'models' | 'pods' | 'views'
-export const FamilyPlugins = z.enum(familyPlugins)
-export type FamilyPlugins_t = z.infer<typeof FamilyPlugins>
+export const PluginFamilySingular = z.enum(pluginFamilySingular)
+export type PluginFamilySingular_t = z.infer<typeof PluginFamilySingular>
+
+export const pluginFamilyPlural = [
+	'overviews',
+	'models',
+	'pods',
+	'themes',
+	'packs',
+] as const
+export const PluginFamilyPlural = z.enum(pluginFamilyPlural)
+export type PluginFamilyPlural_t = z.infer<typeof PluginFamilyPlural>
+
+export const pluginFamilyPluralHasFile = [
+	'orbs',
+	'links',
+	'models',
+	'pods',
+] as const
+export const PluginFamilyPluralHasFile = z.enum(pluginFamilyPluralHasFile)
+export type PluginFamilyPluralHasFile_t = z.infer<
+	typeof PluginFamilyPluralHasFile
+>
 
 // Shared: Type
 type Metadata_t = {
-	family: z.infer<typeof FamilyPlugins>
+	family: z.infer<typeof PluginFamilySingular>
 	id: string
 }
 type BareIsomorphicPlugin_t = {
 	metadata: {
-		family: z.infer<typeof FamilyPlugins>
+		family: z.infer<typeof PluginFamilySingular>
 		id: string
 	}
 }
@@ -74,7 +98,7 @@ export const Link = z.object({
 export const Model = z.object({
 	uuid: Uuid,
 	name: String.optional(),
-	plugin: Id,
+	format: z.string(),
 	extra: z
 		.object({
 			position: z
@@ -86,13 +110,9 @@ export const Model = z.object({
 		})
 		.optional(),
 })
-export const View = z.object({
+export const Modelview = z.object({
 	uuid: Uuid,
-	name: String,
-	plugin: Id,
-	model: z.object({
-		uuid: Uuid,
-	}),
+	name: String.optional(),
 })
 export const Pod = z.object({
 	uuid: Uuid,
@@ -121,14 +141,14 @@ export const PodDir = z.intersection(
 
 export const Plugin = z.object({
 	id: Id,
-	family: FamilyPlugins,
+	family: PluginFamilySingular,
 })
 
 // Object: Type
 export type Orb_t = z.infer<typeof Orb>
 export type Link_t = z.infer<typeof Link>
 export type Model_t = z.infer<typeof Model>
-export type View_t = z.infer<typeof View>
+export type Modelview_t = z.infer<typeof Modelview>
 export type Pod_t = z.infer<typeof Pod>
 export type Plugin_t = z.infer<typeof Plugin>
 
@@ -142,27 +162,32 @@ export const SchemaLinksJson = z.object({
 export const SchemaModelsJson = z.object({
 	models: z.record(Uuid, Model.omit({ uuid: true })),
 })
-export const SchemaViewsJson = z.object({
-	views: z.record(Uuid, View.omit({ uuid: true })),
-})
 export const SchemaPodsJson = z.object({
 	pods: z.record(Uuid, Pod.omit({ uuid: true })),
 })
 export const SchemaSettingsJson = z
 	.object({
-		defaultOverview: z.string().optional(),
-		mimesToPlugin: z.record(z.string(), z.string()),
+		defaultOverview: z.string(),
+		podMimes: z.record(z.string(), z.string()),
+		podviewMimes: z.record(z.string(), z.string()),
+		modelMimes: z.record(z.string(), z.string()),
+		modelviewMimes: z.record(z.string(), z.string()),
+		view: z.record(z.string(), z.string()),
 	})
 	.deepPartial()
-export const SchemaIndexJson = z.object({
-	formats: z.record(z.string(), z.array(z.string())),
-})
+export const SchemaIndexJson = z
+	.object({
+		podMimeOptions: z.record(z.string(), z.array(z.string())),
+		podviewMimeOptions: z.record(z.string(), z.array(z.string())),
+		modelMimeOptions: z.record(z.string(), z.array(z.string())),
+		modelviewMimeOptions: z.record(z.string(), z.array(z.string())),
+	})
+	.deepPartial()
 
 // JSON File: Type
 export type SchemaOrbsJson_t = z.infer<typeof SchemaOrbsJson>
 export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
 export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
-export type SchemaViewsJson_t = z.infer<typeof SchemaViewsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
 export type SchemaSettingsJson_t = z.infer<typeof SchemaSettingsJson>
 export type SchemaIndexJson_t = z.infer<typeof SchemaIndexJson>
@@ -171,15 +196,23 @@ export type SchemaIndexJson_t = z.infer<typeof SchemaIndexJson>
 export type AnyIsomorphicPlugin_t =
 	| OverviewIsomorphicPlugin_t
 	| ModelIsomorphicPlugin_t
-	| ViewIsomorphicPlugin_t
+	| ModelviewIsomorphicPlugin_t
 	| PodIsomorphicPlugin_t
+	| PodviewIsomorphicPlugin_t
 	| ThemeIsomorphicPlugin_t
 	| PackIsomorphicPlugin_t
 export type OverviewIsomorphicPlugin_t = BareIsomorphicPlugin_t
-export type ModelIsomorphicPlugin_t = BareIsomorphicPlugin_t
-export type ViewIsomorphicPlugin_t = BareIsomorphicPlugin_t
+export type ModelIsomorphicPlugin_t = {
+	metadata: Metadata_t & { format: string }
+}
+export type ModelviewIsomorphicPlugin_t = {
+	metadata: Metadata_t & { format: string }
+}
 export type PodIsomorphicPlugin_t = {
-	metadata: Metadata_t & { forFormat: string }
+	metadata: Metadata_t & { format: string }
+}
+export type PodviewIsomorphicPlugin_t = {
+	metadata: Metadata_t & { format: string }
 }
 export type ThemeIsomorphicPlugin_t = BareIsomorphicPlugin_t
 export type PackIsomorphicPlugin_t = BareIsomorphicPlugin_t
@@ -188,15 +221,17 @@ export type PackIsomorphicPlugin_t = BareIsomorphicPlugin_t
 export type AnyClientPlugin_t =
 	| OverviewClientPlugin_t
 	| ModelClientPlugin_t
-	| ViewClientPlugin_t
+	| ModelviewClientPlugin_t
 	| PodClientPlugin_t
+	| PodviewClientPlugin_t
 	| ThemeClientPlugin_t
 	| PackClientPlugin_t
 export type ClientPluginMap_t = {
 	overview: OverviewClientPlugin_t
 	model: ModelClientPlugin_t
-	view: ViewClientPlugin_t
+	modelview: ModelviewClientPlugin_t
 	pod: PodClientPlugin_t
+	podview: PodviewClientPlugin_t
 	theme: ThemeClientPlugin_t
 	pack: PackClientPlugin_t
 }
@@ -214,11 +249,14 @@ export type ModelClientPlugin_t = {
 	) => { elements: cytoscape.ElementDefinition[] }
 	validateNewChild: () => boolean
 }
-export type ViewClientPlugin_t = {
-	metadata: Metadata_t
+export type ModelviewClientPlugin_t = {
 	component: unknown
 }
 export type PodClientPlugin_t = {
+	metadata: Metadata_t
+	component: unknown
+}
+export type PodviewClientPlugin_t = {
 	metadata: Metadata_t
 	component: unknown
 }
@@ -233,7 +271,6 @@ export type PackClientPlugin_t = {
 // Server Plugins: Type
 type HooksTable = {
 	model: { model: Model_t }
-	view: { view: View_t }
 	pod: { pod: Pod_t }
 }
 export type Hooks<
@@ -259,22 +296,30 @@ export type Hooks<
 export type AnyServerPlugin_t =
 	| OverviewServerPlugin_t
 	| ModelServerPlugin_t
-	| ViewServerPlugin_t
+	| ModelviewServerPlugin_t
 	| PodServerPlugin_t
+	| PodviewServerPlugin_t
 	| ThemeServerPlugin_t
 	| PackServerPlugin_t
 export type ServerPluginMap_t = {
 	overview: OverviewServerPlugin_t
 	model: ModelServerPlugin_t
-	view: ViewServerPlugin_t
+	modelview: ModelviewServerPlugin_t
 	pod: PodServerPlugin_t
+	podview: PodviewServerPlugin_t
 	theme: ThemeServerPlugin_t
 	pack: PackServerPlugin_t
 }
 export type OverviewServerPlugin_t = BareServerPlugin_t
 export type ModelServerPlugin_t = BareServerPlugin_t
-export type ViewServerPlugin_t = BareServerPlugin_t
+export type ModelviewServerPlugin_t = BareServerPlugin_t
 export type PodServerPlugin_t = {
+	metadata: PodIsomorphicPlugin_t['metadata']
+	trpcRouter?: AnyProcedure | AnyRouter
+	oakRouter?: Router
+	hooks?: Hooks<keyof HooksTable, Record<string, unknown>>
+}
+export type PodviewServerPlugin_t = {
 	metadata: PodIsomorphicPlugin_t['metadata']
 	trpcRouter?: AnyProcedure | AnyRouter
 	oakRouter?: Router

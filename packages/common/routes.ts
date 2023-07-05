@@ -209,8 +209,8 @@ export const coreRouter = trpc.router({
 			return { models }
 		}),
 
-	viewAdd: trpc.procedure
-		.input(t.View.omit({ uuid: true }))
+	modelviewAdd: trpc.procedure
+		.input(t.Modelview.omit({ uuid: true }))
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
@@ -222,7 +222,7 @@ export const coreRouter = trpc.router({
 
 			return { uuid }
 		}),
-	viewRemove: trpc.procedure
+	modelviewRemove: trpc.procedure
 		.input(z.object({ uuid: t.Uuid }))
 		.output(z.void())
 		.mutation(async ({ input }) => {
@@ -233,14 +233,14 @@ export const coreRouter = trpc.router({
 				'views',
 			)
 		}),
-	viewModify: trpc.procedure
+	modelviewModify: trpc.procedure
 		.input(
 			z.object({
 				uuid: t.Uuid,
-				data: t.View.omit({ uuid: true }).partial(),
+				data: t.Modelview.omit({ uuid: true }).partial(),
 			}),
 		)
-		.output(t.View)
+		.output(t.Modelview)
 		.mutation(async ({ input }) => {
 			const view = await utilResource.resourceModify<t.View_t>(
 				input,
@@ -251,7 +251,7 @@ export const coreRouter = trpc.router({
 
 			return view
 		}),
-	viewList: trpc.procedure
+	modelviewList: trpc.procedure
 		.input(z.void())
 		.output(
 			z.object({
@@ -413,7 +413,7 @@ export const coreRouter = trpc.router({
 		.input(
 			z
 				.object({
-					family: z.string().optional(),
+					family: t.PluginFamilySingular.optional(),
 				})
 				.optional(),
 		)
@@ -422,21 +422,18 @@ export const coreRouter = trpc.router({
 				plugins: z.array(t.Plugin),
 			}),
 		)
-		.query(async ({ input }) => {
+		.query(({ input }) => {
 			let rawPlugins: t.AnyServerPlugin_t[] = []
 			if (input?.family) {
-				rawPlugins = Array.from(pluginServer.list(input.family).values())
+				rawPlugins = pluginServer.list(input.family)
 			} else {
 				for (const family of pluginServer.getFamilies()) {
-					const arr = Array.from(pluginServer.list(family).values())
+					const arr = pluginServer.list(family)
 					rawPlugins = rawPlugins.concat(arr)
 				}
 			}
 
-			const plugins = rawPlugins.map((item) => ({
-				id: item.metadata.id,
-				family: item.metadata.family,
-			}))
+			const plugins = rawPlugins.map((item) => item.metadata)
 
 			return { plugins }
 		}),

@@ -4,7 +4,7 @@ import * as t from '../types.ts'
 const plugins: t.AnyServerPlugin_t[] = []
 
 export function getFamilies() {
-	return t.familyPlugins
+	return t.pluginFamilySingular
 }
 
 export function register<T extends keyof t.ServerPluginMap_t>(

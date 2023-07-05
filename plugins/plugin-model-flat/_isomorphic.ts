@@ -5,6 +5,7 @@ import * as types from '@quasipanacea/common/types.ts'
 export const metadata: t.ModelIsomorphicPlugin_t['metadata'] = {
 	id: 'flat',
 	family: 'model',
+	format: 'x-multipart/x-flat',
 }
 
 export const Typings = z.object({

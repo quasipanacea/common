@@ -60,8 +60,8 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 const childTypes = ref(['orb', 'pod'])
 const podFormats = ref<string[]>([])
 onMounted(async () => {
-	const { formats } = await api.core.indexGet.query()
-	podFormats.value = Object.keys(formats)
+	const indexJson = await api.core.indexGet.query()
+	podFormats.value = Object.keys(indexJson.podMimeOptions)
 
 	form.format = podFormats.value[0]
 })

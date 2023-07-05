@@ -1,7 +1,7 @@
 <template>
 	<div ref="cytoscapeEl" style="height: 100%"></div>
-	<div style="position: absolute; top: 0; right: 0">
-		<span class="button" style="margin: 5px">
+	<div class="m-1" style="position: absolute; top: 0; left: 0">
+		<span class="button">
 			{{
 				currentMode === 'default'
 					? 'Node Move'
@@ -12,42 +12,41 @@
 					: 'Node Move'
 			}}
 		</span>
+	</div>
+	<div
+		class="m-1 p-1"
+		style="
+			position: absolute;
+			top: 2px;
+			right: 2px;
+			border: 1px solid black;
+			backdrop-filter: blur(25px);
+			background-color: white;
+			border-radius: 5px;
+		"
+	>
+		<aside class="menu">
+			<p class="menu-label">General</p>
+			<ul class="menu-list">
+				<li>
+					<a @click="popup.showNoData('null', GuidePopup)"> Show Guide </a>
+				</li>
+			</ul>
 
-		<div class="dropdown is-right is-hoverable" style="margin: 5px">
-			<div class="dropdown-trigger">
-				<button
-					class="button"
-					aria-haspopup="true"
-					aria-controls="dropdown-menu"
-				>
-					<span>Options</span>
-					<span class="icon">
-						<ion-icon name="chevron-down-outline"></ion-icon>
-					</span>
-				</button>
-			</div>
-			<div class="dropdown-menu" id="dropdown-menu" role="menu">
-				<div class="dropdown-content">
-					<a
-						class="dropdown-item"
-						@click="popup.showNoData('null', GuidePopup)"
-					>
-						Show Guide
-					</a>
-					<router-link to="/plugins">
-						<a class="dropdown-item">Plugins</a>
-					</router-link>
-					<div class="dropdown-item">
+			<p class="menu-label">Layout</p>
+			<ul class="menu-list">
+				<li>
+					<a>
 						<div class="select">
 							<select v-model="currentLayout">
 								<option value="automatic">Automatic Layout</option>
 								<option value="manual">Manual Layout</option>
 							</select>
 						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+					</a>
+				</li>
+			</ul>
+		</aside>
 	</div>
 </template>
 
@@ -403,12 +402,82 @@ async function updateData() {
 			model: { uuid: model.uuid },
 		})
 
-		const modelPlugin = pluginClient.get('model', model.plugin)
-		const { elements: newElements } = modelPlugin.arrangeElements(
-			model,
-			pods,
-			orbs,
-		)
+		function arrangeElements(
+			model: t.Model_t,
+			pods: t.Pod_t[],
+			orbs: t.Orb_t[],
+		): { elements: cytoscape.ElementDefinition[] } {
+			const elements: cytoscape.ElementDefinition[] = []
+
+			// pods
+			for (const pod of pods) {
+				elements.push({
+					group: 'nodes',
+					// classes: [
+					// 	'qp-pod',
+					// 	...(orb.pod ? ['qp-orb-with-pod'] : ['qp-orb-without-pod']),
+					// ],
+					...{
+						position: pod?.extra?.position && {
+							x: pod.extra.position.x,
+							y: pod.extra.position.y,
+						},
+					},
+					data: {
+						id: pod.uuid,
+						label: pod.name,
+						resource: 'pod',
+						resourceData: pod,
+					},
+				})
+
+				elements.push({
+					group: 'edges',
+					classes: 'qp-link',
+					data: {
+						id: crypto.randomUUID(),
+						source: pod.uuid,
+						target: pod.model.uuid,
+					},
+				})
+			}
+
+			// orbs
+			for (const orb of orbs) {
+				elements.push({
+					group: 'nodes',
+					classes: [
+						'qp-orb',
+						...(orb.pod ? ['qp-orb-with-pod'] : ['qp-orb-without-pod']),
+					],
+					...{
+						position: orb?.extra?.position && {
+							x: orb.extra.position.x,
+							y: orb.extra.position.y,
+						},
+					},
+					data: {
+						id: orb.uuid,
+						label: orb.name,
+						resource: 'orb',
+						resourceData: orb,
+					},
+				})
+
+				elements.push({
+					group: 'edges',
+					classes: 'qp-link',
+					data: {
+						id: crypto.randomUUID(),
+						source: orb.uuid,
+						target: orb.model.uuid,
+					},
+				})
+			}
+
+			return { elements }
+		}
+		const { elements: newElements } = arrangeElements(model, pods, orbs)
 		elements = elements.concat(newElements)
 	}
 

@@ -21,7 +21,7 @@
 				<div class="select">
 					<select name="pluginId" id="plugin-id" v-model="form.plugin" required>
 						<option
-							v-for="plugin in plugins"
+							v-for="plugin in modelPlugins"
 							:value="plugin.id"
 							:key="plugin.id"
 						>
@@ -53,14 +53,19 @@ import { t } from '../../index.ts'
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 
-const plugins = ref<t.Plugin_t[]>([])
+const modelPlugins = ref<t.Plugin_t[]>([])
 onMounted(async () => {
-	plugins.value = (await api.core.pluginList.query({ family: 'model' })).plugins
+	const { plugins } = await api.core.pluginList.query({ family: 'model' })
+
+	modelPlugins.value = plugins
+	if (!form.plugin) {
+		form.plugin = plugins[0].id
+	}
 })
 
 const form = reactive<{
 	name: string
-	plugin: string
+	plugin: t.PluginFamilySingular_t | ''
 }>({
 	name: '',
 	plugin: '',

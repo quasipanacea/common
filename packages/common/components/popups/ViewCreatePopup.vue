@@ -96,7 +96,7 @@ watch(props, (val) => {
 })
 
 async function submitData() {
-	await api.core.viewAdd.mutate(form)
+	await api.core.modelviewAdd.mutate(form)
 	popup.hideNoData('null')
 }
 </script>
