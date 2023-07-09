@@ -7,19 +7,18 @@ import { t } from '@quasipanacea/common/index.ts'
 import { serverUtil } from '@quasipanacea/plugin-utility/server/index.ts'
 
 export type State = {
-	someFile: string
+	stateJsonFile: string
 }
 
 export const hooks: t.Hooks<'model', State> = {
-	makeState({ dir }) {},
-	async onAdd({ state }) {
-		await serverUtil.assertFileExists(state)
+	makeState({ dir }) {
+		return {
+			stateJsonFile: path.join(dir, 'state.json'),
+		}
 	},
-}
-
-export function getRequests() {
-	const value = Deno.env.get('GOOGLE_API_KEY')
-	console.log('api key', value)
+	async onAdd({ state }) {
+		await serverUtil.assertFileExists(state.stateJsonFile)
+	},
 }
 
 const trpc = serverUtil.useTrpc<State>()

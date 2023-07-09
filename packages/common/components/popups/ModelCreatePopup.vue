@@ -19,13 +19,9 @@
 			<label class="label" for="plugin-id">Plugin</label>
 			<div class="control">
 				<div class="select">
-					<select name="pluginId" id="plugin-id" v-model="form.plugin" required>
-						<option
-							v-for="plugin in modelPlugins"
-							:value="plugin.id"
-							:key="plugin.id"
-						>
-							{{ plugin.id }}
+					<select name="pluginId" id="plugin-id" v-model="form.format" required>
+						<option v-for="plugin in modelMimes" :value="plugin" :key="plugin">
+							{{ plugin }}
 						</option>
 					</select>
 				</div>
@@ -53,22 +49,20 @@ import { t } from '../../index.ts'
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 
-const modelPlugins = ref<t.Plugin_t[]>([])
+const modelMimes = ref<string[]>([])
 onMounted(async () => {
-	const { plugins } = await api.core.pluginList.query({ family: 'model' })
+	const indexJson = await api.core.indexGet.query()
+	modelMimes.value = Object.keys(indexJson.mimes?.model ?? {})
 
-	modelPlugins.value = plugins
-	if (!form.plugin) {
-		form.plugin = plugins[0].id
-	}
+	form.format = modelMimes.value[0]
 })
 
 const form = reactive<{
 	name: string
-	plugin: t.PluginFamilySingular_t | ''
+	format: string
 }>({
 	name: '',
-	plugin: '',
+	format: '',
 })
 
 async function submitData() {

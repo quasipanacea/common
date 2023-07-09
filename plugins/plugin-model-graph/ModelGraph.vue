@@ -1,5 +1,5 @@
 <template>
-	<h1>Group Line</h1>
+	<h1>Group Graph</h1>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,7 @@
 <template>
-	<h1>Group Line</h1>
+	<div>
+		<h1>Graph View</h1>
+	</div>
 </template>
 
 <script setup lang="ts">

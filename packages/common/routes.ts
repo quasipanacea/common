@@ -18,10 +18,11 @@ export const coreRouter = trpc.router({
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
+				'orb',
+				'orbs',
 				input,
 				utilResource.getOrbsJsonFile(),
 				utilResource.getOrbsJson,
-				'orbs',
 			)
 
 			return { uuid }
@@ -31,10 +32,11 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
+				'orb',
+				'orbs',
 				input,
 				utilResource.getOrbsJsonFile(),
 				utilResource.getOrbsJson,
-				'orbs',
 			)
 		}),
 	orbModify: trpc.procedure
@@ -47,10 +49,11 @@ export const coreRouter = trpc.router({
 		.output(t.Orb)
 		.mutation(async ({ input }) => {
 			const orb = await utilResource.resourceModify<t.Orb_t>(
+				'orb',
+				'orbs',
 				input,
 				utilResource.getOrbsJsonFile(),
 				utilResource.getOrbsJson,
-				'orbs',
 			)
 
 			return orb
@@ -72,8 +75,9 @@ export const coreRouter = trpc.router({
 		)
 		.query(async ({ input }) => {
 			let orbs = await utilResource.resourceList<t.Orb_t>(
-				utilResource.getOrbsJson,
+				'orb',
 				'orbs',
+				utilResource.getOrbsJson,
 			)
 
 			if (input?.model?.uuid) {
@@ -88,10 +92,11 @@ export const coreRouter = trpc.router({
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
+				'link',
+				'links',
 				input,
 				utilResource.getLinksJsonFile(),
 				utilResource.getLinksJson,
-				'links',
 			)
 
 			return { uuid }
@@ -101,10 +106,11 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
+				'link',
+				'links',
 				input,
 				utilResource.getLinksJsonFile(),
 				utilResource.getLinksJson,
-				'links',
 			)
 		}),
 	linkModify: trpc.procedure
@@ -117,10 +123,11 @@ export const coreRouter = trpc.router({
 		.output(t.Link)
 		.mutation(async ({ input }) => {
 			const link = await utilResource.resourceModify<t.Link_t>(
+				'link',
+				'links',
 				input,
 				utilResource.getLinksJsonFile(),
 				utilResource.getLinksJson,
-				'links',
 			)
 
 			return link
@@ -134,8 +141,9 @@ export const coreRouter = trpc.router({
 		)
 		.query(async () => {
 			const links = await utilResource.resourceList<t.Link_t>(
-				utilResource.getLinksJson,
+				'link',
 				'links',
+				utilResource.getLinksJson,
 			)
 
 			return { links }
@@ -146,10 +154,11 @@ export const coreRouter = trpc.router({
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
+				'model',
+				'models',
 				input,
 				utilResource.getModelsJsonFile(),
 				utilResource.getModelsJson,
-				'models',
 			)
 
 			return { uuid }
@@ -159,10 +168,11 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
+				'model',
+				'models',
 				input,
 				utilResource.getModelsJsonFile(),
 				utilResource.getModelsJson,
-				'models',
 			)
 		}),
 	modelModify: trpc.procedure
@@ -175,10 +185,11 @@ export const coreRouter = trpc.router({
 		.output(t.Model)
 		.mutation(async ({ input }) => {
 			const model = await utilResource.resourceModify<t.Model_t>(
+				'model',
+				'models',
 				input,
 				utilResource.getModelsJsonFile(),
 				utilResource.getModelsJson,
-				'models',
 			)
 
 			return model
@@ -198,8 +209,9 @@ export const coreRouter = trpc.router({
 		)
 		.query(async ({ input }) => {
 			let models = await utilResource.resourceList<t.Model_t>(
-				utilResource.getModelsJson,
+				'model',
 				'models',
+				utilResource.getModelsJson,
 			)
 
 			if (input?.uuid) {
@@ -214,10 +226,11 @@ export const coreRouter = trpc.router({
 		.output(z.object({ uuid: t.Uuid }))
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
+				'modelview',
+				'modelviews',
 				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
+				utilResource.getModelviewsJsonFile(),
+				utilResource.getModelviewsJson,
 			)
 
 			return { uuid }
@@ -227,10 +240,11 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
+				'modelview',
+				'modelviews',
 				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
+				utilResource.getModelviewsJsonFile(),
+				utilResource.getModelviewsJson,
 			)
 		}),
 	modelviewModify: trpc.procedure
@@ -242,11 +256,12 @@ export const coreRouter = trpc.router({
 		)
 		.output(t.Modelview)
 		.mutation(async ({ input }) => {
-			const view = await utilResource.resourceModify<t.View_t>(
+			const view = await utilResource.resourceModify<t.Modelview_t>(
+				'modelview',
+				'modelviews',
 				input,
-				utilResource.getViewsJsonFile(),
-				utilResource.getViewsJson,
-				'views',
+				utilResource.getModelviewsJsonFile(),
+				utilResource.getModelviewsJson,
 			)
 
 			return view
@@ -255,21 +270,21 @@ export const coreRouter = trpc.router({
 		.input(z.void())
 		.output(
 			z.object({
-				views: z.array(t.View),
+				modelviews: z.array(t.Modelview),
 			}),
 		)
 		.query(async () => {
-			const rJson = await utilResource.getViewsJson()
+			const rJson = await utilResource.getModelviewsJson()
 
 			// work
-			const views: t.View_t[] = []
-			for (const [uuid, obj] of Object.entries(rJson.views)) {
-				views.push({
+			const modelviews: t.Modelview_t[] = []
+			for (const [uuid, obj] of Object.entries(rJson.modelviews)) {
+				modelviews.push({
 					uuid,
 					...obj,
 				})
 			}
-			return { views }
+			return { modelviews }
 		}),
 
 	podAdd: trpc.procedure
@@ -281,10 +296,11 @@ export const coreRouter = trpc.router({
 		)
 		.mutation(async ({ input }) => {
 			const uuid = await utilResource.resourceAdd(
+				'pod',
+				'pods',
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
-				'pods',
 			)
 
 			return { uuid }
@@ -298,10 +314,11 @@ export const coreRouter = trpc.router({
 		.output(z.void())
 		.mutation(async ({ input }) => {
 			await utilResource.resourceRemove(
+				'pod',
+				'pods',
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
-				'pods',
 			)
 		}),
 	podModify: trpc.procedure
@@ -314,10 +331,11 @@ export const coreRouter = trpc.router({
 		.output(t.Pod)
 		.mutation(async ({ input }) => {
 			const pod = await utilResource.resourceModify<t.Pod_t>(
+				'pod',
+				'pods',
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
-				'pods',
 			)
 
 			return pod
@@ -333,10 +351,11 @@ export const coreRouter = trpc.router({
 		.output(t.Pod)
 		.mutation(async ({ ctx, input }) => {
 			const pod = await utilResource.resourceModifyExtra<t.Pod_t>(
+				'pod',
+				'pods',
 				input,
 				utilResource.getPodsJsonFile(),
 				utilResource.getPodsJson,
-				'pods',
 			)
 
 			return pod

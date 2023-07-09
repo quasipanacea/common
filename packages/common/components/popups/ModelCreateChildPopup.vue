@@ -61,7 +61,7 @@ const childTypes = ref(['orb', 'pod'])
 const podFormats = ref<string[]>([])
 onMounted(async () => {
 	const indexJson = await api.core.indexGet.query()
-	podFormats.value = Object.keys(indexJson.podMimeOptions)
+	podFormats.value = Object.keys(indexJson.mimes?.pod ?? {})
 
 	form.format = podFormats.value[0]
 })

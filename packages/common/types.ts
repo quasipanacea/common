@@ -24,23 +24,14 @@ export type PluginFamilySingular_t = z.infer<typeof PluginFamilySingular>
 export const pluginFamilyPlural = [
 	'overviews',
 	'models',
+	'modelviews',
 	'pods',
+	'podviews',
 	'themes',
 	'packs',
 ] as const
 export const PluginFamilyPlural = z.enum(pluginFamilyPlural)
 export type PluginFamilyPlural_t = z.infer<typeof PluginFamilyPlural>
-
-export const pluginFamilyPluralHasFile = [
-	'orbs',
-	'links',
-	'models',
-	'pods',
-] as const
-export const PluginFamilyPluralHasFile = z.enum(pluginFamilyPluralHasFile)
-export type PluginFamilyPluralHasFile_t = z.infer<
-	typeof PluginFamilyPluralHasFile
->
 
 // Shared: Type
 type Metadata_t = {
@@ -132,13 +123,7 @@ export const Pod = z.object({
 		})
 		.optional(),
 })
-export const PodDir = z.intersection(
-	Pod,
-	z.object({
-		dir: String,
-	}),
-)
-
+export const Podview = z.object({})
 export const Plugin = z.object({
 	id: Id,
 	family: PluginFamilySingular,
@@ -150,9 +135,11 @@ export type Link_t = z.infer<typeof Link>
 export type Model_t = z.infer<typeof Model>
 export type Modelview_t = z.infer<typeof Modelview>
 export type Pod_t = z.infer<typeof Pod>
+export type Podview_t = z.infer<typeof Podview>
 export type Plugin_t = z.infer<typeof Plugin>
 
 // JSON File: Zod Schema
+export const SchemaOverviewsJson = z.object({})
 export const SchemaOrbsJson = z.object({
 	orbs: z.record(Uuid, Orb.omit({ uuid: true })),
 })
@@ -162,25 +149,36 @@ export const SchemaLinksJson = z.object({
 export const SchemaModelsJson = z.object({
 	models: z.record(Uuid, Model.omit({ uuid: true })),
 })
+export const SchemaModelviewsJson = z.object({
+	modelviews: z.record(Uuid, Modelview.omit({ uuid: true })),
+})
 export const SchemaPodsJson = z.object({
 	pods: z.record(Uuid, Pod.omit({ uuid: true })),
 })
+export const SchemaPodviewsJson = z.object({
+	podviews: z.record(Uuid, Podview.omit({ uuid: true })),
+})
+export const SchemaThemesJson = z.object({})
+export const SchemaPacksJson = z.object({})
 export const SchemaSettingsJson = z
 	.object({
 		defaultOverview: z.string(),
-		podMimes: z.record(z.string(), z.string()),
-		podviewMimes: z.record(z.string(), z.string()),
-		modelMimes: z.record(z.string(), z.string()),
-		modelviewMimes: z.record(z.string(), z.string()),
-		view: z.record(z.string(), z.string()),
+		mimes: z.object({
+			pod: z.record(z.string(), z.string()),
+			podview: z.record(z.string(), z.string()),
+			model: z.record(z.string(), z.string()),
+			modelview: z.record(z.string(), z.string()),
+		}),
 	})
 	.deepPartial()
 export const SchemaIndexJson = z
 	.object({
-		podMimeOptions: z.record(z.string(), z.array(z.string())),
-		podviewMimeOptions: z.record(z.string(), z.array(z.string())),
-		modelMimeOptions: z.record(z.string(), z.array(z.string())),
-		modelviewMimeOptions: z.record(z.string(), z.array(z.string())),
+		mimes: z.object({
+			pod: z.record(z.string(), z.array(z.string())),
+			podview: z.record(z.string(), z.array(z.string())),
+			model: z.record(z.string(), z.array(z.string())),
+			modelview: z.record(z.string(), z.array(z.string())),
+		}),
 	})
 	.deepPartial()
 
@@ -188,7 +186,9 @@ export const SchemaIndexJson = z
 export type SchemaOrbsJson_t = z.infer<typeof SchemaOrbsJson>
 export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
 export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
+export type SchemaModelviewsJson_t = z.infer<typeof SchemaModelviewsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
+export type SchemaPodviewsJson_t = z.infer<typeof SchemaPodviewsJson>
 export type SchemaSettingsJson_t = z.infer<typeof SchemaSettingsJson>
 export type SchemaIndexJson_t = z.infer<typeof SchemaIndexJson>
 

@@ -43,7 +43,7 @@ export function yieldPluginAppRouter<
 
 // TODO: internal
 export async function getResource(
-	pluginFamily: t.PluginFamilyPluralHasFile_t,
+	pluginFamily: t.PluginFamilyPlural_t,
 	uuid: string,
 ) {
 	const dir = utilResource.getResourceDir(pluginFamily, uuid)

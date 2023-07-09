@@ -17,12 +17,13 @@ async function runHook<
 	uuid: string,
 ): Promise<void> {
 	if (
-		pluginFamilyPlural === 'overviews' ||
-		pluginFamilyPlural === 'themes' ||
-		pluginFamilyPlural === 'packs'
+		pluginFamilySingular === 'overview' ||
+		pluginFamilySingular === 'theme' ||
+		pluginFamilySingular === 'pack'
 	) {
-		// TODO
-		throw new TypeError(`'${pluginFamilyPlural}' value not supported`)
+		throw new TypeError(
+			`Failed to run the '${hook}' because the plugin family '${pluginFamilySingular}' is not supported.`,
+		)
 	}
 
 	let resource
@@ -35,18 +36,20 @@ async function runHook<
 			continue
 		}
 	}
-
 	if (!resource) {
-		throw new Error(
-			`Resource not found with uuid '${uuid}' and familyPlural '${pluginFamilyPlural}'`,
-		)
+		// TODO it has already been removed
+		// throw new Error(
+		// 	`Failed to run the '${hook}' hook because the '${pluginFamilySingular}' resource with the uuid of '${uuid}' could not be found.`,
+		// )
+		return
 	}
 
 	const settingsJson = await getSettingsJson()
-	const pluginId = settingsJson?.podMimes?.[resource.format]
+	const pluginId =
+		settingsJson?.mimes?.[pluginFamilySingular]?.[resource.format]
 	if (!pluginId) {
 		throw new Error(
-			`pluginId could not be found for format '${resource.format}', uuid '${uuid}'`,
+			`Failed to run the '${hook}' hook because a corresponding plugin id could not be found for the format '${resource.format}' (in uuid '${uuid}')`,
 		)
 	}
 
@@ -55,7 +58,6 @@ async function runHook<
 		pluginId,
 	)
 
-	console.log('ad', pluginFamilyPlural, uuid)
 	const dir = utilResource.getResourceDir(pluginFamilyPlural, uuid)
 	if (!dir) {
 		throw new Error(
@@ -84,71 +86,76 @@ async function runHook<
 
 // generic
 export async function resourceAdd(
+	family: t.PluginFamilySingular_t,
+	familyPlural: t.PluginFamilyPlural_t,
 	input: Record<string, unknown>,
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
-	key: string,
 ): Promise<string> {
 	const uuid = crypto.randomUUID()
 
 	const rJson = await rJsonFn()
-	rJson[key][uuid] = input
+	rJson[familyPlural][uuid] = input
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 
-	const dir = getPodDir(uuid)
+	const dir = getResourceDir(familyPlural, uuid)
 	await Deno.mkdir(dir, { recursive: true })
 
-	runHook('pod', 'pods', 'add', uuid)
+	runHook(family, familyPlural, 'add', uuid)
 
 	return uuid
 }
 
 export async function resourceRemove(
+	family: t.PluginFamilySingular_t,
+	familyPlural: t.PluginFamilyPlural_t,
 	input: { uuid: string },
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
-	key: string,
 ): Promise<void> {
-	runHook('pod', 'pods', 'remove', input.uuid)
+	runHook(family, familyPlural, 'remove', input.uuid)
 
-	const dir = getPodDir(input.uuid)
+	const dir = getResourceDir(familyPlural, input.uuid)
 	await Deno.mkdir(dir, { recursive: true })
 
 	const rJson = await rJsonFn()
-	if (rJson[key][input.uuid]) {
-		delete rJson[key][input.uuid]
+	if (rJson[familyPlural][input.uuid]) {
+		delete rJson[familyPlural][input.uuid]
 	}
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 }
 
 export async function resourceModify<Resource_t>(
+	family: t.PluginFamilySingular_t,
+	familyPlural: t.PluginFamilyPlural_t,
 	input: {
 		uuid: string
 		data: Record<string, unknown>
 	},
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
-	key: string,
 ): Promise<Resource_t> {
 	const rJson = await rJsonFn()
 
-	if (!(input.uuid in rJson[key])) {
+	if (!(input.uuid in rJson[familyPlural])) {
 		throw new Error(`Failed to find uuid ${input.uuid}`)
 	}
 
-	rJson[key][input.uuid] = {
-		...rJson[key][input.uuid],
+	rJson[familyPlural][input.uuid] = {
+		...rJson[familyPlural][input.uuid],
 		...input.data,
 	}
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 
 	return {
-		...rJson[key][input.uuid],
+		...rJson[familyPlural][input.uuid],
 		uuid: input.uuid,
 	}
 }
 
 export async function resourceModifyExtra<Resource_t>(
+	family: t.PluginFamilySingular_t,
+	familyPlural: t.PluginFamilyPlural_t,
 	input: {
 		uuid: string
 		field: string
@@ -156,43 +163,43 @@ export async function resourceModifyExtra<Resource_t>(
 	},
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
-	key: string,
 ): Promise<Resource_t> {
 	const rJson = await rJsonFn()
 
-	if (!(input.uuid in rJson[key])) {
+	if (!(input.uuid in rJson[familyPlural])) {
 		throw new Error(`Failed to find uuid ${input.uuid}`)
 	}
 
-	if (!('extra' in rJson[key][input.uuid])) {
-		rJson[key][input.uuid].extra = {}
+	if (!('extra' in rJson[familyPlural][input.uuid])) {
+		rJson[familyPlural][input.uuid].extra = {}
 	}
 
-	if (!(input.field in rJson[key][input.uuid].extra)) {
-		rJson[key][input.uuid].extra[input.field] = {}
+	if (!(input.field in rJson[familyPlural][input.uuid].extra)) {
+		rJson[familyPlural][input.uuid].extra[input.field] = {}
 	}
 
-	rJson[key][input.uuid].extra[input.field] = {
-		...rJson[key][input.uuid].extra[input.field],
+	rJson[familyPlural][input.uuid].extra[input.field] = {
+		...rJson[familyPlural][input.uuid].extra[input.field],
 		...input.data,
 	}
 	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
 
 	return {
-		...rJson[key][input.uuid],
+		...rJson[familyPlural][input.uuid],
 		uuid: input.uuid,
 	}
 }
 
 export async function resourceList<Resource_t>(
+	family: t.PluginFamilySingular_t,
+	familyPlural: t.PluginFamilyPlural_t,
 	rJsonFn: () => Promise<Record<string, any>>,
-	key: string,
 ): Promise<Resource_t[]> {
 	const rJson = await rJsonFn()
 
 	const resources = []
 	for (const [uuid, obj] of Object.entries<Record<string, unknown>>(
-		rJson[key],
+		rJson[familyPlural],
 	)) {
 		resources.push({
 			...obj,
@@ -204,31 +211,37 @@ export async function resourceList<Resource_t>(
 }
 
 // dir
-export function getResourcesDir(
-	resourceName: t.PluginFamilyPluralHasFile_t,
-): string {
+export function getResourcesDir(resourceName: t.PluginFamilyPlural_t): string {
 	return path.join(util.getDataDir(), resourceName)
 }
 
 export function getOrbsDir(): string {
-	return path.join(util.getDataDir(), 'orbs')
+	return getResourcesDir('orbs')
 }
 
 export function getLinksDir(): string {
-	return path.join(util.getDataDir(), 'links')
+	return getResourcesDir('links')
 }
 
 export function getModelsDir(): string {
-	return path.join(util.getDataDir(), 'models')
+	return getResourcesDir('models')
+}
+
+export function getModelViewsDir(): string {
+	return getResourcesDir('modelviews')
 }
 
 export function getPodsDir(): string {
-	return path.join(util.getDataDir(), 'pods')
+	return getResourcesDir('pods')
+}
+
+export function getPodviewsDir(): string {
+	return getResourcesDir('podviews')
 }
 
 // dir (instance)
 export function getResourceDir(
-	resourceName: t.PluginFamilyPluralHasFile_t,
+	resourceName: t.PluginFamilyPlural_t,
 	uuid: string,
 ) {
 	return path.join(
@@ -239,42 +252,56 @@ export function getResourceDir(
 }
 
 export function getOrbDir(uuid: string): string {
-	return path.join(getOrbsDir(), uuid.slice(0, 2), uuid.slice(2))
+	return getResourceDir('orbs', uuid)
 }
 
 export function getLinkDir(uuid: string): string {
-	return path.join(getLinksDir(), uuid.slice(0, 2), uuid.slice(2))
+	return getResourceDir('links', uuid)
 }
 
 export function getModelDir(uuid: string): string {
-	return path.join(getModelsDir(), uuid.slice(0, 2), uuid.slice(2))
+	return getResourceDir('models', uuid)
+}
+
+export function getModelviewDir(uuid: string): string {
+	return getResourceDir('modelviews', uuid)
 }
 
 export function getPodDir(uuid: string): string {
-	return path.join(getPodsDir(), uuid.slice(0, 2), uuid.slice(2))
+	return getResourceDir('pods', uuid)
+}
+
+export function getPodviewDir(uuid: string): string {
+	return getResourceDir('podviews', uuid)
 }
 
 // file
-export function getResourcesJsonFile(
-	resourceName: t.PluginFamilyPluralHasFile_t,
-) {
+export function getResourcesJsonFile(resourceName: t.PluginFamilyPlural_t) {
 	return path.join(util.getDataDir(), resourceName + '.json')
 }
 
 export function getOrbsJsonFile(): string {
-	return path.join(util.getDataDir(), 'orbs.json')
+	return getResourcesJsonFile('orbs')
 }
 
 export function getLinksJsonFile(): string {
-	return path.join(util.getDataDir(), 'links.json')
+	return getResourcesJsonFile('links')
 }
 
 export function getModelsJsonFile(): string {
-	return path.join(util.getDataDir(), 'models.json')
+	return getResourcesJsonFile('models')
+}
+
+export function getModelviewsJsonFile(): string {
+	return getResourcesJsonFile('modelviews')
 }
 
 export function getPodsJsonFile(): string {
-	return path.join(util.getDataDir(), 'pods.json')
+	return getResourcesJsonFile('pods')
+}
+
+export function getPodviewsJsonFile(): string {
+	return getResourcesJsonFile('podviews')
 }
 
 export function getSettingsJsonFile(): string {
@@ -286,37 +313,40 @@ export function getIndexJsonFile(): string {
 }
 
 // json
-const table = {
+const Table = {
 	// TODO
+	overviews: t.SchemaOverviewsJson,
 	orbs: t.SchemaOrbsJson,
 	links: t.SchemaLinksJson,
 	models: t.SchemaModelsJson,
+	modelviews: t.SchemaModelviewsJson,
 	pods: t.SchemaPodsJson,
+	podviews: t.SchemaPodviewsJson,
+	themes: t.SchemaThemesJson,
+	pack: t.SchemaPacksJson,
 }
 export async function getResourcesJson<
-	ResourceName extends t.PluginFamilyPluralHasFile_t,
->(resourceName: ResourceName) {
+	ResourceName extends t.PluginFamilyPlural_t,
+>(
+	resourceName: ResourceName,
+	defaultContent: string = `{ "${resourceName}": {} }`,
+) {
 	const jsonFile = getResourcesJsonFile(resourceName)
 	let content
 	try {
 		content = await Deno.readTextFile(jsonFile)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			content = `{ "${resourceName}": {} }`
+			content = defaultContent
 			await Deno.writeTextFile(jsonFile, content)
 		} else {
 			throw err
 		}
 	}
 
-	return util.validateSchema<(typeof table)[ResourceName]>(
+	return util.validateSchema<(typeof Table)[ResourceName]>(
 		JSON.parse(content),
-		{
-			orbs: t.SchemaOrbsJson,
-			links: t.SchemaLinksJson,
-			models: t.SchemaModelsJson,
-			pods: t.SchemaPodsJson,
-		}[resourceName],
+		Table[resourceName],
 	)
 }
 
@@ -380,6 +410,26 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	)
 }
 
+export async function getModelviewsJson(): Promise<t.SchemaModelviewsJson_t> {
+	const jsonFile = getResourcesJsonFile('modelviews')
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "modelviews": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaModelviewsJson>(
+		JSON.parse(content),
+		t.SchemaModelviewsJson,
+	)
+}
+
 export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	const jsonFile = getPodsJsonFile()
 	let content
@@ -397,6 +447,26 @@ export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	return util.validateSchema<typeof t.SchemaPodsJson>(
 		JSON.parse(content),
 		t.SchemaPodsJson,
+	)
+}
+
+export async function getPodviewsJson(): Promise<t.SchemaPodviewsJson_t> {
+	const jsonFile = getPodviewsJsonFile()
+	let content
+	try {
+		content = await Deno.readTextFile(jsonFile)
+	} catch (err: unknown) {
+		if (err instanceof Deno.errors.NotFound) {
+			content = '{ "podviews": {} }'
+			await Deno.writeTextFile(jsonFile, content)
+		} else {
+			throw err
+		}
+	}
+
+	return util.validateSchema<typeof t.SchemaPodviewsJson>(
+		JSON.parse(content),
+		t.SchemaPodviewsJson,
 	)
 }
 

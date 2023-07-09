@@ -1,5 +1,8 @@
 <template>
-	<h1>Group Line</h1>
+	<div>
+		<p>This model implements a straight line.</p>
+		<button class="button">New Pod</button>
+	</div>
 </template>
 
 <script setup lang="ts">

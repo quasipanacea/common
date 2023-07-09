@@ -1,1 +1,3 @@
-<template>ViewList</template>
+<template>
+	<p>ViewList</p>
+</template>
