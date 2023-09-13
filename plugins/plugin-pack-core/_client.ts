@@ -1,3 +1,5 @@
+import { init as OverviewBasic } from '@quasipanacea/plugin-overview-basic/_client.js'
+import { init as OverviewBullets } from '@quasipanacea/plugin-overview-bullets/_client.js'
 import { init as OverviewDebug } from '@quasipanacea/plugin-overview-debug/_client.js'
 import { init as OverviewGraph } from '@quasipanacea/plugin-overview-graph/_client.js'
 import { init as OverviewMindelixir } from '@quasipanacea/plugin-overview-mindelixir/_client.js'
@@ -39,6 +41,8 @@ export { metadata } from './_isomorphic.ts'
 
 export async function initAll() {
 	await Promise.all([
+		OverviewBasic(),
+		OverviewBullets(),
 		OverviewDebug(),
 		OverviewGraph(),
 		OverviewMindelixir(),

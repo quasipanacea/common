@@ -28,7 +28,8 @@ async function readConfig(): Promise<z.infer<typeof schema>> {
 		config = JSON.parse(configText)
 	} catch (err: unknown) {
 		if (err instanceof Deno.errors.NotFound) {
-			config = {}
+			console.error(`Config file does not exist: ${configFile}`)
+			Deno.exit(1)
 		} else {
 			throw err
 		}

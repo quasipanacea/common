@@ -215,14 +215,6 @@ export function getResourcesDir(resourceName: t.PluginFamilyPlural_t): string {
 	return path.join(util.getDataDir(), resourceName)
 }
 
-export function getOrbsDir(): string {
-	return getResourcesDir('orbs')
-}
-
-export function getLinksDir(): string {
-	return getResourcesDir('links')
-}
-
 export function getModelsDir(): string {
 	return getResourcesDir('models')
 }
@@ -251,14 +243,6 @@ export function getResourceDir(
 	)
 }
 
-export function getOrbDir(uuid: string): string {
-	return getResourceDir('orbs', uuid)
-}
-
-export function getLinkDir(uuid: string): string {
-	return getResourceDir('links', uuid)
-}
-
 export function getModelDir(uuid: string): string {
 	return getResourceDir('models', uuid)
 }
@@ -278,14 +262,6 @@ export function getPodviewDir(uuid: string): string {
 // file
 export function getResourcesJsonFile(resourceName: t.PluginFamilyPlural_t) {
 	return path.join(util.getDataDir(), resourceName + '.json')
-}
-
-export function getOrbsJsonFile(): string {
-	return getResourcesJsonFile('orbs')
-}
-
-export function getLinksJsonFile(): string {
-	return getResourcesJsonFile('links')
 }
 
 export function getModelsJsonFile(): string {
@@ -316,8 +292,6 @@ export function getIndexJsonFile(): string {
 const Table = {
 	// TODO
 	overviews: t.SchemaOverviewsJson,
-	orbs: t.SchemaOrbsJson,
-	links: t.SchemaLinksJson,
 	models: t.SchemaModelsJson,
 	modelviews: t.SchemaModelviewsJson,
 	pods: t.SchemaPodsJson,
@@ -347,46 +321,6 @@ export async function getResourcesJson<
 	return util.validateSchema<(typeof Table)[ResourceName]>(
 		JSON.parse(content),
 		Table[resourceName],
-	)
-}
-
-export async function getOrbsJson(): Promise<t.SchemaOrbsJson_t> {
-	const jsonFile = getOrbsJsonFile()
-	let content
-	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "orbs": {} }'
-			await Deno.writeTextFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaOrbsJson>(
-		JSON.parse(content),
-		t.SchemaOrbsJson,
-	)
-}
-
-export async function getLinksJson(): Promise<t.SchemaLinksJson_t> {
-	const jsonFile = getLinksJsonFile()
-	let content
-	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
-			content = '{ "links": {} }'
-			await Deno.writeTextFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaLinksJson>(
-		JSON.parse(content),
-		t.SchemaLinksJson,
 	)
 }
 

@@ -76,7 +76,6 @@ const router = useRouter()
 
 const model = ref<t.Model_t>()
 const pods = ref<t.Pod_t[]>([])
-const orbs = ref<t.Orb_t[]>([])
 
 onMounted(async () => {
 	await updateData()
@@ -91,15 +90,9 @@ async function updateData() {
 			uuid: props.uuid,
 		},
 	})
-	const { orbs: orbsRes } = await api.core.orbList.query({
-		model: {
-			uuid: props.uuid,
-		},
-	})
 
 	model.value = modelsRes[0]
 	pods.value = podsRes
-	orbs.value = orbsRes
 }
 
 function handlePopupPodNew() {

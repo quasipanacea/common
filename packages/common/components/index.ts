@@ -1,5 +1,7 @@
 export { default as ModelCreateChildPopup } from './popups/ModelCreateChildPopup.vue'
+export { default as ModelCreateLightPopup } from './popups/ModelCreateLightPopup.vue'
 export { default as ModelCreatePopup } from './popups/ModelCreatePopup.vue'
+export { default as ModelCreatePopupDefault } from './popups/ModelCreatePopupDefault.vue'
 export { default as ModelEditPropertiesPopup } from './popups/ModelEditPropertiesPopup.vue'
 export { default as PodCreatePopup } from './popups/PodCreatePopup.vue'
 export { default as PodRenamePopup } from './popups/PodRenamePopup.vue'

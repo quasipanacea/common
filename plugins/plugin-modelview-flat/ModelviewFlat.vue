@@ -89,7 +89,6 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 
 const model = ref<t.Model_t>()
 const pods = ref<t.Pod_t[]>([])
-const orbs = ref<t.Orb_t[]>([])
 
 type myType = t.Foo.PodExtras['a']
 onMounted(async () => {
@@ -105,15 +104,9 @@ async function updateData() {
 			uuid: props.uuid,
 		},
 	})
-	const { orbs: orbsRes } = await api.core.orbList.query({
-		model: {
-			uuid: props.uuid,
-		},
-	})
 
 	model.value = modelsRes[0]
 	pods.value = podsRes
-	orbs.value = orbsRes
 }
 
 async function handlePopupPodCreate() {

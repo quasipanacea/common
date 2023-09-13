@@ -51,41 +51,6 @@ type BareServerPlugin_t = {
 }
 
 // Object: Zod Schema
-export const Orb = z.object({
-	uuid: Uuid,
-	name: String.optional(),
-	model: z.object({
-		uuid: Uuid,
-	}),
-	pod: z
-		.object({
-			uuid: Uuid,
-		})
-		.optional(),
-	extra: z
-		.object({
-			position: z
-				.object({
-					x: z.number(),
-					y: z.number(),
-				})
-				.optional(),
-		})
-		.optional(),
-})
-export const Link = z.object({
-	uuid: Uuid,
-	name: String.optional(),
-	source: z.object({
-		resource: String,
-		uuid: Uuid,
-	}),
-	target: z.object({
-		resource: String,
-		uuid: Uuid,
-	}),
-	extra: z.object({}).optional(),
-})
 export const Model = z.object({
 	uuid: Uuid,
 	name: String.optional(),
@@ -130,8 +95,6 @@ export const Plugin = z.object({
 })
 
 // Object: Type
-export type Orb_t = z.infer<typeof Orb>
-export type Link_t = z.infer<typeof Link>
 export type Model_t = z.infer<typeof Model>
 export type Modelview_t = z.infer<typeof Modelview>
 export type Pod_t = z.infer<typeof Pod>
@@ -140,12 +103,6 @@ export type Plugin_t = z.infer<typeof Plugin>
 
 // JSON File: Zod Schema
 export const SchemaOverviewsJson = z.object({})
-export const SchemaOrbsJson = z.object({
-	orbs: z.record(Uuid, Orb.omit({ uuid: true })),
-})
-export const SchemaLinksJson = z.object({
-	links: z.record(Uuid, Link.omit({ uuid: true })),
-})
 export const SchemaModelsJson = z.object({
 	models: z.record(Uuid, Model.omit({ uuid: true })),
 })
@@ -183,8 +140,6 @@ export const SchemaIndexJson = z
 	.deepPartial()
 
 // JSON File: Type
-export type SchemaOrbsJson_t = z.infer<typeof SchemaOrbsJson>
-export type SchemaLinksJson_t = z.infer<typeof SchemaLinksJson>
 export type SchemaModelsJson_t = z.infer<typeof SchemaModelsJson>
 export type SchemaModelviewsJson_t = z.infer<typeof SchemaModelviewsJson>
 export type SchemaPodsJson_t = z.infer<typeof SchemaPodsJson>
@@ -242,10 +197,10 @@ export type OverviewClientPlugin_t = {
 export type ModelClientPlugin_t = {
 	metadata: Metadata_t
 	component: unknown
+	componentCreatePopup?: unknown
 	arrangeElements: (
 		arg0: Model_t,
 		arg1: Pod_t[],
-		arg2: Orb_t[],
 	) => { elements: cytoscape.ElementDefinition[] }
 	validateNewChild: () => boolean
 }
@@ -366,18 +321,6 @@ export type CytoscapeElementJson = {
 }
 
 export type CytoscapeElementData =
-	| {
-			id?: string
-			label?: string
-			resource: 'orb'
-			resourceData: Orb_t
-	  }
-	| {
-			id?: string
-			label?: string
-			resource: 'link'
-			resourceData: Link_t
-	  }
 	| {
 			id?: string
 			label?: string

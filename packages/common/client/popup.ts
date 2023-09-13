@@ -31,6 +31,20 @@ const PopupEvents = z.object({
 		show: z.undefined(),
 		hide: z.undefined(),
 	}),
+	'model-create-light': z.object({
+		show: z.undefined(),
+		hide: z.object({
+			format: z.string(),
+		}),
+	}),
+	'model-create-custom': z.object({
+		show: z.object({
+			pluginId: z.string(),
+		}),
+		hide: z.object({
+			name: z.string(),
+		}),
+	}),
 	'model-edit-properties': z.object({
 		show: z.object({
 			uuid: z.string(),
@@ -142,7 +156,7 @@ export async function hideNoData<T extends UndefinedOutputKeys>(
 	return await _hidePopup(eventString, undefined)
 }
 
-export async function hidePopup<T extends NotUndefinedOutputKeys>(
+export async function hide<T extends NotUndefinedOutputKeys>(
 	eventString: T,
 	response: PopupEvents_t[T]['hide'],
 ) {

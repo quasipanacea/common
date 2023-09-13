@@ -57,7 +57,6 @@ const props = defineProps<{
 
 const api = trpcClient.yieldClient<BareAppRouter>()
 
-const childTypes = ref(['orb', 'pod'])
 const podFormats = ref<string[]>([])
 onMounted(async () => {
 	const indexJson = await api.core.indexGet.query()
@@ -72,27 +71,19 @@ const form = reactive<{
 	format: string
 }>({
 	name: '',
-	childType: childTypes.value[0],
+	childType: 'pod',
 	format: '',
 })
 
 async function submitData() {
-	if (form.childType === 'orb') {
-		await api.core.orbAdd.mutate({
-			name: form.name,
-			model: {
-				uuid: props.modelUuid,
-			},
-		})
-	} else if (form.childType === 'pod') {
-		await api.core.podAdd.mutate({
-			name: form.name,
-			format: form.format,
-			model: {
-				uuid: props.modelUuid,
-			},
-		})
-	}
+	await api.core.podAdd.mutate({
+		name: form.name,
+		format: form.format,
+		model: {
+			uuid: props.modelUuid,
+		},
+	})
+
 	popup.hideNoData('null')
 }
 </script>

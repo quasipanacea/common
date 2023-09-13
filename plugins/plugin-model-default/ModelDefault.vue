@@ -19,14 +19,6 @@
 				</li>
 			</ul>
 		</div>
-		<div class="column">
-			<h2 class="subtitle">Orbs</h2>
-			<ul>
-				<li v-for="orb in orbs" :key="orb.uuid">
-					<router-link :to="`/orb/${orb.uuid}`">{{ orb.name }}</router-link>
-				</li>
-			</ul>
-		</div>
 	</div>
 </template>
 
@@ -49,7 +41,6 @@ const api = trpcClient.yieldClient<BareAppRouter>()
 
 const model = ref<t.Model_t>()
 const pods = ref<t.Pod_t[]>([])
-const orbs = ref<t.Orb_t[]>([])
 
 onMounted(async () => {
 	const { models: modelsRes } = await api.core.modelList.query({
@@ -60,14 +51,8 @@ onMounted(async () => {
 			uuid: props.uuid,
 		},
 	})
-	const { orbs: orbsRes } = await api.core.orbList.query({
-		model: {
-			uuid: props.uuid,
-		},
-	})
 
 	model.value = modelsRes[0]
 	pods.value = podsRes
-	orbs.value = orbsRes
 })
 </script>

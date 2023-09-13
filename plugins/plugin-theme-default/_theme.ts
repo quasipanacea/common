@@ -22,12 +22,6 @@ export const defaultTheme = {
 			},
 		},
 		{
-			selector: 'node.qp-orb-without-pod',
-			style: {
-				'background-color': '#ccc',
-			},
-		},
-		{
 			selector: 'edge[label]',
 			style: {
 				label: 'data(label)',

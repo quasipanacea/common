@@ -13,7 +13,7 @@
 import { ref, onMounted, onUpdated, nextTick, watch } from 'vue'
 
 import { Transformer } from 'markmap-lib'
-import { Markmap } from 'markmap-view/dist/index.esm'
+import { Markmap } from 'markmap-view'
 
 import {
 	SemanticInputOutput,

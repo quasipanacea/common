@@ -1,17 +1,24 @@
 {
 	"name": "@quasipanacea/plugin-overview-graph",
 	"dependencies": {
+		"@antv/g6": "^4.8.20",
 		"@quasipanacea/common": "workspace:^",
-		"@quasipanacea/plugin-utility": "workspace:^",
 		"@quasipanacea/plugin-theme-default": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^",
 		"cytoscape": "^3.23.0",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-compound-drag-and-drop": "^1.1.0",
+		"cytoscape-cose-bilkent": "^4.1.0",
+		"cytoscape-cosep": "https://github.com/iVis-at-Bilkent/cytoscape.js-cosep#b63d726360cfb011edd300fe86272dc128c9e6af",
 		"cytoscape-cxtmenu": "^3.5.0",
+		"cytoscape-d3-force": "^1.1.4",
 		"cytoscape-edgehandles": "^4.0.1",
+		"cytoscape-euler": "^1.2.2",
 		"cytoscape-fcose": "^2.2.0",
 		"cytoscape-lasso": "^1.1.4",
-		"cytoscape-undo-redo": "^1.3.3"
+		"cytoscape-undo-redo": "^1.3.3",
+		"vis-data": "^7.1.6",
+		"vis-network": "^9.1.6"
 	},
 	"devDependencies": {
 		"@quasipanacea/types": "workspace:^",
