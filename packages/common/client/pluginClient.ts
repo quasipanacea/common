@@ -3,46 +3,49 @@ import * as t from '../types.ts'
 import type { BareAppRouter } from '../routes.ts'
 import { yieldClient } from './trpcClient.ts'
 
-const plugins: t.AnyClientPlugin_t[] = []
+const plugins: t.ClientPluginModule_t[] = []
 
 export function getFamilies() {
-	return t.pluginFamilySingular
+	return t.resourceNamesSingular
 }
 
-export function register<T extends keyof t.ClientPluginMap_t>(
-	plugin: t.ClientPluginMap_t[T],
-): void {
+export function register(plugin: t.ClientPluginModule_t): void {
 	if (
-		!plugins.some(
-			(item) =>
-				plugin.metadata.family === item.metadata.family &&
-				plugin.metadata.id === item.metadata.id,
-		)
+		!plugins.some((item) => {
+			return plugin.metadata.id === item.metadata.id
+		})
 	) {
 		plugins.push(plugin)
 	}
 }
 
-export function get<T extends keyof t.ClientPluginMap_t>(
-	family: T,
-	id: string,
-): t.ClientPluginMap_t[T] {
-	const plugin = plugins.find(
-		(item) => item.metadata.family === family && item.metadata.id === id,
-	)
+export function get(family: string, id: string): t.ClientPluginModule_t {
+	const plugin = plugins.find((item) => {
+		return item.metadata.id === id
+	})
 	if (!plugin) {
 		throw new Error(
 			`Failed to find client plugin with family '${family}' and id '${id}'`,
 		)
 	}
 
-	return plugin as t.ClientPluginMap_t[T]
+	return plugin
 }
 
-export function list<T extends keyof t.ClientPluginMap_t>(
-	family?: T,
-): t.ClientPluginMap_t[T][] {
+export function get2(id: string): t.ClientPluginModule_t {
+	const plugin = plugins.find((item) => {
+		return item.metadata.id === id
+	})
+
+	if (!plugin) {
+		throw new Error(`Failed to find client plugin id '${id}'`)
+	}
+
+	return plugin
+}
+
+export function list(family?: string): t.ServerPluginModule_t[] {
 	const values = plugins.filter((item) => item.metadata.family === family)
 
-	return values as t.ClientPluginMap_t[T][]
+	return values
 }

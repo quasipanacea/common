@@ -85,72 +85,6 @@ export const coreRouter = trpc.router({
 			return { models }
 		}),
 
-	modelviewAdd: trpc.procedure
-		.input(t.Modelview.omit({ uuid: true }))
-		.output(z.object({ uuid: t.Uuid }))
-		.mutation(async ({ input }) => {
-			const uuid = await utilResource.resourceAdd(
-				'modelview',
-				'modelviews',
-				input,
-				utilResource.getModelviewsJsonFile(),
-				utilResource.getModelviewsJson,
-			)
-
-			return { uuid }
-		}),
-	modelviewRemove: trpc.procedure
-		.input(z.object({ uuid: t.Uuid }))
-		.output(z.void())
-		.mutation(async ({ input }) => {
-			await utilResource.resourceRemove(
-				'modelview',
-				'modelviews',
-				input,
-				utilResource.getModelviewsJsonFile(),
-				utilResource.getModelviewsJson,
-			)
-		}),
-	modelviewModify: trpc.procedure
-		.input(
-			z.object({
-				uuid: t.Uuid,
-				data: t.Modelview.omit({ uuid: true }).partial(),
-			}),
-		)
-		.output(t.Modelview)
-		.mutation(async ({ input }) => {
-			const view = await utilResource.resourceModify<t.Modelview_t>(
-				'modelview',
-				'modelviews',
-				input,
-				utilResource.getModelviewsJsonFile(),
-				utilResource.getModelviewsJson,
-			)
-
-			return view
-		}),
-	modelviewList: trpc.procedure
-		.input(z.void())
-		.output(
-			z.object({
-				modelviews: z.array(t.Modelview),
-			}),
-		)
-		.query(async () => {
-			const rJson = await utilResource.getModelviewsJson()
-
-			// work
-			const modelviews: t.Modelview_t[] = []
-			for (const [uuid, obj] of Object.entries(rJson.modelviews)) {
-				modelviews.push({
-					uuid,
-					...obj,
-				})
-			}
-			return { modelviews }
-		}),
-
 	podAdd: trpc.procedure
 		.input(t.Pod.omit({ uuid: true }))
 		.output(
@@ -296,29 +230,35 @@ export const coreRouter = trpc.router({
 		.input(
 			z
 				.object({
-					family: t.PluginFamilySingular.optional(),
+					family: t.ResourceNamesSingular.optional(),
 				})
 				.optional(),
 		)
 		.output(
 			z.object({
-				plugins: z.array(t.Plugin),
+				plugins: z.array(t.PluginMetadata),
 			}),
 		)
 		.query(({ input }) => {
-			let rawPlugins: t.AnyServerPlugin_t[] = []
+			let plugins: t.ServerPluginModule_t[] = []
+
 			if (input?.family) {
-				rawPlugins = pluginServer.list(input.family)
-			} else {
-				for (const family of pluginServer.getFamilies()) {
-					const arr = pluginServer.list(family)
-					rawPlugins = rawPlugins.concat(arr)
-				}
+				plugins = plugins.filter((item) => {
+					if (input.family === 'model') {
+						return !!item.modelController
+					} else if (input.family === 'overview') {
+						return !!item.overview
+					} else if (input.family === 'pack') {
+						return !!item.pack
+					} else if (input.family === 'pod') {
+						return !!item.pod
+					} else if (input.family === 'theme') {
+						return !!item.theme
+					}
+				})
 			}
 
-			const plugins = rawPlugins.map((item) => item.metadata)
-
-			return { plugins }
+			return { plugins: plugins.map((item) => item.metadata) }
 		}),
 })
 

@@ -8,8 +8,8 @@ import * as util from './util.ts'
 
 // utility
 async function runHook<
-	PluginFamilySingular extends t.PluginFamilySingular_t,
-	PluginFamilyPlural extends t.PluginFamilyPlural_t,
+	PluginFamilySingular extends t.ResourceNamesSingular_t,
+	PluginFamilyPlural extends t.ResourceNamesPlural_t,
 >(
 	pluginFamilySingular: PluginFamilySingular,
 	pluginFamilyPlural: PluginFamilyPlural,
@@ -86,8 +86,8 @@ async function runHook<
 
 // generic
 export async function resourceAdd(
-	family: t.PluginFamilySingular_t,
-	familyPlural: t.PluginFamilyPlural_t,
+	family: t.ResourceNamesSingular_t,
+	familyPlural: t.ResourceNamesPlural_t,
 	input: Record<string, unknown>,
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
@@ -107,8 +107,8 @@ export async function resourceAdd(
 }
 
 export async function resourceRemove(
-	family: t.PluginFamilySingular_t,
-	familyPlural: t.PluginFamilyPlural_t,
+	family: t.ResourceNamesSingular_t,
+	familyPlural: t.ResourceNamesPlural_t,
 	input: { uuid: string },
 	rJsonFile: string,
 	rJsonFn: () => Promise<Record<string, any>>,
@@ -126,8 +126,8 @@ export async function resourceRemove(
 }
 
 export async function resourceModify<Resource_t>(
-	family: t.PluginFamilySingular_t,
-	familyPlural: t.PluginFamilyPlural_t,
+	family: t.ResourceNamesSingular_t,
+	familyPlural: t.ResourceNamesPlural_t,
 	input: {
 		uuid: string
 		data: Record<string, unknown>
@@ -154,8 +154,8 @@ export async function resourceModify<Resource_t>(
 }
 
 export async function resourceModifyExtra<Resource_t>(
-	family: t.PluginFamilySingular_t,
-	familyPlural: t.PluginFamilyPlural_t,
+	family: t.ResourceNamesSingular_t,
+	familyPlural: t.ResourceNamesPlural_t,
 	input: {
 		uuid: string
 		field: string
@@ -191,8 +191,8 @@ export async function resourceModifyExtra<Resource_t>(
 }
 
 export async function resourceList<Resource_t>(
-	family: t.PluginFamilySingular_t,
-	familyPlural: t.PluginFamilyPlural_t,
+	family: t.ResourceNamesSingular_t,
+	familyPlural: t.ResourceNamesPlural_t,
 	rJsonFn: () => Promise<Record<string, any>>,
 ): Promise<Resource_t[]> {
 	const rJson = await rJsonFn()
@@ -211,7 +211,7 @@ export async function resourceList<Resource_t>(
 }
 
 // dir
-export function getResourcesDir(resourceName: t.PluginFamilyPlural_t): string {
+export function getResourcesDir(resourceName: t.ResourceNamesPlural_t): string {
 	return path.join(util.getDataDir(), resourceName)
 }
 
@@ -233,7 +233,7 @@ export function getPodviewsDir(): string {
 
 // dir (instance)
 export function getResourceDir(
-	resourceName: t.PluginFamilyPlural_t,
+	resourceName: t.ResourceNamesPlural_t,
 	uuid: string,
 ) {
 	return path.join(
@@ -260,7 +260,7 @@ export function getPodviewDir(uuid: string): string {
 }
 
 // file
-export function getResourcesJsonFile(resourceName: t.PluginFamilyPlural_t) {
+export function getResourcesJsonFile(resourceName: t.ResourceNamesPlural_t) {
 	return path.join(util.getDataDir(), resourceName + '.json')
 }
 
@@ -296,11 +296,9 @@ const Table = {
 	modelviews: t.SchemaModelviewsJson,
 	pods: t.SchemaPodsJson,
 	podviews: t.SchemaPodviewsJson,
-	themes: t.SchemaThemesJson,
-	pack: t.SchemaPacksJson,
 }
 export async function getResourcesJson<
-	ResourceName extends t.PluginFamilyPlural_t,
+	ResourceName extends t.ResourceNamesPlural_t,
 >(
 	resourceName: ResourceName,
 	defaultContent: string = `{ "${resourceName}": {} }`,

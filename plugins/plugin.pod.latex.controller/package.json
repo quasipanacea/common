@@ -1,0 +1,17 @@
+{
+	"name": "@quasipanacea/plugin.pod.latex.controller",
+	"dependencies": {
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^"
+	},
+	"devDependencies": {
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	},
+	"peerDependencies": {
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	}
+}

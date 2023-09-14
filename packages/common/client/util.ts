@@ -4,7 +4,7 @@ import type cytoscape from 'cytoscape'
 export async function getPluginFromFormat(
 	api,
 	format: string,
-	pluginFamily: t.PluginFamilySingular_t,
+	pluginFamily: t.ResourceNamesSingular_t,
 ) {
 	const indexJson = await api.core.settingsGet.query()
 	const pluginId = indexJson.mimes[pluginFamily][format]

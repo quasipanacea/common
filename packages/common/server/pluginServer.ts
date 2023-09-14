@@ -1,15 +1,13 @@
 import { default as _ } from 'lodash'
 
 import * as t from '../types.ts'
-const plugins: t.AnyServerPlugin_t[] = []
+const plugins: t.ServerPluginModule_t[] = []
 
 export function getFamilies() {
-	return t.pluginFamilySingular
+	return t.resourceNamesSingular
 }
 
-export function register<T extends keyof t.ServerPluginMap_t>(
-	plugin: t.ServerPluginMap_t[T],
-): void {
+export function register(plugin: t.ServerPluginModule_t): void {
 	if (
 		!plugins.some(
 			(item) =>
@@ -21,10 +19,7 @@ export function register<T extends keyof t.ServerPluginMap_t>(
 	}
 }
 
-export function get<T extends keyof t.ServerPluginMap_t>(
-	family: T,
-	id: string,
-): t.ServerPluginMap_t[T] {
+export function get(family: string, id: string): t.ServerPluginModule_t {
 	const plugin = plugins.find(
 		(item) => item.metadata.family === family && item.metadata.id === id,
 	)
@@ -34,13 +29,11 @@ export function get<T extends keyof t.ServerPluginMap_t>(
 		)
 	}
 
-	return plugin as t.ServerPluginMap_t[T]
+	return plugin
 }
 
-export function list<T extends keyof t.ServerPluginMap_t>(
-	family?: T,
-): t.ServerPluginMap_t[T][] {
+export function list(family?: string): t.ServerPluginModule_t[] {
 	const values = plugins.filter((item) => item.metadata.family === family)
 
-	return values as t.ServerPluginMap_t[T][]
+	return values
 }

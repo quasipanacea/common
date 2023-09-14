@@ -1,0 +1,20 @@
+{
+	"name": "@quasipanacea/plugin.pod.markdown.view.remark",
+	"dependencies": {
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/plugin.pod.markdown.controller": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^",
+		"github-markdown-css": "^5.2.0",
+		"katex": "^0.16.4"
+	},
+	"devDependencies": {
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	},
+	"peerDependencies": {
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	}
+}

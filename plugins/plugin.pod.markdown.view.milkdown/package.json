@@ -1,0 +1,42 @@
+{
+	"name": "@quasipanacea/plugin.pod.markdown.view.milkdown",
+	"dependencies": {
+		"@milkdown/core": "^7.2.3",
+		"@milkdown/plugin-block": "^7.2.3",
+		"@milkdown/plugin-clipboard": "^7.2.3",
+		"@milkdown/plugin-cursor": "^7.2.3",
+		"@milkdown/plugin-diagram": "^7.2.3",
+		"@milkdown/plugin-emoji": "^7.2.3",
+		"@milkdown/plugin-history": "^7.2.3",
+		"@milkdown/plugin-indent": "^7.2.3",
+		"@milkdown/plugin-listener": "^7.2.3",
+		"@milkdown/plugin-math": "^7.2.3",
+		"@milkdown/plugin-prism": "^7.2.3",
+		"@milkdown/plugin-slash": "^7.2.3",
+		"@milkdown/plugin-tooltip": "^7.2.3",
+		"@milkdown/plugin-upload": "^7.2.3",
+		"@milkdown/preset-commonmark": "^7.2.3",
+		"@milkdown/preset-gfm": "^7.2.3",
+		"@milkdown/theme-nord": "^7.2.3",
+		"@milkdown/utils": "^7.2.3",
+		"@milkdown/vue": "^7.2.3",
+		"@prosemirror-adapter/vue": "^0.2.5",
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/plugin.pod.markdown.controller": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^",
+		"@tailwindcss/typography": "^0.5.9",
+		"lodash": "^4.17.21",
+		"tailwindcss": "^3.3.2"
+	},
+	"devDependencies": {
+		"@quasipanacea/types": "workspace:^",
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	},
+	"peerDependencies": {
+		"@trpc/client": "^10.33.0",
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	}
+}

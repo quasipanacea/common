@@ -43,16 +43,16 @@ export function yieldPluginAppRouter<
 
 // TODO: internal
 export async function getResource(
-	pluginFamily: t.PluginFamilyPlural_t,
+	resourceName: t.ResourceNamesPlural_t,
 	uuid: string,
 ) {
-	const dir = utilResource.getResourceDir(pluginFamily, uuid)
-	const resourceJson = await utilResource.getResourcesJson(pluginFamily)
+	const dir = utilResource.getResourceDir(resourceName, uuid)
+	const resourceJson = await utilResource.getResourcesJson(resourceName)
 
-	const obj = resourceJson[pluginFamily][uuid]
+	const obj = resourceJson[resourceName][uuid]
 	if (!obj) {
 		throw new Error(
-			`Failed to find item of family '${pluginFamily}' with id: ${uuid}`,
+			`Failed to find item of family '${resourceName}' with id: ${uuid}`,
 		)
 	}
 

@@ -1,0 +1,15 @@
+{
+	"name": "@quasipanacea/plugin.model.colors.controller",
+	"dependencies": {
+		"@quasipanacea/common": "workspace:^",
+		"@quasipanacea/plugin-utility": "workspace:^"
+	},
+	"devDependencies": {
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	},
+	"peerDependencies": {
+		"vue": "^3.0.0",
+		"vue-router": "^4.0.0"
+	}
+}
