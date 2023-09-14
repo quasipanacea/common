@@ -19,26 +19,13 @@ export function register(plugin: t.ClientPluginModule_t): void {
 	}
 }
 
-export function get(family: string, id: string): t.ClientPluginModule_t {
-	const plugin = plugins.find((item) => {
-		return item.metadata.id === id
-	})
-	if (!plugin) {
-		throw new Error(
-			`Failed to find client plugin with family '${family}' and id '${id}'`,
-		)
-	}
-
-	return plugin
-}
-
-export function get2(id: string): t.ClientPluginModule_t {
+export function get(id: string): t.ClientPluginModule_t {
 	const plugin = plugins.find((item) => {
 		return item.metadata.id === id
 	})
 
 	if (!plugin) {
-		throw new Error(`Failed to find client plugin id '${id}'`)
+		throw new Error(`Failed to find client plugin with id of '${id}'`)
 	}
 
 	return plugin

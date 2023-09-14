@@ -23,6 +23,6 @@ const props = defineProps<{
 	pluginId: string
 }>()
 
-const plugin = pluginClient.get2(props.pluginId)
+const plugin = pluginClient.get(props.pluginId)
 console.log(plugin)
 </script>

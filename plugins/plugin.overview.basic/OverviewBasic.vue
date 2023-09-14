@@ -133,7 +133,7 @@ async function newModel() {
 		res.format,
 		'model',
 	)
-	const plugin = pluginClient.get2(pluginId)
+	const plugin = pluginClient.get(pluginId)
 
 	const res2 = (
 		await popup.show(

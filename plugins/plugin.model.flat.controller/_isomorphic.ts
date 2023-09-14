@@ -3,7 +3,7 @@ import { z } from 'zod'
 import * as types from '@quasipanacea/common/types.ts'
 
 export const metadata: t.PluginMetadata_t = {
-	id: 'model.flat.controller,
+	id: 'model.flat.controller',
 }
 
 export const format = 'x-multipart/x-flat'

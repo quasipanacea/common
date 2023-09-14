@@ -1,7 +1,7 @@
 import type { t } from '@quasipanacea/common/index.ts'
 
 export const metadata: t.PluginMetadata_t = {
-	id: 'podview.remark',
+	id: 'pod.markdown.view.remark',
 }
 
 export const format = 'text/markdown'

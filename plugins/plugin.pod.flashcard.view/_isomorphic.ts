@@ -1,7 +1,7 @@
 import type { t } from '@quasipanacea/common/index.ts'
 
 export const metadata: t.PluginMetadata_t = {
-	id: 'podview.flashcard',
+	id: 'pod.flashcard.view',
 }
 
 export const format = 'text/x-flashcard'

@@ -80,25 +80,19 @@ export const SchemaSettingsJson = z
 				viewPlugin: z.string(),
 			}),
 		),
-
-		mimes: z.object({
-			pod: z.record(z.string(), z.string()),
-			podview: z.record(z.string(), z.string()),
-			model: z.record(z.string(), z.string()),
-			modelview: z.record(z.string(), z.string()),
-		}),
 	})
 	.deepPartial()
 export const SchemaIndexJson = z
 	.object({
-		modelFormats: z.array(z.string()),
-		podFormats: z.array(z.string()),
-
-		mimes: z.object({
-			pod: z.record(z.string(), z.array(z.string())),
-			podview: z.record(z.string(), z.array(z.string())),
-			model: z.record(z.string(), z.array(z.string())),
-			modelview: z.record(z.string(), z.array(z.string())),
+		formats: z.object({
+			model: z.object({
+				controller: z.array(z.string()),
+				view: z.array(z.string()),
+			}),
+			pod: z.object({
+				controller: z.array(z.string()),
+				view: z.array(z.string()),
+			}),
 		}),
 	})
 	.deepPartial()

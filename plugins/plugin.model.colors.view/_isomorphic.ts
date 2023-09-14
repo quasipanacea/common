@@ -1,7 +1,7 @@
 import type { t } from '@quasipanacea/common/index.ts'
 
 export const metadata: t.PluginMetadata_t = {
-	id: 'model.colors.view,
+	id: 'model.colors.view',
 }
 
 export const format = 'x-multipart/colors'

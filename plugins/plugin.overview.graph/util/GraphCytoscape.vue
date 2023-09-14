@@ -354,7 +354,7 @@ onMounted(async () => {
 							async select(el) {
 								const data = el.data() as t.CytoscapeElementData
 
-								const modelPlugin = pluginClient.get2('colors') // TODO
+								const modelPlugin = pluginClient.get('colors') // TODO
 								handlePopupModelCreateChild(data.resourceData, validateNewChild)
 							},
 						},

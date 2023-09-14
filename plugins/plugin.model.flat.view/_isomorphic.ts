@@ -2,7 +2,7 @@ import { t } from '@quasipanacea/common/index.ts'
 import { z } from 'zod'
 
 export const metadata: t.PluginMetadata_t = {
-	id: 'model.flat.view,
+	id: 'model.flat.view',
 }
 
 export const format = 'x-multipart/x-flat'
