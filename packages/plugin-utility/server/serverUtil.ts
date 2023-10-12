@@ -18,7 +18,7 @@ export async function assertFileExists(filepath: string, content?: string) {
 			await f.write(new TextEncoder().encode(content))
 		}
 		f.close()
-	} catch (err: unknown) {
+	} catch (err) {
 		if (!(err instanceof Deno.errors.AlreadyExists)) {
 			throw err
 		}

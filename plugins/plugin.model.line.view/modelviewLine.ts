@@ -1,6 +1,5 @@
-import * as path from 'std/path/mod.ts'
+import * as path from 'node:path'
 import { dotnev } from 'std/dotenv/mod.ts'
-import { Router, send } from 'oak/mod.ts'
 import { z } from 'zod'
 
 import { t } from '@quasipanacea/common/index.ts'

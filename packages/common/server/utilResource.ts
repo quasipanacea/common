@@ -1,4 +1,6 @@
-import * as path from 'std/path/mod.ts'
+// import * as path from 'node:path'
+import * as path from 'node:path'
+import * as fs from 'node:fs/promises'
 import { z } from 'zod'
 import * as pluginServer from './pluginServer.ts'
 
@@ -96,10 +98,10 @@ export async function resourceAdd(
 
 	const rJson = await rJsonFn()
 	rJson[familyPlural][uuid] = input
-	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+	await fs.writeFile(rJsonFile, util.jsonStringify(rJson))
 
 	const dir = getResourceDir(familyPlural, uuid)
-	await Deno.mkdir(dir, { recursive: true })
+	await fs.mkdir(dir, { recursive: true })
 
 	runHook(family, familyPlural, 'add', uuid)
 
@@ -116,13 +118,13 @@ export async function resourceRemove(
 	runHook(family, familyPlural, 'remove', input.uuid)
 
 	const dir = getResourceDir(familyPlural, input.uuid)
-	await Deno.mkdir(dir, { recursive: true })
+	await fs.mkdir(dir, { recursive: true })
 
 	const rJson = await rJsonFn()
 	if (rJson[familyPlural][input.uuid]) {
 		delete rJson[familyPlural][input.uuid]
 	}
-	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+	await fs.writeFile(rJsonFile, util.jsonStringify(rJson))
 }
 
 export async function resourceModify<Resource_t>(
@@ -145,7 +147,7 @@ export async function resourceModify<Resource_t>(
 		...rJson[familyPlural][input.uuid],
 		...input.data,
 	}
-	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+	await fs.writeFile(rJsonFile, util.jsonStringify(rJson))
 
 	return {
 		...rJson[familyPlural][input.uuid],
@@ -182,7 +184,7 @@ export async function resourceModifyExtra<Resource_t>(
 		...rJson[familyPlural][input.uuid].extra[input.field],
 		...input.data,
 	}
-	await Deno.writeTextFile(rJsonFile, util.jsonStringify(rJson))
+	await fs.writeFile(rJsonFile, util.jsonStringify(rJson))
 
 	return {
 		...rJson[familyPlural][input.uuid],
@@ -306,11 +308,14 @@ export async function getResourcesJson<
 	const jsonFile = getResourcesJsonFile(resourceName)
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = defaultContent
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -326,11 +331,14 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	const jsonFile = getModelsJsonFile()
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{ "models": {} }'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -346,11 +354,14 @@ export async function getModelviewsJson(): Promise<t.SchemaModelviewsJson_t> {
 	const jsonFile = getResourcesJsonFile('modelviews')
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{ "modelviews": {} }'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -366,11 +377,14 @@ export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	const jsonFile = getPodsJsonFile()
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{ "pods": {} }'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -386,11 +400,14 @@ export async function getPodviewsJson(): Promise<t.SchemaPodviewsJson_t> {
 	const jsonFile = getPodviewsJsonFile()
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{ "podviews": {} }'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -406,11 +423,14 @@ export async function getSettingsJson(): Promise<t.SchemaSettingsJson_t> {
 	const jsonFile = getSettingsJsonFile()
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{}'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}
@@ -426,11 +446,14 @@ export async function getIndexJson(): Promise<t.SchemaIndexJson_t> {
 	const jsonFile = getIndexJsonFile()
 	let content
 	try {
-		content = await Deno.readTextFile(jsonFile)
-	} catch (err: unknown) {
-		if (err instanceof Deno.errors.NotFound) {
+		content = await fs.readFile(jsonFile, 'utf-8')
+	} catch (err) {
+		if (
+			err instanceof Error &&
+			(err as NodeJS.ErrnoException).code === 'ENOENT'
+		) {
 			content = '{ "formats": {} }'
-			await Deno.writeTextFile(jsonFile, content)
+			await fs.writeFile(jsonFile, content)
 		} else {
 			throw err
 		}

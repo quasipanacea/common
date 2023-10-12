@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { Router } from 'oak/mod.ts'
+import type express from 'express'
 import type { AnyProcedure, AnyRouter } from '@trpc/server'
 
 // Shared: Zod Schema
@@ -84,6 +84,7 @@ export const SchemaSettingsJson = z
 	.deepPartial()
 export const SchemaIndexJson = z
 	.object({
+		defaultOverviewPlugin: z.array(z.string()),
 		formats: z.object({
 			model: z.object({
 				controller: z.array(z.string()),

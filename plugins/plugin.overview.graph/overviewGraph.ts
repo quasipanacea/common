@@ -1,3 +1,3 @@
-import { Router } from 'oak/mod.ts'
+import express from 'express'
 
-export const oakRouter = new Router()
+export const oakRouter = express.Router({ caseSensitive: true })

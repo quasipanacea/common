@@ -8,21 +8,13 @@ export function getFamilies() {
 }
 
 export function register(plugin: t.ServerPluginModule_t): void {
-	if (
-		!plugins.some(
-			(item) =>
-				plugin.metadata.family === item.metadata.family &&
-				plugin.metadata.id === item.metadata.id,
-		)
-	) {
+	if (!plugins.some((item) => plugin.metadata.id === item.metadata.id)) {
 		plugins.push(plugin)
 	}
 }
 
 export function get(family: string, id: string): t.ServerPluginModule_t {
-	const plugin = plugins.find(
-		(item) => item.metadata.family === family && item.metadata.id === id,
-	)
+	const plugin = plugins.find((item) => item.metadata.id === id)
 	if (!plugin) {
 		throw new Error(
 			`Failed to find client plugin with family '${family} and id '${id}'`,
@@ -33,7 +25,9 @@ export function get(family: string, id: string): t.ServerPluginModule_t {
 }
 
 export function list(family?: string): t.ServerPluginModule_t[] {
-	const values = plugins.filter((item) => item.metadata.family === family)
+	const values = plugins.filter((item) =>
+		item.metadata.id.includes(family ?? ''),
+	)
 
 	return values
 }

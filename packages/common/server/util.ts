@@ -1,8 +1,8 @@
-import * as path from 'std/path/mod.ts'
-import * as toml from 'std/toml/mod.ts'
+import * as path from 'node:path'
+import * as toml from '@ltd/j-toml'
 import { z } from 'zod'
 
-import { config } from './config.ts'
+import { getConfig } from './config.ts'
 import * as util from './util.ts'
 
 export function jsonStringify(obj: Record<string, unknown>) {
@@ -15,18 +15,19 @@ export function tomlStringify(obj: Record<string, unknown>) {
 
 export function getPublicDir() {
 	let public_dir = ''
-	const env = Deno.env.get('QP_PUBLIC')
+	const env = process.env.QP_PUBLIC
 	if (env) {
 		public_dir = env
 	} else {
-		public_dir = path.join(Deno.cwd(), './public')
+		public_dir = path.join(process.cwd(), './public')
 	}
 
 	return public_dir
 }
 
 export function getDataDir() {
-	return path.join(config.documentsDir, 'data')
+	// return path.join(config.documentsDir, 'data')
+	return path.join(getConfig().documentsDir, 'data')
 }
 
 export function validateSchema<Schema extends z.AnyZodObject>(

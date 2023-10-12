@@ -1,5 +1,5 @@
-import * as path from 'std/path/mod.ts'
-import { Router, Context, send } from 'oak/mod.ts'
+import * as path from 'node:path'
+import express from 'express'
 import { z } from 'zod'
 
 import { t } from '@quasipanacea/common/index.ts'
@@ -26,9 +26,9 @@ export const hooks: t.Hooks<'pod', State> = {
 	},
 }
 
-export const oakRouter = new Router().get(
-	'/get-pdf/:podUuid',
-	async (ctx: Context) => {
+export const oakRouter = express
+	.Router()
+	.get('/get-pdf/:podUuid', async (ctx: Context) => {
 		const podUuid = ctx.params.podUuid
 		const pod = await utilPlugin.getResource('pods', podUuid)
 
@@ -36,8 +36,7 @@ export const oakRouter = new Router().get(
 		await send(ctx, pdfFile.slice('/home/edwin'.length), {
 			root: '/home/edwin', // TODO
 		})
-	},
-)
+	})
 
 const trpc = serverUtil.useTrpc<State>()
 

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { default as _ } from 'lodash'
+import * as fs from 'node:fs/promises'
 
 import {
 	trpcServer,
@@ -212,10 +213,7 @@ export const coreRouter = trpc.router({
 			settingsJson = _.merge(settingsJson, input)
 
 			const settingsJsonFile = await utilResource.getSettingsJsonFile()
-			await Deno.writeTextFile(
-				settingsJsonFile,
-				util.jsonStringify(settingsJson),
-			)
+			await fs.writeFile(settingsJsonFile, util.jsonStringify(settingsJson))
 		}),
 
 	indexGet: trpc.procedure
@@ -244,16 +242,14 @@ export const coreRouter = trpc.router({
 
 			if (input?.family) {
 				plugins = plugins.filter((item) => {
-					if (input.family === 'model') {
-						return !!item.modelController
-					} else if (input.family === 'overview') {
+					if (input.family === 'overview') {
 						return !!item.overview
-					} else if (input.family === 'pack') {
-						return !!item.pack
+					} else if (input.family === 'model') {
+						return !!item.modelController
 					} else if (input.family === 'pod') {
-						return !!item.pod
-					} else if (input.family === 'theme') {
-						return !!item.theme
+						return !!item.podController
+					} else {
+						return true
 					}
 				})
 			}
