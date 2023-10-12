@@ -10,7 +10,7 @@ export function jsonStringify(obj: Record<string, unknown>) {
 }
 
 export function tomlStringify(obj: Record<string, unknown>) {
-	return toml.stringify(obj)
+	return toml.stringify(obj as any)
 }
 
 export function getPublicDir() {
@@ -44,10 +44,7 @@ export function validateSchema<Schema extends z.AnyZodObject>(
 export class JSONError extends Error {
 	obj: Record<string, unknown>
 
-	constructor(
-		obj: Record<string, unknown>,
-		serializationType: 'json' | 'toml' = 'json',
-	) {
+	constructor(obj: Record<string, unknown>, serializationType: 'json' | 'toml' = 'json') {
 		let str = '???'
 		switch (serializationType) {
 			case 'json':

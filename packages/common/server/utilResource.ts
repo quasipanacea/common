@@ -18,72 +18,69 @@ async function runHook<
 	hook: 'add' | 'remove',
 	uuid: string,
 ): Promise<void> {
-	if (
-		pluginFamilySingular === 'overview' ||
-		pluginFamilySingular === 'theme' ||
-		pluginFamilySingular === 'pack'
-	) {
-		throw new TypeError(
-			`Failed to run the '${hook}' because the plugin family '${pluginFamilySingular}' is not supported.`,
-		)
-	}
+	// TODO
+	console.info('HOOKS ARE NOT IMPLEMENTED')
 
-	let resource
-	const resourcesJson = await getResourcesJson(pluginFamilyPlural)
-	for (const [uuidEntry, resourceEntry] of Object.entries(
-		resourcesJson[pluginFamilyPlural],
-	)) {
-		if (uuid === uuidEntry) {
-			resource = resourceEntry
-			continue
-		}
-	}
-	if (!resource) {
-		// TODO it has already been removed
-		// throw new Error(
-		// 	`Failed to run the '${hook}' hook because the '${pluginFamilySingular}' resource with the uuid of '${uuid}' could not be found.`,
-		// )
-		return
-	}
+	// if (
+	// 	pluginFamilySingular === 'overview' ||
+	// 	pluginFamilySingular === 'theme' ||
+	// 	pluginFamilySingular === 'pack'
+	// ) {
+	// 	throw new TypeError(
+	// 		`Failed to run the '${hook}' because the plugin family '${pluginFamilySingular}' is not supported.`,
+	// 	)
+	// }
 
-	const settingsJson = await getSettingsJson()
-	const pluginId =
-		settingsJson?.mimes?.[pluginFamilySingular]?.[resource.format]
-	if (!pluginId) {
-		throw new Error(
-			`Failed to run the '${hook}' hook because a corresponding plugin id could not be found for the format '${resource.format}' (in uuid '${uuid}')`,
-		)
-	}
+	// let resource
+	// const resourcesJson = await getResourcesJson(pluginFamilyPlural)
+	// for (const [uuidEntry, resourceEntry] of Object.entries(
+	// 	resourcesJson[pluginFamilyPlural],
+	// )) {
+	// 	if (uuid === uuidEntry) {
+	// 		resource = resourceEntry
+	// 		continue
+	// 	}
+	// }
+	// if (!resource) {
+	// 	// TODO it has already been removed
+	// 	// throw new Error(
+	// 	// 	`Failed to run the '${hook}' hook because the '${pluginFamilySingular}' resource with the uuid of '${uuid}' could not be found.`,
+	// 	// )
+	// 	return
+	// }
 
-	const plugin = pluginServer.get<PluginFamilyPlural>(
-		pluginFamilySingular,
-		pluginId,
-	)
+	// const settingsJson = await getSettingsJson()
+	// const pluginId = settingsJson?.mimes?.[pluginFamilySingular]?.[resource.format]
+	// if (!pluginId) {
+	// 	throw new Error(
+	// 		`Failed to run the '${hook}' hook because a corresponding plugin id could not be found for the format '${resource.format}' (in uuid '${uuid}')`,
+	// 	)
+	// }
 
-	const dir = utilResource.getResourceDir(pluginFamilyPlural, uuid)
-	if (!dir) {
-		throw new Error(
-			`dir is not defined for family ${pluginFamilyPlural}, ${uuid}`,
-		)
-	}
+	// const plugin = pluginServer.get<PluginFamilyPlural>(pluginFamilySingular, pluginId)
 
-	if (hook === 'add') {
-		if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onAdd) {
-			const state = await plugin.hooks.makeState({
-				dir,
-				singular: resource,
-			})
-			await plugin.hooks.onAdd({ dir, state, singular: resource })
-		}
-	} else {
-		if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onRemove) {
-			const state = await plugin.hooks.makeState({
-				dir,
-				singular: resource,
-			})
-			await plugin.hooks.onRemove({ dir, state, singular: resource })
-		}
-	}
+	// const dir = utilResource.getResourceDir(pluginFamilyPlural, uuid)
+	// if (!dir) {
+	// 	throw new Error(`dir is not defined for family ${pluginFamilyPlural}, ${uuid}`)
+	// }
+
+	// if (hook === 'add') {
+	// 	if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onAdd) {
+	// 		const state = await plugin.hooks.makeState({
+	// 			dir,
+	// 			singular: resource,
+	// 		})
+	// 		await plugin.hooks.onAdd({ dir, state, singular: resource })
+	// 	}
+	// } else {
+	// 	if (plugin.hooks && plugin.hooks.makeState && plugin.hooks.onRemove) {
+	// 		const state = await plugin.hooks.makeState({
+	// 			dir,
+	// 			singular: resource,
+	// 		})
+	// 		await plugin.hooks.onRemove({ dir, state, singular: resource })
+	// 	}
+	// }
 }
 
 // generic
@@ -221,44 +218,21 @@ export function getModelsDir(): string {
 	return getResourcesDir('models')
 }
 
-export function getModelViewsDir(): string {
-	return getResourcesDir('modelviews')
-}
-
 export function getPodsDir(): string {
 	return getResourcesDir('pods')
 }
 
-export function getPodviewsDir(): string {
-	return getResourcesDir('podviews')
-}
-
 // dir (instance)
-export function getResourceDir(
-	resourceName: t.ResourceNamesPlural_t,
-	uuid: string,
-) {
-	return path.join(
-		getResourcesDir(resourceName),
-		uuid.slice(0, 2),
-		uuid.slice(2),
-	)
+export function getResourceDir(resourceName: t.ResourceNamesPlural_t, uuid: string) {
+	return path.join(getResourcesDir(resourceName), uuid.slice(0, 2), uuid.slice(2))
 }
 
 export function getModelDir(uuid: string): string {
 	return getResourceDir('models', uuid)
 }
 
-export function getModelviewDir(uuid: string): string {
-	return getResourceDir('modelviews', uuid)
-}
-
 export function getPodDir(uuid: string): string {
 	return getResourceDir('pods', uuid)
-}
-
-export function getPodviewDir(uuid: string): string {
-	return getResourceDir('podviews', uuid)
 }
 
 // file
@@ -270,16 +244,8 @@ export function getModelsJsonFile(): string {
 	return getResourcesJsonFile('models')
 }
 
-export function getModelviewsJsonFile(): string {
-	return getResourcesJsonFile('modelviews')
-}
-
 export function getPodsJsonFile(): string {
 	return getResourcesJsonFile('pods')
-}
-
-export function getPodviewsJsonFile(): string {
-	return getResourcesJsonFile('podviews')
 }
 
 export function getSettingsJsonFile(): string {
@@ -295,13 +261,9 @@ const Table = {
 	// TODO
 	overviews: t.SchemaOverviewsJson,
 	models: t.SchemaModelsJson,
-	modelviews: t.SchemaModelviewsJson,
 	pods: t.SchemaPodsJson,
-	podviews: t.SchemaPodviewsJson,
 }
-export async function getResourcesJson<
-	ResourceName extends t.ResourceNamesPlural_t,
->(
+export async function getResourcesJson<ResourceName extends t.ResourceNamesPlural_t>(
 	resourceName: ResourceName,
 	defaultContent: string = `{ "${resourceName}": {} }`,
 ) {
@@ -310,10 +272,7 @@ export async function getResourcesJson<
 	try {
 		content = await fs.readFile(jsonFile, 'utf-8')
 	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
+		if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
 			content = defaultContent
 			await fs.writeFile(jsonFile, content)
 		} else {
@@ -333,10 +292,7 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	try {
 		content = await fs.readFile(jsonFile, 'utf-8')
 	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
+		if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
 			content = '{ "models": {} }'
 			await fs.writeFile(jsonFile, content)
 		} else {
@@ -350,39 +306,13 @@ export async function getModelsJson(): Promise<t.SchemaModelsJson_t> {
 	)
 }
 
-export async function getModelviewsJson(): Promise<t.SchemaModelviewsJson_t> {
-	const jsonFile = getResourcesJsonFile('modelviews')
-	let content
-	try {
-		content = await fs.readFile(jsonFile, 'utf-8')
-	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
-			content = '{ "modelviews": {} }'
-			await fs.writeFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaModelviewsJson>(
-		JSON.parse(content),
-		t.SchemaModelviewsJson,
-	)
-}
-
 export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	const jsonFile = getPodsJsonFile()
 	let content
 	try {
 		content = await fs.readFile(jsonFile, 'utf-8')
 	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
+		if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
 			content = '{ "pods": {} }'
 			await fs.writeFile(jsonFile, content)
 		} else {
@@ -396,39 +326,13 @@ export async function getPodsJson(): Promise<t.SchemaPodsJson_t> {
 	)
 }
 
-export async function getPodviewsJson(): Promise<t.SchemaPodviewsJson_t> {
-	const jsonFile = getPodviewsJsonFile()
-	let content
-	try {
-		content = await fs.readFile(jsonFile, 'utf-8')
-	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
-			content = '{ "podviews": {} }'
-			await fs.writeFile(jsonFile, content)
-		} else {
-			throw err
-		}
-	}
-
-	return util.validateSchema<typeof t.SchemaPodviewsJson>(
-		JSON.parse(content),
-		t.SchemaPodviewsJson,
-	)
-}
-
 export async function getSettingsJson(): Promise<t.SchemaSettingsJson_t> {
 	const jsonFile = getSettingsJsonFile()
 	let content
 	try {
 		content = await fs.readFile(jsonFile, 'utf-8')
 	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
+		if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
 			content = '{}'
 			await fs.writeFile(jsonFile, content)
 		} else {
@@ -448,10 +352,7 @@ export async function getIndexJson(): Promise<t.SchemaIndexJson_t> {
 	try {
 		content = await fs.readFile(jsonFile, 'utf-8')
 	} catch (err) {
-		if (
-			err instanceof Error &&
-			(err as NodeJS.ErrnoException).code === 'ENOENT'
-		) {
+		if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
 			content = '{ "formats": {} }'
 			await fs.writeFile(jsonFile, content)
 		} else {

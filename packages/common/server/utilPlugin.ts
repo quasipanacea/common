@@ -1,4 +1,5 @@
-import { path } from 'std/path/mod.ts'
+import * as path from 'node:path'
+
 import {
 	type AnyProcedure,
 	type AnyRouter,
@@ -18,13 +19,7 @@ import { instance } from './trpcServer.ts'
 // this is unused
 type Map = {
 	model: ''
-	pod:
-		| 'chemical'
-		| 'flashcard'
-		| 'latex'
-		| 'markdown'
-		| 'plaintext'
-		| 'excalidraw'
+	pod: 'chemical' | 'flashcard' | 'latex' | 'markdown' | 'plaintext' | 'excalidraw'
 }
 export function yieldPluginAppRouter<
 	T extends Extract<'model' | 'pod', string>,
@@ -42,18 +37,13 @@ export function yieldPluginAppRouter<
 }
 
 // TODO: internal
-export async function getResource(
-	resourceName: t.ResourceNamesPlural_t,
-	uuid: string,
-) {
+export async function getResource(resourceName: t.ResourceNamesPlural_t, uuid: string) {
 	const dir = utilResource.getResourceDir(resourceName, uuid)
 	const resourceJson = await utilResource.getResourcesJson(resourceName)
 
-	const obj = resourceJson[resourceName][uuid]
+	const obj = (resourceJson as any)[resourceName][uuid]
 	if (!obj) {
-		throw new Error(
-			`Failed to find item of family '${resourceName}' with id: ${uuid}`,
-		)
+		throw new Error(`Failed to find item of family '${resourceName}' with id: ${uuid}`)
 	}
 
 	return {

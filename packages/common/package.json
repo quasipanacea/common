@@ -18,6 +18,7 @@
 		"mind-elixir": "^1.2.0"
 	},
 	"devDependencies": {
+		"@types/express": "^4.17.19",
 		"zod": "^3.21.4"
 	},
 	"peerDependencies": {

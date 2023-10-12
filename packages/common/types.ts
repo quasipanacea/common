@@ -137,13 +137,13 @@ export type ServerPluginModule_t = {
 	modelController?: {
 		format?: string
 		trpcRouter?: AnyProcedure | AnyRouter
-		oakRouter?: Router
+		oakRouter?: (typeof express)['Router']
 		hooks?: Hooks<keyof HooksTable, Record<string, unknown>>
 	}
 	podController?: {
 		format?: string
 		trpcRouter?: AnyProcedure | AnyRouter
-		oakRouter?: Router
+		oakRouter?: (typeof express)['Router']
 		hooks?: Hooks<keyof HooksTable, Record<string, unknown>>
 	}
 	theme?: {
@@ -162,7 +162,7 @@ export type Hooks<
 > = {
 	makeState?: (
 		arg0: { dir: string } & HooksTable[PluginFamily],
-	) => State | Promise<State>
+	) => State | Promise<State> | void | Promise<void>
 	onAdd?: (
 		arg0: {
 			dir: string

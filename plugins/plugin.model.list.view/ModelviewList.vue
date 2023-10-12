@@ -1,1 +1,0 @@
-<template>ViewList</template>
