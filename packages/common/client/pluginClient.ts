@@ -32,7 +32,7 @@ export function get(id: string): t.ClientPluginModule_t {
 }
 
 export function list(family?: string): t.ServerPluginModule_t[] {
-	const values = plugins.filter((item) => item.metadata.family === family)
+	const values = plugins.filter((item) => item.metadata.id.startsWith(family === void 0 ? '' : family + '.'))
 
 	return values
 }
